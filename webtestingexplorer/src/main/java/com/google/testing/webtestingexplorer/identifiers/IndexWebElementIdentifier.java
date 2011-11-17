@@ -17,6 +17,8 @@ package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -31,7 +33,6 @@ public class IndexWebElementIdentifier implements WebElementIdentifier {
     this.index = index;
   }
   
-  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getAllElements().get(index);
   }
@@ -39,5 +40,22 @@ public class IndexWebElementIdentifier implements WebElementIdentifier {
   @Override
   public String toString() {
     return  "index=" + index;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+  	if (obj == this) {
+  		return true;
+  	}
+  	if (!(obj instanceof IndexWebElementIdentifier)) {
+  		return false;
+  	}
+  	IndexWebElementIdentifier other = (IndexWebElementIdentifier) obj;
+    return new EqualsBuilder().append(index, other.index).isEquals();
+  }
+  
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(index).hashCode();
   }
 }

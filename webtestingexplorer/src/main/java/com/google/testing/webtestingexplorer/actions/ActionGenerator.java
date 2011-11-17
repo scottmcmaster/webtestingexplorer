@@ -17,9 +17,7 @@ package com.google.testing.webtestingexplorer.actions;
 
 import com.google.testing.webtestingexplorer.config.ActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
-import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
+import com.google.testing.webtestingexplorer.element.WebElementUtil;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 import org.openqa.selenium.WebElement;
@@ -45,26 +43,17 @@ public class ActionGenerator {
    * Builds the list of actions to take on a given element.
    */
   public List<Action> generateActionsForElement(int elementIndex, WebElement element) {
-    String name = element.getAttribute("name");
     String type = element.getAttribute("type");
-    String id = element.getAttribute("id");
     String role = element.getAttribute("role");
     String ariaDisabled = element.getAttribute("aria-disabled");
     
     // WebDriver can only interact with visible elements.
-    if (!element.isDisplayed()) {
+    if (!element.isDisplayed() || !element.isEnabled()) {
       return new ArrayList<Action>();
     }
     
     List<Action> actions = new ArrayList<Action>();
-    WebElementIdentifier identifier;
-    if (id != null && id.length() > 0) {
-      identifier = new IdWebElementIdentifier(id);
-    } else if (name != null && name.length() > 0) {
-      identifier = new NameWebElementIdentifier(name);
-    } else {
-      identifier = new IndexWebElementIdentifier(elementIndex);
-    }
+    WebElementIdentifier identifier = WebElementUtil.generateIdentifier(elementIndex, element);
     
     // Look for a specific action configuration.
     for (ActionGeneratorConfig actionConfig : config.getActionGeneratorConfigs()) {

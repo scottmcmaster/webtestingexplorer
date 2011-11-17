@@ -156,6 +156,7 @@ public class WebTestingExplorer {
       }
       
       List<State> finalState = createStateSnapshot(driver);
+      
       if (!finalState.equals(stateBeforeLastAction)) {
         if (config.getTestCaseWriter() != null) {
           config.getTestCaseWriter().writeTestCase(actionSequence, "test-" + testCaseCount + ".xml");

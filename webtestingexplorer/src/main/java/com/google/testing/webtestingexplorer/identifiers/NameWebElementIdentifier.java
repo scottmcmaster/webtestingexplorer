@@ -15,10 +15,12 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
-
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
@@ -31,7 +33,6 @@ public class NameWebElementIdentifier implements WebElementIdentifier {
     this.name = name;
   }
   
-  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getDriver().findElement(By.name(name));
   }
@@ -39,5 +40,22 @@ public class NameWebElementIdentifier implements WebElementIdentifier {
   @Override
   public String toString() {
     return "name=" + name;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+  	if (obj == this) {
+  		return true;
+  	}
+  	if (!(obj instanceof NameWebElementIdentifier)) {
+  		return false;
+  	}
+  	NameWebElementIdentifier other = (NameWebElementIdentifier) obj;
+    return new EqualsBuilder().append(name, other.name).isEquals();
+  }
+  
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(name).hashCode();
   }
 }

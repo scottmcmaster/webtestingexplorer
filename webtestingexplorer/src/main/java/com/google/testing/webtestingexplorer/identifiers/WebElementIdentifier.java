@@ -26,5 +26,5 @@ import org.openqa.selenium.WebElement;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public interface WebElementIdentifier {
-  WebElement findElement(WebDriverWrapper driver);
+  public WebElement findElement(WebDriverWrapper driver); 
 }

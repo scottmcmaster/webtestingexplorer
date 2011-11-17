@@ -17,6 +17,8 @@ package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -31,13 +33,29 @@ public class IdWebElementIdentifier implements WebElementIdentifier {
     this.id = id;
   }
   
-  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getDriver().findElement(By.id(id));
   }
-
+  
   @Override
   public String toString() {
     return "id=" + id;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+  	if (obj == this) {
+  		return true;
+  	}
+  	if (!(obj instanceof NameWebElementIdentifier)) {
+  		return false;
+  	}
+  	IdWebElementIdentifier other = (IdWebElementIdentifier) obj;
+    return new EqualsBuilder().append(id, other.id).isEquals();
+  }
+  
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(id).hashCode();
   }
 }

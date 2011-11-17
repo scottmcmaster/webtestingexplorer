@@ -21,7 +21,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
@@ -54,5 +56,23 @@ public class WebDriverWrapper {
     elements.addAll(driver.findElements(By.xpath("//button")));
     elements.addAll(driver.findElements(By.xpath("//select")));
     return elements;
+  }
+  
+  /**
+   * Returns a list of all visible elements.
+   */
+  public Map<Integer, WebElement> getVisibleElements() {
+	  List<WebElement> allElements = new ArrayList<WebElement>();
+	  allElements.addAll(this.getAllElements());
+	  Map<Integer, WebElement> visibleElements = new HashMap<Integer, WebElement>();
+	  
+	  WebElement e;
+	  for (int i = 0; i < allElements.size(); ++i) {
+		  e = allElements.get(i);
+	    if (e.isDisplayed()) {
+		    visibleElements.put(new Integer(i), e);
+	    }
+	  }
+	  return visibleElements;
   }
 }
