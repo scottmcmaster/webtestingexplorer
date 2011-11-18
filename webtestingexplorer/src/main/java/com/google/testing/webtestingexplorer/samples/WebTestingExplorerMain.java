@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class WebTestingExplorerMain {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     String url = args[0];
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))

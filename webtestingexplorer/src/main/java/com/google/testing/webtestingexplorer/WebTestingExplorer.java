@@ -19,6 +19,7 @@ import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
+import com.google.testing.webtestingexplorer.driver.WebDriverProxy;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.state.StateChecker;
@@ -26,8 +27,10 @@ import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 import org.openqa.selenium.WebElement;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -39,15 +42,19 @@ public class WebTestingExplorer {
 
   private WebTestingConfig config;
   private ActionGenerator actionGenerator;
+  private WebDriverProxy proxy;
   
-  public WebTestingExplorer(WebTestingConfig config) {
+  public WebTestingExplorer(WebTestingConfig config) throws Exception {
     this.config= config;
     this.actionGenerator = new ActionGenerator(config);
+    
+    // Start a proxy.
+    proxy = new WebDriverProxy();
   }
 
-  public void run() {
+  public void run() throws Exception {
     // Init.
-    WebDriverWrapper driver = new WebDriverWrapper();
+    WebDriverWrapper driver = new WebDriverWrapper(proxy);
     
     // Rip.
     Stack<ActionSequence> actionSequences = buildInitialActionSequences(driver);
@@ -89,8 +96,11 @@ public class WebTestingExplorer {
   }
 
   private void loadUrl(WebDriverWrapper driver) {
-    driver.getDriver().get(config.getUrl());
-    waitOnConditions(config.getInitialWaitConditions(), driver);
+    driver.get(config.getUrl(), config.getInitialWaitConditions());
+    Map<URI, Integer> statusCodes = driver.getLastRequestStatusMap();
+    for (Map.Entry<URI, Integer> entry : statusCodes.entrySet()) {
+      System.err.println(entry.getKey().toString() + " : " + entry.getValue());
+    }
   }
 
   /**
@@ -136,13 +146,13 @@ public class WebTestingExplorer {
 
   // As long as the test case is longer than the previous one, you don't need to
   // restart the browser.
-  private void replay(Stack<ActionSequence> actionSequences, int maxSequenceLength) {
+  private void replay(Stack<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
     while (!actionSequences.isEmpty()) {
       ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
       System.out.println("" + testCaseCount + ": " + actionSequence.toString());
-      WebDriverWrapper driver = new WebDriverWrapper();
+      WebDriverWrapper driver = new WebDriverWrapper(proxy);
       loadUrl(driver);
       
       List<State> stateBeforeLastAction = null;

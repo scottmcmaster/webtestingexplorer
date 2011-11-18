@@ -15,11 +15,16 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.driver;
 
+import com.google.testing.webtestingexplorer.wait.WaitCondition;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,13 +36,34 @@ import java.util.Map;
  */
 public class WebDriverWrapper {
   private WebDriver driver;
+  private WebDriverProxy proxy;
   
-  public WebDriverWrapper() {
-    driver = new FirefoxDriver();
+  public WebDriverWrapper(WebDriverProxy proxy) {
+    DesiredCapabilities driverCapabilities = new DesiredCapabilities();
+    driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
+    driver = new FirefoxDriver(driverCapabilities);
+    this.proxy = proxy;
   }
   
   public WebDriver getDriver() {
     return driver;
+  }
+  
+  /**
+   * Gets the given url and waits for the wait conditions to be satisifed.
+   */
+  public void get(String url, List<WaitCondition> waitConditions) {
+    proxy.resetForRequest();
+    driver.get(url);
+    waitOnConditions(waitConditions);
+  }
+  
+  /**
+   * Gets a map of the URI(s) and corresponding status codes for the
+   * last get request.
+   */
+  public Map<URI, Integer> getLastRequestStatusMap() {
+    return proxy.getLastRequestStatusMap();
   }
   
   public List<WebElement> getAllElements() {
@@ -74,5 +100,34 @@ public class WebDriverWrapper {
 	    }
 	  }
 	  return visibleElements;
+  }
+  
+  /**
+   * Waits for the given list of conditions to be true before returning.
+   * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
+   */
+  private void waitOnConditions(List<WaitCondition> waitConditions) {
+    for (WaitCondition waitCondition : waitConditions) {
+      waitCondition.reset();
+    }
+    while (true) {
+      boolean allCanContinue = true;
+      String conditionDescription = "";
+      for (WaitCondition waitCondition : waitConditions) {
+        if (!waitCondition.canContinue(this)) {
+          allCanContinue = false;
+          conditionDescription = waitCondition.getDescription();
+          break;
+        }
+      }
+      if (allCanContinue) {
+        break;
+      }
+      System.out.println("Waiting for " + conditionDescription);
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException useless) {
+      }
+    }
   }
 }
