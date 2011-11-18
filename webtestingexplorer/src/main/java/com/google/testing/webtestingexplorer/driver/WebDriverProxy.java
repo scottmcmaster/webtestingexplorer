@@ -60,6 +60,8 @@ public class WebDriverProxy {
         if (wrapper.getOriginal() instanceof HttpGet) {
           HttpGet getRequest = (HttpGet) wrapper.getOriginal();
           requestURIs.add(getRequest.getURI());
+        } else {
+          requestURIs.add(wrapper.getURI());
         }
       }
     });
