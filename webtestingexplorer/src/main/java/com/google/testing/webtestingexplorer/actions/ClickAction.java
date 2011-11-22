@@ -37,4 +37,9 @@ public class ClickAction extends Action {
     WebElement element = identifier.findElement(driver);
     element.click();
   }
+  
+  @Override
+  public String toString() {
+    return identifier.toString() + ": Click()";
+  }
 }

@@ -57,17 +57,11 @@ public class ActionSequence {
     return length;
   }
   
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
     String result = "";
     for (Action action : actions) {
-      result += action.getClass().getName();
-      result += "(";
-      result += action.getIdentifier().toString();
-      result += ")";
+      result += action.toString();
       result += ",";
     }
     return result;
@@ -81,5 +75,9 @@ public class ActionSequence {
     for (Action action : actions) {
       action.setInitial(true);
     }
+  }
+
+  public Action getLastAction() {
+    return actions.get(actions.size() - 1);
   }
 }

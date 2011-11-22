@@ -23,6 +23,7 @@ import com.google.testing.webtestingexplorer.config.NameActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.TagActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.oracles.HttpStatusCodeOracle;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
@@ -45,6 +46,7 @@ public class WebTestingExplorerMain {
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
+        .addAfterActionOracle(new HttpStatusCodeOracle().setDisallowedStatusCodes(500, 503))
         .addActionGeneratorConfig(new NameActionGeneratorConfig("feedback_email") {
           @Override
           public List<Action> generateActions(WebElement element, WebElementIdentifier identifier) {

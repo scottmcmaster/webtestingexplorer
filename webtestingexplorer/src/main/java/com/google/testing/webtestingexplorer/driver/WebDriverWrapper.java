@@ -29,12 +29,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * Custom wrapper for WebDriver that adds functionality that we find
+ * useful.
+ * 
  * @author smcmaster@google.com (Scott McMaster)
- *
  */
 public class WebDriverWrapper {
+	
+  private final static Logger LOGGER = Logger.getLogger(WebDriverWrapper.class.getName());
+	
   private WebDriver driver;
   private WebDriverProxy proxy;
   
@@ -53,6 +60,7 @@ public class WebDriverWrapper {
    * Gets the given url and waits for the wait conditions to be satisifed.
    */
   public void get(String url, List<WaitCondition> waitConditions) {
+    LOGGER.log(Level.INFO, "Getting " + url);
     proxy.resetForRequest();
     driver.get(url);
     waitOnConditions(waitConditions);

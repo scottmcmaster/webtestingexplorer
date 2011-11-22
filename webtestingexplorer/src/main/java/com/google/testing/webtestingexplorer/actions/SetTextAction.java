@@ -21,6 +21,8 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.openqa.selenium.WebElement;
 
 /**
+ * Sends keys to the specified element.
+ * 
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class SetTextAction extends Action {
@@ -32,13 +34,15 @@ public class SetTextAction extends Action {
     this.keysToSend = keysToSend;
   }
   
-  /* (non-Javadoc)
-   * @see Action#perform()
-   */
   @Override
   public void perform(WebDriverWrapper driver) {
     WebElement element = identifier.findElement(driver);
     element.clear();
     element.sendKeys(keysToSend);
+  }
+  
+  @Override
+  public String toString() {
+    return identifier.toString() + ": SetText(" + keysToSend + ")";
   }
 }

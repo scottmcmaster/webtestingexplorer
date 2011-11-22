@@ -15,23 +15,26 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.openqa.selenium.WebElement;
+
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.WebDriverProxy;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.oracles.Failure;
+import com.google.testing.webtestingexplorer.oracles.FailureReason;
+import com.google.testing.webtestingexplorer.oracles.Oracle;
 import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
-
-import org.openqa.selenium.WebElement;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Implements the actual test exploration process.
@@ -39,6 +42,9 @@ import java.util.Stack;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class WebTestingExplorer {
+
+  private final static Logger LOGGER =
+      Logger.getLogger(WebTestingExplorer.class.getName());
 
   private WebTestingConfig config;
   private ActionGenerator actionGenerator;
@@ -91,16 +97,17 @@ public class WebTestingExplorer {
   }
 
   private void performAction(WebDriverWrapper driver, Action action) {
+    // We should reset the proxy on each action (keeping in mind that we
+    // don't really know which actions will actually trigger http
+    // request/responses.
+    proxy.resetForRequest();
+    
     action.perform(driver);
     waitOnConditions(config.getAfterActionWaitConditions(), driver);
   }
 
   private void loadUrl(WebDriverWrapper driver) {
     driver.get(config.getUrl(), config.getInitialWaitConditions());
-    Map<URI, Integer> statusCodes = driver.getLastRequestStatusMap();
-    for (Map.Entry<URI, Integer> entry : statusCodes.entrySet()) {
-      System.err.println(entry.getKey().toString() + " : " + entry.getValue());
-    }
   }
 
   /**
@@ -163,10 +170,17 @@ public class WebTestingExplorer {
           stateBeforeLastAction = createStateSnapshot(driver);
         }
         performAction(driver, action);
+        
+        // Check for failures.
+        checkForFailures(config.getAfterActionOracles(), driver, actionSequence, action);
       }
       
-      List<State> finalState = createStateSnapshot(driver);
-      
+      // Check for failures.
+      checkForFailures(config.getFinalOracles(), driver, actionSequence,
+          actionSequence.getLastAction());
+
+      // Check the state and add a new test case if it has changed.
+      List<State> finalState = createStateSnapshot(driver);   
       if (!finalState.equals(stateBeforeLastAction)) {
         if (config.getTestCaseWriter() != null) {
           config.getTestCaseWriter().writeTestCase(actionSequence, "test-" + testCaseCount + ".xml");
@@ -183,7 +197,6 @@ public class WebTestingExplorer {
       //    Look for new or removed elements.
       //    Look at some CSS properties (disabled, color, etc.) for some subset of elements.
       //        All elements? Elements with ids/names?
-
       if (actionSequence.getLength() < maxSequenceLength) {
         // Extend.
         List<Action> actions = getAllPossibleActionsInCurrentState(driver);
@@ -194,6 +207,25 @@ public class WebTestingExplorer {
         }
       }
       driver.getDriver().close();
+    }
+  }
+
+  /**
+   * Checks the given oracles for failures.
+   */
+  private void checkForFailures(List<Oracle> oracles,
+      WebDriverWrapper driver,
+      ActionSequence actionSequence,
+      Action action) {
+    List<FailureReason> failureReasons = new ArrayList<FailureReason>();
+    for (Oracle oracle : oracles) {
+      failureReasons.addAll(oracle.check(driver));
+    }
+    if (!failureReasons.isEmpty()) {
+      // Create a failure.
+      Failure failure = new Failure(actionSequence, action);
+      failure.addReasons(failureReasons);
+      LOGGER.log(Level.INFO, "Failure detected: " + failure);
     }
   }
 

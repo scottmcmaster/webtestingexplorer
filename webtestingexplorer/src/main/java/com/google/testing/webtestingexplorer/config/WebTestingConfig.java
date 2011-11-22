@@ -16,6 +16,7 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.config;
 
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+import com.google.testing.webtestingexplorer.oracles.Oracle;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
@@ -48,6 +49,17 @@ public class WebTestingConfig {
    * initial state(s) to start exploration.
    */
   private List<ActionSequence> initialActionSequences = new ArrayList<ActionSequence>();
+  
+  /**
+   * A list of oracles that get checked after each action is performed.
+   */
+  private List<Oracle> afterActionOracles = new ArrayList<Oracle>();
+  
+  /**
+   * A list of oracles that get checked after a complete action sequence has been
+   * executed.
+   */
+  private List<Oracle> finalOracles = new ArrayList<Oracle>();
   
   public WebTestingConfig() {
   }
@@ -122,6 +134,24 @@ public class WebTestingConfig {
   
   public WebTestingConfig setTestCaseWriter(TestCaseWriter testCaseWriter) {
     this.testCaseWriter = testCaseWriter;
+    return this;
+  }
+
+  public List<Oracle> getAfterActionOracles() {
+    return afterActionOracles;
+  }
+
+  public WebTestingConfig addAfterActionOracle(Oracle oracle) {
+    afterActionOracles.add(oracle);
+    return this;
+  }
+
+  public List<Oracle> getFinalOracles() {
+    return finalOracles;
+  }
+
+  public WebTestingConfig addFinalOracle(Oracle oracle) {
+    finalOracles.add(oracle);
     return this;
   }
 }
