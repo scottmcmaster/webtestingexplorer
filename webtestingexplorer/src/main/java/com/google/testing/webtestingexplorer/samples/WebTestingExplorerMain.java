@@ -15,13 +15,13 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.samples;
 
-import com.google.testing.webtestingexplorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ClickAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.config.NameActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.TagActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
+import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.oracles.HttpStatusCodeOracle;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;

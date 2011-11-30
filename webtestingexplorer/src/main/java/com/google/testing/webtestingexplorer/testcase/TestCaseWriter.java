@@ -15,17 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.testcase;
 
-import com.google.testing.webtestingexplorer.actions.Action;
-import com.google.testing.webtestingexplorer.actions.ActionSequence;
-import com.google.testing.webtestingexplorer.actions.ClickAction;
-import com.google.testing.webtestingexplorer.actions.SetTextAction;
-import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -45,24 +35,15 @@ public class TestCaseWriter {
    * @param outputDirectory
    */
   public TestCaseWriter(String outputDirectory) {
-    xstream = new XStream(new StaxDriver());
-    xstream.alias("ActionSequence", ActionSequence.class);
-    xstream.alias("Action", Action.class);
-    xstream.alias("ClickAction", ClickAction.class);
-    xstream.alias("SetTextAction", SetTextAction.class);
-    xstream.alias("WebElementIdentifier", WebElementIdentifier.class);
-    xstream.alias("NameWebElementIdentifier", NameWebElementIdentifier.class);
-    xstream.alias("IdWebElementIdentifier", IdWebElementIdentifier.class);
-    xstream.alias("IndexWebElementIdentifier", IndexWebElementIdentifier.class);
-
+    xstream = TestCaseXStream.createXStream();
     this.outputDirectory = outputDirectory;
   }
 
   /**
    * Writes a test case based on the given action sequence.
    */
-  public void writeTestCase(ActionSequence actionSequence, String filename) {
-    String xml = xstream.toXML(actionSequence);
+  public void writeTestCase(TestCase testCase, String filename) {
+    String xml = xstream.toXML(testCase);
     System.out.println(xml);
     String fullPath = outputDirectory + "/" + filename;
     Writer out = null;
@@ -77,5 +58,4 @@ public class TestCaseWriter {
       try { out.close(); } catch (Exception e) {}
     }
   }
-
 }

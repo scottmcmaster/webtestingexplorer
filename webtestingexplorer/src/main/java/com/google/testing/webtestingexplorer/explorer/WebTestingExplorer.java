@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.google.testing.webtestingexplorer;
+package com.google.testing.webtestingexplorer.explorer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ import com.google.testing.webtestingexplorer.oracles.FailureReason;
 import com.google.testing.webtestingexplorer.oracles.Oracle;
 import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.state.StateChecker;
+import com.google.testing.webtestingexplorer.testcase.TestCase;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 /**
@@ -158,32 +159,16 @@ public class WebTestingExplorer {
     while (!actionSequences.isEmpty()) {
       ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
-      System.out.println("" + testCaseCount + ": " + actionSequence.toString());
+      LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
       WebDriverWrapper driver = new WebDriverWrapper(proxy);
-      loadUrl(driver);
-      
-      List<State> stateBeforeLastAction = null;
-      for (int i = 0; i < actionSequence.getActions().size(); ++i) {
-        Action action = actionSequence.getActions().get(i);
-        // If this is the last action, grab the state before and after.
-        if (i == actionSequence.getActions().size() - 1) {
-          stateBeforeLastAction = createStateSnapshot(driver);
-        }
-        performAction(driver, action);
-        
-        // Check for failures.
-        checkForFailures(config.getAfterActionOracles(), driver, actionSequence, action);
-      }
-      
-      // Check for failures.
-      checkForFailures(config.getFinalOracles(), driver, actionSequence,
-          actionSequence.getLastAction());
+      List<State> stateBeforeLastAction = runActionSequence(actionSequence, driver);
 
       // Check the state and add a new test case if it has changed.
       List<State> finalState = createStateSnapshot(driver);   
       if (!finalState.equals(stateBeforeLastAction)) {
         if (config.getTestCaseWriter() != null) {
-          config.getTestCaseWriter().writeTestCase(actionSequence, "test-" + testCaseCount + ".xml");
+          TestCase testCase = new TestCase(config.getUrl(), actionSequence);
+          config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
         }
       }
       
@@ -208,6 +193,33 @@ public class WebTestingExplorer {
       }
       driver.getDriver().close();
     }
+  }
+
+  /**
+   * Executes the given action sequence.
+   * 
+   * @return the state prior to the last action being executed.
+   */
+  private List<State> runActionSequence(ActionSequence actionSequence, WebDriverWrapper driver) {
+    loadUrl(driver);
+    
+    List<State> stateBeforeLastAction = null;
+    for (int i = 0; i < actionSequence.getActions().size(); ++i) {
+      Action action = actionSequence.getActions().get(i);
+      // If this is the last action, grab the state before and after.
+      if (i == actionSequence.getActions().size() - 1) {
+        stateBeforeLastAction = createStateSnapshot(driver);
+      }
+      performAction(driver, action);
+      
+      // Check for failures.
+      checkForFailures(config.getAfterActionOracles(), driver, actionSequence, action);
+    }
+    
+    // Check for failures.
+    checkForFailures(config.getFinalOracles(), driver, actionSequence,
+        actionSequence.getLastAction());
+    return stateBeforeLastAction;
   }
 
   /**
