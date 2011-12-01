@@ -78,6 +78,9 @@ public class ActionSequence {
   }
 
   public Action getLastAction() {
+    if (actions.isEmpty()) {
+      return null;
+    }
     return actions.get(actions.size() - 1);
   }
 }

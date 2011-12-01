@@ -15,27 +15,24 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.explorer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.openqa.selenium.WebElement;
-
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
-import com.google.testing.webtestingexplorer.driver.WebDriverProxy;
+import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
+import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
-import com.google.testing.webtestingexplorer.oracles.Failure;
-import com.google.testing.webtestingexplorer.oracles.FailureReason;
-import com.google.testing.webtestingexplorer.oracles.Oracle;
 import com.google.testing.webtestingexplorer.state.State;
+import com.google.testing.webtestingexplorer.state.StateChange;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCase;
-import com.google.testing.webtestingexplorer.wait.WaitCondition;
+
+import org.openqa.selenium.WebElement;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Logger;
 
 /**
  * Implements the actual test exploration process.
@@ -49,19 +46,17 @@ public class WebTestingExplorer {
 
   private WebTestingConfig config;
   private ActionGenerator actionGenerator;
-  private WebDriverProxy proxy;
+  private ActionSequenceRunner runner;
   
   public WebTestingExplorer(WebTestingConfig config) throws Exception {
     this.config= config;
     this.actionGenerator = new ActionGenerator(config);
-    
-    // Start a proxy.
-    proxy = new WebDriverProxy();
+    this.runner = new ActionSequenceRunner(config);
   }
 
   public void run() throws Exception {
     // Init.
-    WebDriverWrapper driver = new WebDriverWrapper(proxy);
+    WebDriverWrapper driver = new WebDriverWrapper(runner.getProxy());
     
     // Rip.
     Stack<ActionSequence> actionSequences = buildInitialActionSequences(driver);
@@ -83,10 +78,7 @@ public class WebTestingExplorer {
     
     Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
-      loadUrl(driver);
-      for (Action action : initialActionSequence.getActions()) {
-        performAction(driver, action);
-      }
+      runner.runActionSequence(initialActionSequence, driver, null);
       List<Action> actions = getAllPossibleActionsInCurrentState(driver);
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(action);
@@ -95,49 +87,6 @@ public class WebTestingExplorer {
       driver.getDriver().close();
     }
     return actionSequences;
-  }
-
-  private void performAction(WebDriverWrapper driver, Action action) {
-    // We should reset the proxy on each action (keeping in mind that we
-    // don't really know which actions will actually trigger http
-    // request/responses.
-    proxy.resetForRequest();
-    
-    action.perform(driver);
-    waitOnConditions(config.getAfterActionWaitConditions(), driver);
-  }
-
-  private void loadUrl(WebDriverWrapper driver) {
-    driver.get(config.getUrl(), config.getInitialWaitConditions());
-  }
-
-  /**
-   * Waits for the given list of conditions to be true before returning.
-   * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
-   */
-  private void waitOnConditions(List<WaitCondition> waitConditions, WebDriverWrapper driver) {
-    for (WaitCondition waitCondition : waitConditions) {
-      waitCondition.reset();
-    }
-    while (true) {
-      boolean allCanContinue = true;
-      String conditionDescription = "";
-      for (WaitCondition waitCondition : waitConditions) {
-        if (!waitCondition.canContinue(driver)) {
-          allCanContinue = false;
-          conditionDescription = waitCondition.getDescription();
-          break;
-        }
-      }
-      if (allCanContinue) {
-        break;
-      }
-      System.out.println("Waiting for " + conditionDescription);
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException useless) {
-      }
-    }
   }
 
   private List<Action> getAllPossibleActionsInCurrentState(WebDriverWrapper driver) {
@@ -157,15 +106,23 @@ public class WebTestingExplorer {
   private void replay(Stack<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
     while (!actionSequences.isEmpty()) {
-      ActionSequence actionSequence = actionSequences.pop();
+      final ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
-      WebDriverWrapper driver = new WebDriverWrapper(proxy);
-      List<State> stateBeforeLastAction = runActionSequence(actionSequence, driver);
+      final WebDriverWrapper driver = new WebDriverWrapper(runner.getProxy());
+      final StateChange stateChange = new StateChange();
+      runner.runActionSequence(actionSequence, driver, new BeforeActionCallback() {
+        @Override
+        public void onBeforeAction(Action action) {
+          if (action == actionSequence.getLastAction()) {
+            stateChange.setBeforeState(createStateSnapshot(driver));
+          }
+        }
+      });
 
       // Check the state and add a new test case if it has changed.
-      List<State> finalState = createStateSnapshot(driver);   
-      if (!finalState.equals(stateBeforeLastAction)) {
+      stateChange.setAfterState(createStateSnapshot(driver));   
+      if (stateChange.isStateChanged()) {
         if (config.getTestCaseWriter() != null) {
           TestCase testCase = new TestCase(config.getUrl(), actionSequence);
           config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
@@ -192,52 +149,6 @@ public class WebTestingExplorer {
         }
       }
       driver.getDriver().close();
-    }
-  }
-
-  /**
-   * Executes the given action sequence.
-   * 
-   * @return the state prior to the last action being executed.
-   */
-  private List<State> runActionSequence(ActionSequence actionSequence, WebDriverWrapper driver) {
-    loadUrl(driver);
-    
-    List<State> stateBeforeLastAction = null;
-    for (int i = 0; i < actionSequence.getActions().size(); ++i) {
-      Action action = actionSequence.getActions().get(i);
-      // If this is the last action, grab the state before and after.
-      if (i == actionSequence.getActions().size() - 1) {
-        stateBeforeLastAction = createStateSnapshot(driver);
-      }
-      performAction(driver, action);
-      
-      // Check for failures.
-      checkForFailures(config.getAfterActionOracles(), driver, actionSequence, action);
-    }
-    
-    // Check for failures.
-    checkForFailures(config.getFinalOracles(), driver, actionSequence,
-        actionSequence.getLastAction());
-    return stateBeforeLastAction;
-  }
-
-  /**
-   * Checks the given oracles for failures.
-   */
-  private void checkForFailures(List<Oracle> oracles,
-      WebDriverWrapper driver,
-      ActionSequence actionSequence,
-      Action action) {
-    List<FailureReason> failureReasons = new ArrayList<FailureReason>();
-    for (Oracle oracle : oracles) {
-      failureReasons.addAll(oracle.check(driver));
-    }
-    if (!failureReasons.isEmpty()) {
-      // Create a failure.
-      Failure failure = new Failure(actionSequence, action);
-      failure.addReasons(failureReasons);
-      LOGGER.log(Level.INFO, "Failure detected: " + failure);
     }
   }
 

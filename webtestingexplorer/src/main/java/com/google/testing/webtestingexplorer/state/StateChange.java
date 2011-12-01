@@ -15,11 +15,34 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-/**
- * Supports different state representations.
- * 
- * @author smcmaster@google.com (Scott McMaster)
- */
-public interface State {
+import java.util.List;
 
+/**
+ * Stores "before" and "after" states for comparison.
+ * 
+ * @author scott.d.mcmaster@gmail.com  (Scott McMaster)
+ */
+public class StateChange {
+  private List<State> beforeState;
+  private List<State> afterState;
+  
+  public List<State> getBeforeState() {
+    return beforeState;
+  }
+
+  public void setBeforeState(List<State> beforeState) {
+    this.beforeState = beforeState;
+  }
+
+  public List<State> getAfterState() {
+    return afterState;
+  }
+
+  public void setAfterState(List<State> afterState) {
+    this.afterState = afterState;
+  }
+  
+  public boolean isStateChanged() {
+    return !afterState.equals(beforeState);
+  }
 }
