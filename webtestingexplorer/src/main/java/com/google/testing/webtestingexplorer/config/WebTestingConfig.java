@@ -16,10 +16,8 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.config;
 
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
-import com.google.testing.webtestingexplorer.oracles.Oracle;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
-import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +33,14 @@ public class WebTestingConfig {
   private List<ActionGeneratorConfig> actionGeneratorConfigs = new ArrayList<ActionGeneratorConfig>();
   
   /**
-   * A list of wait conditions that apply when first loading the url.
+   * The wait condition configuration.
    */
-  private List<WaitCondition> initialWaitConditions = new ArrayList<WaitCondition>();
+  private WaitConditionConfig waitConditionConfig;
   
   /**
-   * A list of wait conditions that apply after each action is performed.
+   * The oracle configuration.
    */
-  private List<WaitCondition> afterActionWaitConditions = new ArrayList<WaitCondition>();
+  private OracleConfig oracleConfig;
   
   /**
    * A list of action sequences we execute to get into the interesting
@@ -50,18 +48,25 @@ public class WebTestingConfig {
    */
   private List<ActionSequence> initialActionSequences = new ArrayList<ActionSequence>();
   
-  /**
-   * A list of oracles that get checked after each action is performed.
-   */
-  private List<Oracle> afterActionOracles = new ArrayList<Oracle>();
-  
-  /**
-   * A list of oracles that get checked after a complete action sequence has been
-   * executed.
-   */
-  private List<Oracle> finalOracles = new ArrayList<Oracle>();
-  
   public WebTestingConfig() {
+  }
+  
+  public WaitConditionConfig getWaitConditionConfig() {
+    return waitConditionConfig;
+  }
+  
+  public WebTestingConfig setWaitConditionConfig(WaitConditionConfig waitConditionConfig) {
+    this.waitConditionConfig = waitConditionConfig;
+    return this;
+  }
+  
+  public OracleConfig getOracleConfig() {
+    return oracleConfig;
+  }
+  
+  public WebTestingConfig setOracleConfig(OracleConfig oracleConfig) {
+    this.oracleConfig = oracleConfig;
+    return this;
   }
   
   public WebTestingConfig setUrl(String url) {
@@ -110,48 +115,12 @@ public class WebTestingConfig {
     return this;
   }
   
-  public List<WaitCondition> getInitialWaitConditions() {
-    return initialWaitConditions;
-  }
-  
-  public WebTestingConfig addInitialWaitCondition(WaitCondition waitCondition) {
-    initialWaitConditions.add(waitCondition);
-    return this;
-  }
-  
-  public List<WaitCondition> getAfterActionWaitConditions() {
-    return afterActionWaitConditions;
-  }
-  
-  public WebTestingConfig addAfterActionWaitCondition(WaitCondition waitCondition) {
-    afterActionWaitConditions.add(waitCondition);
-    return this;
-  }
-  
   public TestCaseWriter getTestCaseWriter() {
     return testCaseWriter;
   }
   
   public WebTestingConfig setTestCaseWriter(TestCaseWriter testCaseWriter) {
     this.testCaseWriter = testCaseWriter;
-    return this;
-  }
-
-  public List<Oracle> getAfterActionOracles() {
-    return afterActionOracles;
-  }
-
-  public WebTestingConfig addAfterActionOracle(Oracle oracle) {
-    afterActionOracles.add(oracle);
-    return this;
-  }
-
-  public List<Oracle> getFinalOracles() {
-    return finalOracles;
-  }
-
-  public WebTestingConfig addFinalOracle(Oracle oracle) {
-    finalOracles.add(oracle);
     return this;
   }
 }

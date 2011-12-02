@@ -115,6 +115,10 @@ public class WebDriverWrapper {
    * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
    */
   private void waitOnConditions(List<WaitCondition> waitConditions) {
+    if (waitConditions == null) {
+      return;
+    }
+    
     for (WaitCondition waitCondition : waitConditions) {
       waitCondition.reset();
     }
@@ -137,5 +141,9 @@ public class WebDriverWrapper {
       } catch (InterruptedException useless) {
       }
     }
+  }
+
+  public void close() {
+    driver.close();
   }
 }

@@ -49,9 +49,10 @@ public class WebTestingExplorer {
   private ActionSequenceRunner runner;
   
   public WebTestingExplorer(WebTestingConfig config) throws Exception {
-    this.config= config;
+    this.config = config;
     this.actionGenerator = new ActionGenerator(config);
-    this.runner = new ActionSequenceRunner(config);
+    this.runner = new ActionSequenceRunner(config.getOracleConfig(),
+        config.getWaitConditionConfig());
   }
 
   public void run() throws Exception {
@@ -62,7 +63,7 @@ public class WebTestingExplorer {
     Stack<ActionSequence> actionSequences = buildInitialActionSequences(driver);
     
     // Term.
-    driver.getDriver().close();
+    driver.close();
 
     // Replay.
     replay(actionSequences, config.getMaxLength());
@@ -78,13 +79,13 @@ public class WebTestingExplorer {
     
     Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
-      runner.runActionSequence(initialActionSequence, driver, null);
+      runner.runActionSequence(config.getUrl(), initialActionSequence, driver, null);
       List<Action> actions = getAllPossibleActionsInCurrentState(driver);
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(action);
         actionSequences.push(sequence);
       }
-      driver.getDriver().close();
+      driver.close();
     }
     return actionSequences;
   }
@@ -111,7 +112,7 @@ public class WebTestingExplorer {
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
       final WebDriverWrapper driver = new WebDriverWrapper(runner.getProxy());
       final StateChange stateChange = new StateChange();
-      runner.runActionSequence(actionSequence, driver, new BeforeActionCallback() {
+      runner.runActionSequence(config.getUrl(), actionSequence, driver, new BeforeActionCallback() {
         @Override
         public void onBeforeAction(Action action) {
           if (action == actionSequence.getLastAction()) {
@@ -148,7 +149,7 @@ public class WebTestingExplorer {
           actionSequences.push(extendedSequence);
         }
       }
-      driver.getDriver().close();
+      driver.close();
     }
   }
 

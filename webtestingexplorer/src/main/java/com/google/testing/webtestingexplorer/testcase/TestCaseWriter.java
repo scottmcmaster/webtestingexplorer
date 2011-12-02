@@ -20,6 +20,8 @@ import com.thoughtworks.xstream.XStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Outputs test cases to a files in a specific directory.
@@ -27,6 +29,9 @@ import java.io.Writer;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class TestCaseWriter {
+
+  private final static Logger LOGGER =
+      Logger.getLogger(TestCaseWriter.class.getName());
 
   private String outputDirectory;
   private XStream xstream;
@@ -44,8 +49,8 @@ public class TestCaseWriter {
    */
   public void writeTestCase(TestCase testCase, String filename) {
     String xml = xstream.toXML(testCase);
-    System.out.println(xml);
     String fullPath = outputDirectory + "/" + filename;
+    LOGGER.log(Level.INFO, "Writing test case to " + fullPath);
     Writer out = null;
     try {
       out = new OutputStreamWriter(new FileOutputStream(fullPath));

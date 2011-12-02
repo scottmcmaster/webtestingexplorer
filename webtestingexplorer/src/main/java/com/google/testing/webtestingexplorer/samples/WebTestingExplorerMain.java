@@ -19,6 +19,7 @@ import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ClickAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.config.NameActionGeneratorConfig;
+import com.google.testing.webtestingexplorer.config.OracleConfig;
 import com.google.testing.webtestingexplorer.config.TagActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
@@ -41,12 +42,14 @@ public class WebTestingExplorerMain {
 
   public static void main(String[] args) throws Exception {
     String url = args[0];
+    OracleConfig oracleConfig = new OracleConfig()
+        .addAfterActionOracle(new HttpStatusCodeOracle().setDisallowedStatusCodes(500, 503));
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
-        .addAfterActionOracle(new HttpStatusCodeOracle().setDisallowedStatusCodes(500, 503))
+        .setOracleConfig(oracleConfig)
         .addActionGeneratorConfig(new NameActionGeneratorConfig("feedback_email") {
           @Override
           public List<Action> generateActions(WebElement element, WebElementIdentifier identifier) {

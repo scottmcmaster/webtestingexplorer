@@ -17,7 +17,8 @@ package com.google.testing.webtestingexplorer.driver;
 
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
-import com.google.testing.webtestingexplorer.config.WebTestingConfig;
+import com.google.testing.webtestingexplorer.config.OracleConfig;
+import com.google.testing.webtestingexplorer.config.WaitConditionConfig;
 import com.google.testing.webtestingexplorer.oracles.Failure;
 import com.google.testing.webtestingexplorer.oracles.FailureReason;
 import com.google.testing.webtestingexplorer.oracles.Oracle;
@@ -47,10 +48,13 @@ public class ActionSequenceRunner {
   }
   
   private WebDriverProxy proxy;
-  private WebTestingConfig config;
+  private OracleConfig oracleConfig;
+  private WaitConditionConfig waitConditionConfig;
 
-  public ActionSequenceRunner(WebTestingConfig config) throws Exception {
-    this.config = config;
+  public ActionSequenceRunner(OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig)
+      throws Exception {
+    this.oracleConfig = oracleConfig;
+    this.waitConditionConfig = waitConditionConfig;
     this.proxy = new WebDriverProxy();
   }
   
@@ -61,7 +65,7 @@ public class ActionSequenceRunner {
   /**
    * Executes the given action sequence using the given driver.
    */
-  public void runActionSequence(ActionSequence actionSequence, WebDriverWrapper driver,
+  public void runActionSequence(String url, ActionSequence actionSequence, WebDriverWrapper driver,
       BeforeActionCallback beforeActionCallback) {
     // TODO(smcmaster): We ought to manage the lifetime of the driver
     // in here instead of passing it as a parameter. But that is not entirely
@@ -69,7 +73,7 @@ public class ActionSequenceRunner {
     // it is still open so that they can do things like examine state.
     // Probably need to add more callbacks.
     
-    loadUrl(driver);
+    loadUrl(driver, url);
     
     List<State> stateBeforeLastAction = null;
     for (int i = 0; i < actionSequence.getActions().size(); ++i) {
@@ -79,17 +83,25 @@ public class ActionSequenceRunner {
       }
       performAction(driver, action);
       
-      // Check for failures.
-      checkForFailures(config.getAfterActionOracles(), driver, actionSequence, action);
+      if (oracleConfig != null) {
+        // Check for failures.
+        checkForFailures(oracleConfig.getAfterActionOracles(), driver, actionSequence, action);
+      }
     }
     
-    // Check for failures.
-    checkForFailures(config.getFinalOracles(), driver, actionSequence,
-        actionSequence.getLastAction());
+    if (oracleConfig != null) {
+      // Check for failures.
+      checkForFailures(oracleConfig.getFinalOracles(), driver, actionSequence,
+          actionSequence.getLastAction());
+    }
   }
 
-  private void loadUrl(WebDriverWrapper driver) {
-    driver.get(config.getUrl(), config.getInitialWaitConditions());
+  private void loadUrl(WebDriverWrapper driver, String url) {
+    List<WaitCondition> initialWaitConditions = null;
+    if (waitConditionConfig != null) {
+      waitConditionConfig.getInitialWaitConditions();
+    }
+    driver.get(url, initialWaitConditions);
   }
 
   /**
@@ -118,7 +130,9 @@ public class ActionSequenceRunner {
     proxy.resetForRequest();
     
     action.perform(driver);
-    waitOnConditions(config.getAfterActionWaitConditions(), driver);
+    if (waitConditionConfig != null) {
+      waitOnConditions(waitConditionConfig.getAfterActionWaitConditions(), driver);
+    }
   }
 
   /**
@@ -126,6 +140,10 @@ public class ActionSequenceRunner {
    * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
    */
   private void waitOnConditions(List<WaitCondition> waitConditions, WebDriverWrapper driver) {
+    if (waitConditions == null) {
+      return;
+    }
+    
     for (WaitCondition waitCondition : waitConditions) {
       waitCondition.reset();
     }
