@@ -17,10 +17,13 @@ package com.google.testing.webtestingexplorer.driver;
 
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
+import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -45,10 +48,15 @@ public class WebDriverWrapper {
   private WebDriver driver;
   private WebDriverProxy proxy;
   
-  public WebDriverWrapper(WebDriverProxy proxy) {
+  public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
     driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
-    driver = new FirefoxDriver(driverCapabilities);
+    
+    // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
+    final FirefoxProfile profile = new FirefoxProfile();
+    JavaScriptError.addExtension(profile);
+    profile.setProxyPreferences(proxy.getSeleniumProxy());
+    driver = new FirefoxDriver(profile);
     this.proxy = proxy;
   }
   
