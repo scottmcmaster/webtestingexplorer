@@ -56,6 +56,15 @@ public class WebDriverWrapper {
     final FirefoxProfile profile = new FirefoxProfile();
     JavaScriptError.addExtension(profile);
     profile.setProxyPreferences(proxy.getSeleniumProxy());
+    
+    // The following preferences control Firefox's default behavior of sending
+    // requests for favicon.ico, which results in lots of bogus 404's for sites
+    // that don't have favicons. If people want to use the tool to specifically
+    // look for 404's AND they have favicons, perhaps we should make this
+    // configurable.
+    profile.setPreference("browser.chrome.favicons", false);
+    profile.setPreference("browser.chrome.site_icons", false);
+    
     driver = new FirefoxDriver(profile);
     this.proxy = proxy;
   }
