@@ -16,27 +16,22 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.actions;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-
-import org.openqa.selenium.WebElement;
 
 /**
- * @author smcmaster@google.com (Scott McMaster)
+ * Hits the browser "back" button. Due to the way that WebDriver is implemented,
+ * if the button is not enabled, this is a no-op.
+ * 
+ * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class ClickAction extends Action {
+public class BackAction extends Action {
 
-  public ClickAction(WebElementIdentifier identifier) {
-    super(identifier);
-  }
-  
   @Override
   public void perform(WebDriverWrapper driver) {
-    WebElement element = identifier.findElement(driver);
-    element.click();
+    driver.getDriver().navigate().back();
   }
-  
+
   @Override
   public String toString() {
-    return identifier.toString() + ": Click()";
+    return "Browser: Back()";
   }
 }

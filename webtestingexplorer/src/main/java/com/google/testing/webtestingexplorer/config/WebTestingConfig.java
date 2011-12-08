@@ -31,6 +31,9 @@ public class WebTestingConfig {
   private int maxLength;
   private List<StateChecker> stateCheckers = new ArrayList<StateChecker>();
   private List<ActionGeneratorConfig> actionGeneratorConfigs = new ArrayList<ActionGeneratorConfig>();
+  private boolean useBackButtonAction;
+  private boolean useForwardButtonAction;
+  private boolean useRefreshButtonAction;
   
   /**
    * The wait condition configuration.
@@ -121,6 +124,33 @@ public class WebTestingConfig {
   
   public WebTestingConfig setTestCaseWriter(TestCaseWriter testCaseWriter) {
     this.testCaseWriter = testCaseWriter;
+    return this;
+  }
+  
+  public boolean isUseBackButtonAction() {
+    return useBackButtonAction;
+  }
+  
+  public WebTestingConfig withBackButtonAction() {
+    useBackButtonAction = true;
+    return this;
+  }
+  
+  public boolean isUseForwardButtonAction() {
+    return useForwardButtonAction;
+  }
+  
+  public WebTestingConfig withForwardButtonAction() {
+    useForwardButtonAction = true;
+    return this;
+  }
+  
+  public boolean isUseRefreshButtonAction() {
+    return useRefreshButtonAction;
+  }
+  
+  public WebTestingConfig withRefreshButtonAction() {
+    useRefreshButtonAction = true;
     return this;
   }
 }

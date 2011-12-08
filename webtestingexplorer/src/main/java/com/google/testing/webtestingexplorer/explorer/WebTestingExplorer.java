@@ -18,6 +18,9 @@ package com.google.testing.webtestingexplorer.explorer;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+import com.google.testing.webtestingexplorer.actions.BackAction;
+import com.google.testing.webtestingexplorer.actions.ForwardAction;
+import com.google.testing.webtestingexplorer.actions.RefreshAction;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
@@ -92,13 +95,27 @@ public class WebTestingExplorer {
 
   private List<Action> getAllPossibleActionsInCurrentState(WebDriverWrapper driver) {
     List<Action> actions = new ArrayList<Action>();
+
+    // Look for browser actions.
+    if (config.isUseBackButtonAction()) {
+      actions.add(new BackAction());
+    }
+    if (config.isUseForwardButtonAction()) {
+      actions.add(new ForwardAction());
+    }
+    if (config.isUseRefreshButtonAction()) {
+      actions.add(new RefreshAction());
+    }
+
+    // Look for element actions.
     List<WebElement> allElements = driver.getAllElements();
     int elementIndex = 0;
     for (WebElement element : allElements) {
       List<Action> newActions = actionGenerator.generateActionsForElement(elementIndex, element);
       actions.addAll(newActions);
       ++elementIndex;
-    }    
+    }
+    
     return actions;
   }
 

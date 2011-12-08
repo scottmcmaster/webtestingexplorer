@@ -19,6 +19,10 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 /**
+ * Represents an action that we can take on the page. This action may be
+ * associated with a given element on the page, for which we keep a
+ * {@link WebElementIdentifier}.
+ * 
  * @author smcmaster@google.com (Scott McMaster)
  */
 public abstract class Action {
@@ -35,6 +39,9 @@ public abstract class Action {
     this.initial = initial;
   }
 
+  public Action() {  
+  }
+  
   public Action(WebElementIdentifier identifier) {
     this.identifier = identifier;
   }

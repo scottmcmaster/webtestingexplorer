@@ -52,6 +52,7 @@ public class WebTestingExplorerMain {
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
         .setOracleConfig(oracleConfig)
+        .withRefreshButtonAction()
         .addActionGeneratorConfig(new NameActionGeneratorConfig("feedback_email") {
           @Override
           public List<Action> generateActions(WebElement element, WebElementIdentifier identifier) {
