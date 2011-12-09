@@ -25,7 +25,7 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
-public class NameWebElementIdentifier implements WebElementIdentifier {
+public class NameWebElementIdentifier extends WebElementIdentifier {
 
   private String name;
 
@@ -33,13 +33,14 @@ public class NameWebElementIdentifier implements WebElementIdentifier {
     this.name = name;
   }
   
+  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getDriver().findElement(By.name(name));
   }
 
   @Override
   public String toString() {
-    return "name=" + name;
+    return super.toString() + ",name=" + name;
   }
   
   @Override

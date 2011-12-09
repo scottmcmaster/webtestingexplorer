@@ -25,7 +25,7 @@ import org.openqa.selenium.WebElement;
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
-public class IdWebElementIdentifier implements WebElementIdentifier {
+public class IdWebElementIdentifier extends WebElementIdentifier {
 
   private String id;
 
@@ -33,13 +33,14 @@ public class IdWebElementIdentifier implements WebElementIdentifier {
     this.id = id;
   }
   
+  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getDriver().findElement(By.id(id));
   }
   
   @Override
   public String toString() {
-    return "id=" + id;
+    return super.toString() + ",id=" + id;
   }
   
   @Override

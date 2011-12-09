@@ -20,11 +20,28 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import org.openqa.selenium.WebElement;
 
 /**
- * To be implemented by classes that know how to pull {@link WebElement}s out
+ * To be extended by classes that know how to pull {@link WebElement}s out
  * of a driver.
  * 
- * @author smcmaster@google.com (Scott McMaster)
+ * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public interface WebElementIdentifier {
-  public WebElement findElement(WebDriverWrapper driver); 
+public abstract class WebElementIdentifier {
+  
+  private String frameIdentifier;
+  
+  public String getFrameIdentifier() {
+    return frameIdentifier;
+  }
+
+  public void setFrameIdentifier(String frameIdentifier) {
+    this.frameIdentifier = frameIdentifier;
+  }
+
+  @Override
+  public String toString() {
+    String frameIdentifierDesc = (frameIdentifier == null ? "none" : frameIdentifier);
+    return "frame=" + frameIdentifierDesc;
+  }
+  
+  public abstract WebElement findElement(WebDriverWrapper driver); 
 }

@@ -15,6 +15,10 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.driver;
 
+import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
@@ -47,6 +51,11 @@ public class WebDriverWrapper {
 	
   private WebDriver driver;
   private WebDriverProxy proxy;
+
+  /**
+   * The identifier of the current frame.
+   */
+  private String frameIdentifier;
   
   public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
@@ -82,6 +91,20 @@ public class WebDriverWrapper {
     driver.get(url);
     waitOnConditions(waitConditions);
   }
+
+  /**
+   * Changes the current frame that the driver is looking at. Subsequent
+   * calls to methods on this class will be directed at that frame by
+   * WebDriver.
+   * TODO(smcmaster): Currently nobody calls this, but we will need it to hook
+   * up frame support.
+   * 
+   * @param frameIdentifier the index to set. 
+   */
+  public void setCurrentFrame(int frameIdentifier) {
+    this.frameIdentifier = "" + frameIdentifier;
+    driver.switchTo().frame(this.frameIdentifier);
+  }
   
   /**
    * Gets a map of the URI(s) and corresponding status codes for the
@@ -109,6 +132,26 @@ public class WebDriverWrapper {
     return elements;
   }
   
+  /*
+   * Generate identifier for a WebElement.
+   */
+  public WebElementIdentifier generateIdentifier(int elementIndex, WebElement element) {
+    String name = element.getAttribute("name");
+    String id = element.getAttribute("id");
+
+    WebElementIdentifier identifier;
+    if (id != null && id.length() > 0) {
+      identifier = new IdWebElementIdentifier(id);
+    } else if (name != null && name.length() > 0) {
+      identifier = new NameWebElementIdentifier(name);
+    } else {
+      identifier = new IndexWebElementIdentifier(elementIndex);
+    }
+
+    identifier.setFrameIdentifier(frameIdentifier);
+    return identifier;
+  }
+
   /**
    * Returns a list of all visible elements.
    */
@@ -131,7 +174,7 @@ public class WebDriverWrapper {
    * Waits for the given list of conditions to be true before returning.
    * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
    */
-  private void waitOnConditions(List<WaitCondition> waitConditions) {
+  public void waitOnConditions(List<WaitCondition> waitConditions) {
     if (waitConditions == null) {
       return;
     }
@@ -152,7 +195,7 @@ public class WebDriverWrapper {
       if (allCanContinue) {
         break;
       }
-      System.out.println("Waiting for " + conditionDescription);
+      LOGGER.log(Level.INFO, "Waiting for " + conditionDescription);
       try {
         Thread.sleep(1000);
       } catch (InterruptedException useless) {

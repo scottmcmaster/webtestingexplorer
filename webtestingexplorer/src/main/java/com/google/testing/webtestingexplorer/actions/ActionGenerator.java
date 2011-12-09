@@ -17,7 +17,7 @@ package com.google.testing.webtestingexplorer.actions;
 
 import com.google.testing.webtestingexplorer.config.ActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
-import com.google.testing.webtestingexplorer.element.WebElementUtil;
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 import org.openqa.selenium.WebElement;
@@ -41,8 +41,10 @@ public class ActionGenerator {
   
   /**
    * Builds the list of actions to take on a given element.
+   * @param driver 
    */
-  public List<Action> generateActionsForElement(int elementIndex, WebElement element) {
+  public List<Action> generateActionsForElement(WebDriverWrapper driver,
+      int elementIndex, WebElement element) {
     String type = element.getAttribute("type");
     String role = element.getAttribute("role");
     String ariaDisabled = element.getAttribute("aria-disabled");
@@ -53,7 +55,7 @@ public class ActionGenerator {
     }
     
     List<Action> actions = new ArrayList<Action>();
-    WebElementIdentifier identifier = WebElementUtil.generateIdentifier(elementIndex, element);
+    WebElementIdentifier identifier = driver.generateIdentifier(elementIndex, element);
     
     // Look for a specific action configuration.
     for (ActionGeneratorConfig actionConfig : config.getActionGeneratorConfigs()) {

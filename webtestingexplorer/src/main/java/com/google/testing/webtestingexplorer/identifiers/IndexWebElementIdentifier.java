@@ -25,7 +25,7 @@ import org.openqa.selenium.WebElement;
  * @author smcmaster@google.com (Scott McMaster)
  *
  */
-public class IndexWebElementIdentifier implements WebElementIdentifier {
+public class IndexWebElementIdentifier extends WebElementIdentifier {
 
   private int index;
 
@@ -33,13 +33,14 @@ public class IndexWebElementIdentifier implements WebElementIdentifier {
     this.index = index;
   }
   
+  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getAllElements().get(index);
   }
 
   @Override
   public String toString() {
-    return  "index=" + index;
+    return  super.toString() + ",index=" + index;
   }
   
   @Override

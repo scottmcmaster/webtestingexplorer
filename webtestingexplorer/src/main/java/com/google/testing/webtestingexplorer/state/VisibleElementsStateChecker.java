@@ -15,10 +15,6 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import java.util.Map;
-
-import org.openqa.selenium.WebElement;
-
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
@@ -30,7 +26,6 @@ public class VisibleElementsStateChecker implements StateChecker {
 
 	@Override
 	public State createState(WebDriverWrapper driver, Action lastAction) {
-		Map<Integer, WebElement> elements = driver.getVisibleElements();
-		return new VisibleElementsState(elements);
+		return new VisibleElementsState(driver);
 	}
 }

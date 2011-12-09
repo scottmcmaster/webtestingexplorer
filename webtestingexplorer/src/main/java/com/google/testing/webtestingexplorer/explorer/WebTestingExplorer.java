@@ -111,7 +111,8 @@ public class WebTestingExplorer {
     List<WebElement> allElements = driver.getAllElements();
     int elementIndex = 0;
     for (WebElement element : allElements) {
-      List<Action> newActions = actionGenerator.generateActionsForElement(elementIndex, element);
+      List<Action> newActions = actionGenerator.generateActionsForElement(
+          driver, elementIndex, element);
       actions.addAll(newActions);
       ++elementIndex;
     }

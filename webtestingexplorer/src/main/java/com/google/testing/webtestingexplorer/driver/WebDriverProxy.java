@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A proxy for our WebDriver requests since WebDriver omits some very useful
@@ -40,6 +42,8 @@ import java.util.Map;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class WebDriverProxy {
+
+  private final static Logger LOGGER = Logger.getLogger(WebDriverProxy.class.getName());
 
   private Proxy proxy;
   private List<URI> requestURIs = new ArrayList<URI>();
@@ -98,6 +102,7 @@ public class WebDriverProxy {
     // something never comes back in a large amount of time.
     if (requestURIs.size() != statusCodes.size()) {
       try {
+        LOGGER.log(Level.INFO, "Waiting for all requests to return");
         Thread.sleep(1000);
       } catch (InterruptedException useless) { }
     }

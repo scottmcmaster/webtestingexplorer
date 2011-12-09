@@ -131,40 +131,7 @@ public class ActionSequenceRunner {
     
     action.perform(driver);
     if (waitConditionConfig != null) {
-      waitOnConditions(waitConditionConfig.getAfterActionWaitConditions(), driver);
-    }
-  }
-
-  /**
-   * Waits for the given list of conditions to be true before returning.
-   * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
-   */
-  private void waitOnConditions(List<WaitCondition> waitConditions, WebDriverWrapper driver) {
-    if (waitConditions == null) {
-      return;
-    }
-    
-    for (WaitCondition waitCondition : waitConditions) {
-      waitCondition.reset();
-    }
-    while (true) {
-      boolean allCanContinue = true;
-      String conditionDescription = "";
-      for (WaitCondition waitCondition : waitConditions) {
-        if (!waitCondition.canContinue(driver)) {
-          allCanContinue = false;
-          conditionDescription = waitCondition.getDescription();
-          break;
-        }
-      }
-      if (allCanContinue) {
-        break;
-      }
-      LOGGER.log(Level.INFO, "Waiting for " + conditionDescription);
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException useless) {
-      }
+      driver.waitOnConditions(waitConditionConfig.getAfterActionWaitConditions());
     }
   }
 }

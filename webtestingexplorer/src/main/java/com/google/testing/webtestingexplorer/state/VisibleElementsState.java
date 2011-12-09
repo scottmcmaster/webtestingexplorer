@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.openqa.selenium.WebElement;
 
-import com.google.testing.webtestingexplorer.element.WebElementUtil;
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
  * State only contains information on currently visible elements.
@@ -28,19 +28,22 @@ import com.google.testing.webtestingexplorer.element.WebElementUtil;
  * @author xyuan@google.com (Xun Yuan)
  */
 public class VisibleElementsState extends ElementsState {
-  public VisibleElementsState(Map<Integer, WebElement> elements) {
-  	eventType = WebElementUtil.ElementType.VISIBLE;
+  
+  public VisibleElementsState(WebDriverWrapper driver) {
+    Map<Integer, WebElement> elements = driver.getVisibleElements();
+  	eventType = ElementType.VISIBLE;
 	  
   	if (areElementsValid(elements.values())) {
-  	  elementProperties = collectProperties(elements);
+  	  elementProperties = collectProperties(driver, elements);
   	} else {
-  		elementProperties = null;
+  	  elementProperties = null;
   	}
   }
   
   /**
    * Check whether elements are visible.
    */
+  @Override
   protected boolean areElementsValid(Collection<WebElement> elements) {
 		boolean valid = true;
 	
