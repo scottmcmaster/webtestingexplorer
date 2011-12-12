@@ -55,7 +55,7 @@ public class WebDriverWrapper {
   /**
    * The identifier of the current frame.
    */
-  private String frameIdentifier;
+  private String currentFrameIdentifier;
   
   public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
@@ -101,9 +101,9 @@ public class WebDriverWrapper {
    * 
    * @param frameIdentifier the index to set. 
    */
-  public void setCurrentFrame(int frameIdentifier) {
-    this.frameIdentifier = "" + frameIdentifier;
-    driver.switchTo().frame(this.frameIdentifier);
+  public void setCurrentFrame(String frameIdentifier) {
+    this.currentFrameIdentifier = frameIdentifier;
+    driver.switchTo().frame(this.currentFrameIdentifier);
   }
   
   /**
@@ -148,7 +148,7 @@ public class WebDriverWrapper {
       identifier = new IndexWebElementIdentifier(elementIndex);
     }
 
-    identifier.setFrameIdentifier(frameIdentifier);
+    identifier.setFrameIdentifier(currentFrameIdentifier);
     return identifier;
   }
 

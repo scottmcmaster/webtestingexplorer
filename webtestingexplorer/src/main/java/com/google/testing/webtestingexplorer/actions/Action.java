@@ -46,7 +46,11 @@ public abstract class Action {
     this.identifier = identifier;
   }
   
-  public abstract void perform(WebDriverWrapper driver);
+  public void perform(WebDriverWrapper driver) {
+    if (identifier.getFrameIdentifier() != null) {
+      driver.setCurrentFrame(identifier.getFrameIdentifier());
+    }
+  }
   
   WebElementIdentifier getIdentifier() {
     return identifier;

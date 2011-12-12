@@ -36,6 +36,7 @@ public class SetTextAction extends Action {
   
   @Override
   public void perform(WebDriverWrapper driver) {
+    super.perform(driver);
     WebElement element = identifier.findElement(driver);
     element.clear();
     element.sendKeys(keysToSend);
