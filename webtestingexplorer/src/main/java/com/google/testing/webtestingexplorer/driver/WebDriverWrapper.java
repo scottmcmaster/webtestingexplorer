@@ -19,11 +19,13 @@ import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -55,7 +57,7 @@ public class WebDriverWrapper {
   /**
    * The identifier of the current frame.
    */
-  private String currentFrameIdentifier;
+  private String currentFrameIdentifier = null;
   
   public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
@@ -168,6 +170,20 @@ public class WebDriverWrapper {
 	    }
 	  }
 	  return visibleElements;
+  }
+  
+  /**
+   * Get given properties of all elements in DOM.
+   */
+  public String getAllElementsProperties(List<String> properties) {
+  	StringBuilder jsString = new StringBuilder();
+    jsString.append(JavaScriptUtil.generateJavaScriptMap(properties));
+
+    jsString.append(JavaScriptUtil.getJavaScriptFromFile("/getAllElementsProperties.js"));
+
+    // Execute js
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    return (String) js.executeScript(jsString.toString());
   }
   
   /**

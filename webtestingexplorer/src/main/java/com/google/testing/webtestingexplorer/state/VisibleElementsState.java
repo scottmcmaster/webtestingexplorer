@@ -16,11 +16,13 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.state;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openqa.selenium.WebElement;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 /**
  * State only contains information on currently visible elements.
@@ -31,7 +33,7 @@ public class VisibleElementsState extends ElementsState {
   
   public VisibleElementsState(WebDriverWrapper driver) {
     Map<Integer, WebElement> elements = driver.getVisibleElements();
-  	eventType = ElementType.VISIBLE;
+  	elementType = ElementType.VISIBLE;
 	  
   	if (areElementsValid(elements.values())) {
   	  elementProperties = collectProperties(driver, elements);
@@ -55,4 +57,47 @@ public class VisibleElementsState extends ElementsState {
 	  }
 	  return valid;
 	}
+  
+  /**
+   * Get information of a WebElement.
+   */
+  protected Map<WebElementIdentifier, Map<String, String>> collectProperties(
+      WebDriverWrapper driver,
+      Map<Integer, WebElement> elements) {
+    Map<WebElementIdentifier, Map<String, String>> allProperties =
+        new HashMap<WebElementIdentifier, Map<String, String>>();
+
+    for (Map.Entry<Integer, WebElement> element : elements.entrySet()) {
+      // Get all properties
+      WebElement e = element.getValue();
+      Map<String, String> properties = new HashMap<String, String>();
+      String value = e.getTagName();
+      if (value != null) {
+        properties.put(TAG_NAME, value);
+      }
+
+      value = e.getText();
+      if (value != null) {
+        properties.put(VALUE, value);
+      }
+
+      properties.put(ENABLED, Boolean.toString(e.isEnabled()));
+      properties.put(SELECTED, Boolean.toString(e.isSelected()));
+
+      for (String attribute : ELEMENT_ATTRIBUTES) {
+        String attributeValue = e.getAttribute(attribute);
+        if (attributeValue != null) {
+          properties.put(attribute, attributeValue);
+        }
+      }
+
+      // Generate identifier
+      WebElementIdentifier identifier =
+          driver.generateIdentifier(element.getKey().intValue(), e);
+
+      allProperties.put(identifier, properties);
+    }
+
+    return allProperties;
+  }
 }

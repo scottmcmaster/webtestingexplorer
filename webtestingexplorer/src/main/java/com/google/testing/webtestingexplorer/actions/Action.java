@@ -26,7 +26,7 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public abstract class Action {
-  protected WebElementIdentifier identifier;
+  protected WebElementIdentifier identifier = null;
   
   /** Whether this action is part of test case setup */
   private boolean initial;
@@ -47,7 +47,7 @@ public abstract class Action {
   }
   
   public void perform(WebDriverWrapper driver) {
-    if (identifier.getFrameIdentifier() != null) {
+    if (identifier != null && identifier.getFrameIdentifier() != null) {
       driver.setCurrentFrame(identifier.getFrameIdentifier());
     }
   }

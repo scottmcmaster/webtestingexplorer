@@ -22,7 +22,6 @@ import com.google.testing.webtestingexplorer.config.WaitConditionConfig;
 import com.google.testing.webtestingexplorer.oracles.Failure;
 import com.google.testing.webtestingexplorer.oracles.FailureReason;
 import com.google.testing.webtestingexplorer.oracles.Oracle;
-import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
 import java.util.ArrayList;
@@ -75,7 +74,6 @@ public class ActionSequenceRunner {
     
     loadUrl(driver, url);
     
-    List<State> stateBeforeLastAction = null;
     for (int i = 0; i < actionSequence.getActions().size(); ++i) {
       Action action = actionSequence.getActions().get(i);
       if (beforeActionCallback != null) {

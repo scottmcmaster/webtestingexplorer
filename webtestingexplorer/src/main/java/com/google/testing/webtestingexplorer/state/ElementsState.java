@@ -15,16 +15,13 @@
  */
 package com.google.testing.webtestingexplorer.state;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.WebElement;
 
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 /**
@@ -37,53 +34,29 @@ public abstract class ElementsState implements State {
   protected enum ElementType {
     ALL, VISIBLE, ACTIONABLE
   }
+  
+  protected final static String ID = "id";
+  protected final static String TAG_NAME = "tagName";
+  protected final static String CLASS = "class";
+  protected final static String TYPE = "type";
+  protected final static String TITLE = "title";
+  protected final static String ROLE = "rold";
+  protected final static String STYLE = "style";
+  protected final static String VALUE = "value";
+  protected final static String ENABLED = "enabled";
+  protected final static String SELECTED = "selected";
 
   // TODO(xyuan): These should be configurable.
-  protected static final List<String> ELEMENT_ATTRIBUTES = Arrays.asList("id", "class", "type", "title",
-      "role", "style");
+  protected static final List<String> ELEMENT_ATTRIBUTES = Arrays.asList(
+     ID, CLASS, TYPE, TITLE, ROLE, STYLE);
 
-  Map<WebElementIdentifier, List<String>> elementProperties;
+  Map<WebElementIdentifier, Map<String, String>> elementProperties;
 
-  ElementType eventType;
+  ElementType elementType;
 
   abstract boolean areElementsValid(Collection<WebElement> elements);
 
-  /**
-   * Get information of a WebElement.
-   */
-  protected Map<WebElementIdentifier, List<String>> collectProperties(
-      WebDriverWrapper driver,
-      Map<Integer, WebElement> elements) {
-    Map<WebElementIdentifier, List<String>> allProperties =
-        new HashMap<WebElementIdentifier, List<String>>();
-
-    for (Map.Entry<Integer, WebElement> element : elements.entrySet()) {
-      // Get all properties
-      WebElement e = element.getValue();
-      List<String> properties = new ArrayList<String>();
-      String value = e.getTagName();
-      properties.add(value == null ? "" : value);
-
-      value = e.getText();
-      properties.add(value == null ? "" : value);
-
-      properties.add(Boolean.toString(e.isEnabled()));
-      properties.add(Boolean.toString(e.isSelected()));
-
-      for (String attribute : ELEMENT_ATTRIBUTES) {
-        String attributeValue = e.getAttribute(attribute);
-        properties.add(attributeValue == null ? "" : attributeValue);
-      }
-
-      // Generate identifier
-      WebElementIdentifier identifier =
-          driver.generateIdentifier(element.getKey().intValue(), e);
-
-      allProperties.put(identifier, properties);
-    }
-
-    return allProperties;
-  }
+  
 
   /**
    * Compare whether two states are equal.
@@ -104,17 +77,24 @@ public abstract class ElementsState implements State {
     }
 
     boolean isEqual = true;
-    for (Map.Entry<WebElementIdentifier, List<String>> entry : elementProperties.entrySet()) {
-      List<String> otherProperties = otherState.elementProperties.get(entry.getKey());
+    for (Map.Entry<WebElementIdentifier, Map<String, String>> entry : elementProperties.entrySet()) {
+      Map<String, String> otherProperties = otherState.elementProperties.get(entry.getKey());
       if (otherProperties == null) {
         isEqual = false;
         break;
       }
 
-      List<String> theseProperties = entry.getValue();
+      Map<String, String> theseProperties = entry.getValue();
+      
+      if (theseProperties.size() != otherProperties.size()) {
+        isEqual = false;
+        break;
+      }
 
-      for (int j = 0; j < theseProperties.size(); ++j) {
-        if (!theseProperties.get(j).equalsIgnoreCase(otherProperties.get(j))) {
+      for (Map.Entry<String, String> thesePropertyEntry : theseProperties.entrySet()) {
+        String key = thesePropertyEntry.getKey();
+        
+        if (!thesePropertyEntry.getValue().equalsIgnoreCase(otherProperties.get(key))) {
           isEqual = false;
           break;
         }

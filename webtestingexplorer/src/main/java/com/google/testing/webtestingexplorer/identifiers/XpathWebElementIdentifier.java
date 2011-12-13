@@ -15,40 +15,31 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
-import java.util.List;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
-
 /**
- * @author smcmaster@google.com (Scott McMaster)
- *
+ * @author xyuan@google.com (Xun Yuan)
  */
-public class IndexWebElementIdentifier extends WebElementIdentifier {
+public class XpathWebElementIdentifier extends WebElementIdentifier {
 
-  private int index;
+  private String xpath;
 
-  public IndexWebElementIdentifier(int index) {
-    this.index = index;
+  public XpathWebElementIdentifier(String xpath) {
+    this.xpath = xpath;
   }
   
-  @Override
   public WebElement findElement(WebDriverWrapper driver) {
-    List<WebElement> allElements = driver.getAllElements();
-    if (index < allElements.size()) {
-      return driver.getAllElements().get(index);
-    } else {
-      throw new NoSuchElementException("Index out of bound!");
-    }
+    return driver.getDriver().findElement(By.xpath(xpath));
   }
 
   @Override
   public String toString() {
-    return  super.toString() + ",index=" + index;
+    return "xpath=" + xpath;
   }
   
   @Override
@@ -56,15 +47,15 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   	if (obj == this) {
   		return true;
   	}
-  	if (!(obj instanceof IndexWebElementIdentifier)) {
+  	if (!(obj instanceof XpathWebElementIdentifier)) {
   		return false;
   	}
-  	IndexWebElementIdentifier other = (IndexWebElementIdentifier) obj;
-    return new EqualsBuilder().append(index, other.index).isEquals();
+  	XpathWebElementIdentifier other = (XpathWebElementIdentifier) obj;
+    return new EqualsBuilder().append(xpath, other.xpath).isEquals();
   }
   
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(index).hashCode();
+    return new HashCodeBuilder().append(xpath).hashCode();
   }
 }
