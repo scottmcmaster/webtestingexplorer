@@ -15,11 +15,11 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xyuan@google.com (Xun Yuan)

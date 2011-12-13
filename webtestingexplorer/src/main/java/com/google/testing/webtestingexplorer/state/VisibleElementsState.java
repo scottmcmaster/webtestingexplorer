@@ -15,14 +15,16 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import org.openqa.selenium.WebElement;
 
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * State only contains information on currently visible elements.
@@ -32,10 +34,10 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 public class VisibleElementsState extends ElementsState {
   
   public VisibleElementsState(WebDriverWrapper driver) {
-    Map<Integer, WebElement> elements = driver.getVisibleElements();
+    List<WebElementWithIdentifier> elements = driver.getVisibleElements();
   	elementType = ElementType.VISIBLE;
 	  
-  	if (areElementsValid(elements.values())) {
+  	if (areElementsValid(elements)) {
   	  elementProperties = collectProperties(driver, elements);
   	} else {
   	  elementProperties = null;
@@ -46,30 +48,27 @@ public class VisibleElementsState extends ElementsState {
    * Check whether elements are visible.
    */
   @Override
-  protected boolean areElementsValid(Collection<WebElement> elements) {
-		boolean valid = true;
-	
-	  for (WebElement e: elements) {
-	    if (!e.isDisplayed()) {
-	    	valid = false;
-	    	break;
+  protected boolean areElementsValid(Collection<WebElementWithIdentifier> elements) {
+	  for (WebElementWithIdentifier e: elements) {
+	    if (!e.getElement().isDisplayed()) {
+	    	return false;
 	    }
 	  }
-	  return valid;
+	  return true;
 	}
   
   /**
    * Get information of a WebElement.
    */
-  protected Map<WebElementIdentifier, Map<String, String>> collectProperties(
+  private Map<WebElementIdentifier, Map<String, String>> collectProperties(
       WebDriverWrapper driver,
-      Map<Integer, WebElement> elements) {
+      List<WebElementWithIdentifier> elements) {
     Map<WebElementIdentifier, Map<String, String>> allProperties =
         new HashMap<WebElementIdentifier, Map<String, String>>();
 
-    for (Map.Entry<Integer, WebElement> element : elements.entrySet()) {
+    for (WebElementWithIdentifier elementWithId : elements) {
       // Get all properties
-      WebElement e = element.getValue();
+      WebElement e = elementWithId.getElement();
       Map<String, String> properties = new HashMap<String, String>();
       String value = e.getTagName();
       if (value != null) {
@@ -91,11 +90,7 @@ public class VisibleElementsState extends ElementsState {
         }
       }
 
-      // Generate identifier
-      WebElementIdentifier identifier =
-          driver.generateIdentifier(element.getKey().intValue(), e);
-
-      allProperties.put(identifier, properties);
+      allProperties.put(elementWithId.getIdentifier(), properties);
     }
 
     return allProperties;

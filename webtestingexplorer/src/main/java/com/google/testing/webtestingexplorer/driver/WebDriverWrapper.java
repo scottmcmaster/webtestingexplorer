@@ -15,10 +15,12 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.driver;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
@@ -34,8 +36,6 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -90,6 +90,8 @@ public class WebDriverWrapper {
   public void get(String url, List<WaitCondition> waitConditions) {
     LOGGER.log(Level.INFO, "Getting " + url);
     proxy.resetForRequest();
+    driver.switchTo().defaultContent();
+    currentFrameIdentifier = null;
     driver.get(url);
     waitOnConditions(waitConditions);
   }
@@ -98,14 +100,17 @@ public class WebDriverWrapper {
    * Changes the current frame that the driver is looking at. Subsequent
    * calls to methods on this class will be directed at that frame by
    * WebDriver.
-   * TODO(smcmaster): Currently nobody calls this, but we will need it to hook
-   * up frame support.
    * 
-   * @param frameIdentifier the index to set. 
+   * @param frameIdentifier the index to set, or null to go to the default
+   *     content.
    */
   public void setCurrentFrame(String frameIdentifier) {
     this.currentFrameIdentifier = frameIdentifier;
-    driver.switchTo().frame(this.currentFrameIdentifier);
+    if (this.currentFrameIdentifier != null) {
+      driver.switchTo().frame(this.currentFrameIdentifier);
+    } else {
+      driver.switchTo().defaultContent();
+    }
   }
   
   /**
@@ -116,14 +121,51 @@ public class WebDriverWrapper {
     return proxy.getLastRequestStatusMap();
   }
   
-  public List<WebElement> getAllElements() {
-    return driver.findElements(By.xpath("//*"));
+  /**
+   * Gets all elements in the current browser, across frames.
+   */
+  public List<WebElementWithIdentifier> getAllElements() {
+    List<WebElementWithIdentifier> allElements = Lists.newArrayList();
+    String oldCurrentFrameIdentifier = currentFrameIdentifier;
+    allElements.addAll(getAllElementsForFrame(null, 0));
+    setCurrentFrame(oldCurrentFrameIdentifier);
+    return allElements;
+  }
+  
+  /**
+   * Recursive-helper to go across frames for getAllElements.
+   */
+  private List<WebElementWithIdentifier> getAllElementsForFrame(String frameIdentifier,
+      int startElementIndex) {
+    setCurrentFrame(frameIdentifier);
+    List<WebElement> allElements = driver.findElements(By.xpath("//*"));
+    List<WebElementWithIdentifier> allElementsWithIds = Lists.newArrayList();
+    for (WebElement element : allElements) {
+      allElementsWithIds.add(new WebElementWithIdentifier(element,
+          generateIdentifier(startElementIndex++, element)));
+    }
+    
+    for (WebElementWithIdentifier elementAndId : allElementsWithIds) {
+      WebElement element = elementAndId.getElement();
+      if ("frame".equals(element.getTagName().toLowerCase()) ||
+          "iframe".equals(element.getTagName().toLowerCase())) {
+        String nameOrId = element.getAttribute("name");
+        if (nameOrId == null) {
+          nameOrId = element.getAttribute("id");
+        }
+        if (nameOrId != null) {
+          allElementsWithIds.addAll(getAllElementsForFrame(nameOrId, startElementIndex));
+        }
+      }
+    }
+    return allElementsWithIds;
   }
   
   /**
    * Returns a list of all of the elements that we know how to generate
    * actions for.
-   */
+   * Currently this is not used, and it's not clear to me whether we would
+   * want this to work on the current frame or across the whole document. 
   public List<WebElement> getActionElements() {
     List<WebElement> elements = new ArrayList<WebElement>();
     elements.addAll(driver.findElements(By.xpath("//input")));
@@ -133,11 +175,12 @@ public class WebDriverWrapper {
     elements.addAll(driver.findElements(By.xpath("//select")));
     return elements;
   }
+  */
   
-  /*
+  /**
    * Generate identifier for a WebElement.
    */
-  public WebElementIdentifier generateIdentifier(int elementIndex, WebElement element) {
+  private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element) {
     String name = element.getAttribute("name");
     String id = element.getAttribute("id");
 
@@ -157,16 +200,14 @@ public class WebDriverWrapper {
   /**
    * Returns a list of all visible elements.
    */
-  public Map<Integer, WebElement> getVisibleElements() {
-	  List<WebElement> allElements = new ArrayList<WebElement>();
-	  allElements.addAll(this.getAllElements());
-	  Map<Integer, WebElement> visibleElements = new HashMap<Integer, WebElement>();
+  public List<WebElementWithIdentifier> getVisibleElements() {
+	  List<WebElementWithIdentifier> allElements = getAllElements();
+	  List<WebElementWithIdentifier> visibleElements = Lists.newArrayList();
 	  
-	  WebElement e;
-	  for (int i = 0; i < allElements.size(); ++i) {
-		  e = allElements.get(i);
-	    if (e.isDisplayed()) {
-		    visibleElements.put(new Integer(i), e);
+	  for (WebElementWithIdentifier elementWithId : allElements) {
+		WebElement element = elementWithId.getElement();
+	    if (element.isDisplayed()) {
+		   visibleElements.add(elementWithId);
 	    }
 	  }
 	  return visibleElements;

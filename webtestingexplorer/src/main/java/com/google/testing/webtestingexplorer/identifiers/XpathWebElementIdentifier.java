@@ -15,12 +15,12 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
  * @author xyuan@google.com (Xun Yuan)
@@ -33,6 +33,7 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
     this.xpath = xpath;
   }
   
+  @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.getDriver().findElement(By.xpath(xpath));
   }

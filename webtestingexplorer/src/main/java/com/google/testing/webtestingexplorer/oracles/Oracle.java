@@ -15,9 +15,9 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.oracles;
 
-import java.util.List;
-
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+
+import java.util.List;
 
 /**
  * A component that evaluates the state of the web application and

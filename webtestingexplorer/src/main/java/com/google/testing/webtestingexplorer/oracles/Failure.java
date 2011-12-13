@@ -15,11 +15,11 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.oracles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Encapsulates all the reasons detected for failure of an

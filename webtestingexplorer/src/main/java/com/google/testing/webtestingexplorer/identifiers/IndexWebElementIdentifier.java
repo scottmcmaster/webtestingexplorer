@@ -15,18 +15,20 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
-import java.util.List;
-
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 /**
+ * Identifies an element by its index in the list that we build of all
+ * elements in the browser. This will be the least reliable identifier that
+ * we use when the other approaches cannot be used.
+ * 
  * @author smcmaster@google.com (Scott McMaster)
- *
  */
 public class IndexWebElementIdentifier extends WebElementIdentifier {
 
@@ -38,12 +40,10 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
-    List<WebElement> allElements = driver.getAllElements();
-    if (index < allElements.size()) {
-      return driver.getAllElements().get(index);
-    } else {
-      throw new NoSuchElementException("Index out of bound!");
-    }
+    List<WebElementWithIdentifier> allElements = driver.getAllElements();
+    assert index < allElements.size();
+    WebElementWithIdentifier elementWithId = allElements.get(index);
+    return elementWithId.getElement();
   }
 
   @Override

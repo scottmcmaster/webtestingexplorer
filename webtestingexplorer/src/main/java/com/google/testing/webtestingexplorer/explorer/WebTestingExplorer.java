@@ -25,12 +25,11 @@ import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.state.StateChange;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCase;
-
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,11 +107,11 @@ public class WebTestingExplorer {
     }
 
     // Look for element actions.
-    List<WebElement> allElements = driver.getAllElements();
+    List<WebElementWithIdentifier> allElements = driver.getAllElements();
     int elementIndex = 0;
-    for (WebElement element : allElements) {
+    for (WebElementWithIdentifier elementWithId : allElements) {
       List<Action> newActions = actionGenerator.generateActionsForElement(
-          driver, elementIndex, element);
+          driver, elementWithId);
       actions.addAll(newActions);
       ++elementIndex;
     }

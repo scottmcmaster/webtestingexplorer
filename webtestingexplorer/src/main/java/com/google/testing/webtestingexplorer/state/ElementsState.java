@@ -15,14 +15,13 @@
  */
 package com.google.testing.webtestingexplorer.state;
 
-import java.util.List;
+import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
+
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-
-import org.openqa.selenium.WebElement;
-
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
 /**
  * Parent class of element related state.
@@ -54,9 +53,7 @@ public abstract class ElementsState implements State {
 
   ElementType elementType;
 
-  abstract boolean areElementsValid(Collection<WebElement> elements);
-
-  
+  abstract boolean areElementsValid(Collection<WebElementWithIdentifier> elements);
 
   /**
    * Compare whether two states are equal.

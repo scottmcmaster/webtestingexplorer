@@ -15,14 +15,14 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.oracles;
 
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
  * Flags failures based on allowed/disallowed http status codes.
