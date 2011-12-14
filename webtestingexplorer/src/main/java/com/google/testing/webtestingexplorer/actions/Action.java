@@ -18,6 +18,9 @@ package com.google.testing.webtestingexplorer.actions;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Represents an action that we can take on the page. This action may be
  * associated with a given element on the page, for which we keep a
@@ -54,5 +57,25 @@ public abstract class Action {
   
   WebElementIdentifier getIdentifier() {
     return identifier;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj.getClass() != this.getClass()) {
+      return false;
+    }
+    Action other = (Action) obj;
+    return new EqualsBuilder()
+        .append(initial, other.initial)
+        .append(identifier, other.identifier).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(initial).append(identifier).hashCode();
   }
 }

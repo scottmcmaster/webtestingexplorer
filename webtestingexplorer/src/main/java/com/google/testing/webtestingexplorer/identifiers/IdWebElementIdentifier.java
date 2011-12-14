@@ -45,18 +45,19 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public boolean equals(Object obj) {
-  	if (obj == this) {
-  		return true;
-  	}
-  	if (!(obj instanceof NameWebElementIdentifier)) {
-  		return false;
-  	}
-  	IdWebElementIdentifier other = (IdWebElementIdentifier) obj;
-    return new EqualsBuilder().append(id, other.id).isEquals();
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof NameWebElementIdentifier)) {
+      return false;
+    }
+    IdWebElementIdentifier other = (IdWebElementIdentifier) obj;
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(id, other.id).isEquals();
   }
-  
+
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(id).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(id).hashCode();
   }
 }

@@ -15,9 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.config;
 
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-
-import org.openqa.selenium.WebElement;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
@@ -31,8 +29,8 @@ public abstract class NameActionGeneratorConfig implements ActionGeneratorConfig
   }
   
   @Override
-  public boolean matches(WebElement element, WebElementIdentifier identifier) {
-    String elementName = element.getAttribute("name");
+  public boolean matches(WebElementWithIdentifier elementWithId) {
+    String elementName = elementWithId.getElement().getAttribute("name");
     return name.equals(elementName);
   }
 }

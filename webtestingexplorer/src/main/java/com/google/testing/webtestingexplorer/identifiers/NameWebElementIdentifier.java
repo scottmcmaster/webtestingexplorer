@@ -52,11 +52,12 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
   		return false;
   	}
   	NameWebElementIdentifier other = (NameWebElementIdentifier) obj;
-    return new EqualsBuilder().append(name, other.name).isEquals();
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(name, other.name).isEquals();
   }
   
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(name).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(name).hashCode();
   }
 }

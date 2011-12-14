@@ -18,6 +18,8 @@ package com.google.testing.webtestingexplorer.actions;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -45,5 +47,23 @@ public class SetTextAction extends Action {
   @Override
   public String toString() {
     return identifier.toString() + ": SetText(" + keysToSend + ")";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof SetTextAction)) {
+      return false;
+    }
+    SetTextAction other = (SetTextAction) obj;
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(keysToSend, other.keysToSend).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(keysToSend).hashCode();
   }
 }

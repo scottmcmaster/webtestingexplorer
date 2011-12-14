@@ -15,9 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.config;
 
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-
-import org.openqa.selenium.WebElement;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 /**
  * Matches elements based on the value of the class attribute.
@@ -33,8 +31,8 @@ public abstract class ClassActionGeneratorConfig implements ActionGeneratorConfi
   }
   
   @Override
-  public boolean matches(WebElement element, WebElementIdentifier identifier) {
-    String classAttributeValue = element.getAttribute("class");
+  public boolean matches(WebElementWithIdentifier elementWithId) {
+    String classAttributeValue = elementWithId.getElement().getAttribute("class");
     return classValue.equals(classAttributeValue);
   }
 }

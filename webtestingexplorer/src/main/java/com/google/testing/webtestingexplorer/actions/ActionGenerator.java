@@ -60,8 +60,8 @@ public class ActionGenerator {
     
     // Look for a specific action configuration.
     for (ActionGeneratorConfig actionConfig : config.getActionGeneratorConfigs()) {
-      if (actionConfig.matches(element, identifier)) {
-        return actionConfig.generateActions(element, identifier);
+      if (actionConfig.matches(elementWithId)) {
+        return actionConfig.generateActions(elementWithId);
       }
     }
     

@@ -16,9 +16,7 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.config;
 
 import com.google.testing.webtestingexplorer.actions.Action;
-import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-
-import org.openqa.selenium.WebElement;
+import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.List;
 
@@ -28,6 +26,6 @@ import java.util.List;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public interface ActionGeneratorConfig {
-  boolean matches(WebElement element, WebElementIdentifier identifier);
-  List<Action> generateActions(WebElement element, WebElementIdentifier identifier);
+  boolean matches(WebElementWithIdentifier elementWithId);
+  List<Action> generateActions(WebElementWithIdentifier elementWithId);
 }

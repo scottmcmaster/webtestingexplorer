@@ -60,11 +60,12 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   		return false;
   	}
   	IndexWebElementIdentifier other = (IndexWebElementIdentifier) obj;
-    return new EqualsBuilder().append(index, other.index).isEquals();
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(index, other.index).isEquals();
   }
   
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(index).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(index).hashCode();
   }
 }

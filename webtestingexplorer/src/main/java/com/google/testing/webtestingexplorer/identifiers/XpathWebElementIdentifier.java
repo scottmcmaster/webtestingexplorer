@@ -52,11 +52,12 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   		return false;
   	}
   	XpathWebElementIdentifier other = (XpathWebElementIdentifier) obj;
-    return new EqualsBuilder().append(xpath, other.xpath).isEquals();
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(xpath, other.xpath).isEquals();
   }
   
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(xpath).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(xpath).hashCode();
   }
 }

@@ -18,6 +18,8 @@ package com.google.testing.webtestingexplorer.actions;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.support.ui.Select;
 
 /**
@@ -49,5 +51,23 @@ public class SelectAction extends Action {
   @Override
   public String toString() {
     return identifier.toString() + ": Select(" + optionIndex + ")";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof SelectAction)) {
+      return false;
+    }
+    SelectAction other = (SelectAction) obj;
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(optionIndex, other.optionIndex).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(optionIndex).hashCode();
   }
 }

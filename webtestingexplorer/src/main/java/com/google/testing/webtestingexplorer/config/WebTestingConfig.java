@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.config;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
@@ -29,11 +30,12 @@ public class WebTestingConfig {
   private String url;
   private TestCaseWriter testCaseWriter;
   private int maxLength;
-  private List<StateChecker> stateCheckers = new ArrayList<StateChecker>();
-  private List<ActionGeneratorConfig> actionGeneratorConfigs = new ArrayList<ActionGeneratorConfig>();
+  private List<StateChecker> stateCheckers = Lists.newArrayList();
+  private List<ActionGeneratorConfig> actionGeneratorConfigs = Lists.newArrayList();
   private boolean useBackButtonAction;
   private boolean useForwardButtonAction;
   private boolean useRefreshButtonAction;
+  private List<ActionSequenceFilter> actionSequenceFilters = Lists.newArrayList();
   
   /**
    * The wait condition configuration.
@@ -105,6 +107,15 @@ public class WebTestingConfig {
   
   public WebTestingConfig addActionGeneratorConfig(ActionGeneratorConfig config) {
     actionGeneratorConfigs.add(config);
+    return this;
+  }
+  
+  public List<ActionSequenceFilter> getActionSequenceFilters() {
+    return actionSequenceFilters;
+  }
+  
+  public WebTestingConfig addActionSequenceFilter(ActionSequenceFilter filter) {
+    actionSequenceFilters.add(filter);
     return this;
   }
   

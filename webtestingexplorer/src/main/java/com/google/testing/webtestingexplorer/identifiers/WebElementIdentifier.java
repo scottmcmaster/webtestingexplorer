@@ -17,6 +17,8 @@ package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -43,5 +45,22 @@ public abstract class WebElementIdentifier {
     return "frame=" + frameIdentifierDesc;
   }
   
-  public abstract WebElement findElement(WebDriverWrapper driver); 
+  public abstract WebElement findElement(WebDriverWrapper driver);
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof WebElementIdentifier)) {
+      return false;
+    }
+    WebElementIdentifier other = (WebElementIdentifier) obj;
+    return new EqualsBuilder().append(frameIdentifier, other.frameIdentifier).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(frameIdentifier).hashCode();
+  }
 }

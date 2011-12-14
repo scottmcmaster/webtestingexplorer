@@ -21,6 +21,7 @@ import com.google.testing.webtestingexplorer.actions.ActionSequence;
 import com.google.testing.webtestingexplorer.actions.BackAction;
 import com.google.testing.webtestingexplorer.actions.ForwardAction;
 import com.google.testing.webtestingexplorer.actions.RefreshAction;
+import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
@@ -85,7 +86,7 @@ public class WebTestingExplorer {
       List<Action> actions = getAllPossibleActionsInCurrentState(driver);
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(action);
-        actionSequences.push(sequence);
+        checkPushActionSequence(actionSequences, sequence);
       }
       driver.close();
     }
@@ -163,13 +164,26 @@ public class WebTestingExplorer {
         for (Action action : actions) {
           ActionSequence extendedSequence = new ActionSequence(actionSequence);
           extendedSequence.addAction(action);
-          actionSequences.push(extendedSequence);
+          checkPushActionSequence(actionSequences, extendedSequence);
         }
       }
       driver.close();
     }
   }
 
+  /**
+   * Adds the given action sequence to the queue to be run assuming it passes
+   * all filtering.
+   */
+  private void checkPushActionSequence(Stack<ActionSequence> actionSequences,
+      ActionSequence sequence) {
+    for (ActionSequenceFilter filter : config.getActionSequenceFilters()) {
+      if (filter.shouldExplore(sequence)) {
+        actionSequences.push(sequence);
+      }
+    }
+  }
+  
   /**
    * Takes a snapshot of the current state using each of the configured
    * checkers.
