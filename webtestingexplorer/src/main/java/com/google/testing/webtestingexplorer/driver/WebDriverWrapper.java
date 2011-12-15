@@ -32,6 +32,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -63,8 +64,16 @@ public class WebDriverWrapper {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
     driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
     
+    // Use a custom profile that trusts the cybervillians cert
+    // (to use Selenium with the BrowserMob proxy).
+    ProfilesIni allProfiles = new ProfilesIni();
+    System.setProperty("webdriver.firefox.profile","webtestingexplorer");
+    String browserProfile = System.getProperty("webdriver.firefox.profile");
+    FirefoxProfile profile = allProfiles.getProfile(browserProfile); 
+    profile.setAcceptUntrustedCertificates(true);
+    profile.setAssumeUntrustedCertificateIssuer(false);
+
     // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
-    final FirefoxProfile profile = new FirefoxProfile();
     JavaScriptError.addExtension(profile);
     profile.setProxyPreferences(proxy.getSeleniumProxy());
     

@@ -55,7 +55,7 @@ public class WebDriverProxy {
     ProxyServer server = new ProxyServer(4444);
     server.start();
 
-    server.addRequestInterceptor(new HttpRequestInterceptor() {  
+    server.addRequestInterceptor(new HttpRequestInterceptor() {
       @SuppressWarnings("unused") // exception spec
       @Override
       public void process(HttpRequest request, HttpContext context)
