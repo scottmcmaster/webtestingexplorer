@@ -132,12 +132,15 @@ public class WebDriverWrapper {
   
   /**
    * Gets all elements in the current browser, across frames.
+   * TODO(smcmaster): This doesn't work because apparently in WebDriver you cannot
+   * hold onto elements across active frames without them getting stale.
+   * Probably we need to rework all of this to return just the identifiers, not the
+   * elements, and make the callers use the identifiers to get the elements
+   * just-in-time.
    */
   public List<WebElementWithIdentifier> getAllElements() {
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
-    String oldCurrentFrameIdentifier = currentFrameIdentifier;
     getAllElementsForFrame(null, 0, allElements);
-    setCurrentFrame(oldCurrentFrameIdentifier);
     return allElements;
   }
   
@@ -147,7 +150,11 @@ public class WebDriverWrapper {
    */
   private void getAllElementsForFrame(String frameIdentifier,
       int startElementIndex, List<WebElementWithIdentifier> allElements) {
+    
+    String oldCurrentFrameIdentifier = currentFrameIdentifier;
+
     setCurrentFrame(frameIdentifier);
+    
     List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
     for (WebElement element : frameElements) {
@@ -169,6 +176,7 @@ public class WebDriverWrapper {
       }
     }
     allElements.addAll(frameElementsWithIds);
+    setCurrentFrame(oldCurrentFrameIdentifier);
   }
   
   /**
