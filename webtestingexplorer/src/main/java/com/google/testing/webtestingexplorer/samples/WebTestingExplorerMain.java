@@ -18,12 +18,13 @@ package com.google.testing.webtestingexplorer.samples;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ClickAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
+import com.google.testing.webtestingexplorer.config.IdentifierActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
-import com.google.testing.webtestingexplorer.config.NameActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.OracleConfig;
 import com.google.testing.webtestingexplorer.config.TagActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
+import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.oracles.HttpStatusCodeOracle;
 import com.google.testing.webtestingexplorer.oracles.JSErrorCollectorOracle;
@@ -53,7 +54,8 @@ public class WebTestingExplorerMain {
         .setOracleConfig(oracleConfig)
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
-        .addActionGeneratorConfig(new NameActionGeneratorConfig("feedback_email") {
+        .addActionGeneratorConfig(new IdentifierActionGeneratorConfig(
+            new NameWebElementIdentifier("feedback_email")) {          
           @Override
           public List<Action> generateActions(WebElementWithIdentifier elementWithId) {
             // Try valid and invalid email addresses.
