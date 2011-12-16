@@ -136,25 +136,26 @@ public class WebDriverWrapper {
   public List<WebElementWithIdentifier> getAllElements() {
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
     String oldCurrentFrameIdentifier = currentFrameIdentifier;
-    allElements.addAll(getAllElementsForFrame(null, 0));
+    getAllElementsForFrame(null, 0, allElements);
     setCurrentFrame(oldCurrentFrameIdentifier);
     return allElements;
   }
   
   /**
-   * Recursive-helper to go across frames for getAllElements.
+   * Recursive-helper to go across frames for getAllElements. Adds to the 
+   * given list of elements.
    */
-  private List<WebElementWithIdentifier> getAllElementsForFrame(String frameIdentifier,
-      int startElementIndex) {
+  private void getAllElementsForFrame(String frameIdentifier,
+      int startElementIndex, List<WebElementWithIdentifier> allElements) {
     setCurrentFrame(frameIdentifier);
-    List<WebElement> allElements = driver.findElements(By.xpath("//*"));
-    List<WebElementWithIdentifier> allElementsWithIds = Lists.newArrayList();
-    for (WebElement element : allElements) {
-      allElementsWithIds.add(new WebElementWithIdentifier(element,
+    List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
+    List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
+    for (WebElement element : frameElements) {
+      frameElementsWithIds.add(new WebElementWithIdentifier(element,
           generateIdentifier(startElementIndex++, element)));
     }
     
-    for (WebElementWithIdentifier elementAndId : allElementsWithIds) {
+    for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
       WebElement element = elementAndId.getElement();
       if ("frame".equals(element.getTagName().toLowerCase()) ||
           "iframe".equals(element.getTagName().toLowerCase())) {
@@ -163,11 +164,11 @@ public class WebDriverWrapper {
           nameOrId = element.getAttribute("id");
         }
         if (nameOrId != null) {
-          allElementsWithIds.addAll(getAllElementsForFrame(nameOrId, startElementIndex));
+          getAllElementsForFrame(nameOrId, startElementIndex, allElements);
         }
       }
     }
-    return allElementsWithIds;
+    allElements.addAll(frameElementsWithIds);
   }
   
   /**
