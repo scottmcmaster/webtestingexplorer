@@ -36,6 +36,7 @@ public class WebTestingConfig {
   private boolean useForwardButtonAction;
   private boolean useRefreshButtonAction;
   private List<ActionSequenceFilter> actionSequenceFilters = Lists.newArrayList();
+  private List<EquivalentWebElementsSet> equivalentWebElementSets = Lists.newArrayList();
   
   /**
    * The wait condition configuration.
@@ -116,6 +117,15 @@ public class WebTestingConfig {
   
   public WebTestingConfig addActionSequenceFilter(ActionSequenceFilter filter) {
     actionSequenceFilters.add(filter);
+    return this;
+  }
+  
+  public List<EquivalentWebElementsSet> getEquivalentWebElementSets() {
+    return equivalentWebElementSets;
+  }
+  
+  public WebTestingConfig addEquivalentWebElementSet(EquivalentWebElementsSet equivalentElements) {
+    equivalentWebElementSets.add(equivalentElements);
     return this;
   }
   

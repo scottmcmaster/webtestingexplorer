@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.explorer;
 
+import com.google.common.collect.Maps;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
@@ -22,6 +23,7 @@ import com.google.testing.webtestingexplorer.actions.BackAction;
 import com.google.testing.webtestingexplorer.actions.ForwardAction;
 import com.google.testing.webtestingexplorer.actions.RefreshAction;
 import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
+import com.google.testing.webtestingexplorer.config.EquivalentWebElementsSet;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
@@ -34,6 +36,7 @@ import com.google.testing.webtestingexplorer.testcase.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -107,9 +110,28 @@ public class WebTestingExplorer {
       actions.add(new RefreshAction());
     }
 
-    // Look for element actions.
+    // Look for element actions, filtering out ones in the same equivalence
+    // classes.
+    Map<EquivalentWebElementsSet, Boolean> markedEquivalentSets = Maps.newHashMap();
+    for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
+      markedEquivalentSets.put(equivalentSet, false);
+    }
+    
     List<WebElementWithIdentifier> allElements = driver.getAllElements();
     for (WebElementWithIdentifier elementWithId : allElements) {
+      for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
+        if (equivalentSet.getEquivalentElementIdentifiers().contains(
+            elementWithId.getIdentifier())) {
+          if (markedEquivalentSets.containsKey(equivalentSet)) {
+            // We have already added an element from this set.
+            continue;
+          }
+          // Mark that we will add an element from this set so that we don't add
+          // any more.
+          markedEquivalentSets.put(equivalentSet, true);
+        }
+      }
+      
       List<Action> newActions = actionGenerator.generateActionsForElement(
           driver, elementWithId);
       actions.addAll(newActions);
