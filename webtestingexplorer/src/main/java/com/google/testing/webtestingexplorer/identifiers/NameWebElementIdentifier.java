@@ -35,7 +35,7 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
-    return driver.getDriver().findElement(By.name(name));
+    return driver.findElementInFrame(By.name(name), frameIdentifier);
   }
 
   @Override

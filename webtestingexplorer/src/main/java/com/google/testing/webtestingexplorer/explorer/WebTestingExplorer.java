@@ -109,12 +109,10 @@ public class WebTestingExplorer {
 
     // Look for element actions.
     List<WebElementWithIdentifier> allElements = driver.getAllElements();
-    int elementIndex = 0;
     for (WebElementWithIdentifier elementWithId : allElements) {
       List<Action> newActions = actionGenerator.generateActionsForElement(
           driver, elementWithId);
       actions.addAll(newActions);
-      ++elementIndex;
     }
     
     return actions;

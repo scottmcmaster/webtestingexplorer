@@ -35,7 +35,7 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
-    return driver.getDriver().findElement(By.xpath(xpath));
+    return driver.findElementInFrame(By.xpath(xpath), frameIdentifier);
   }
 
   @Override

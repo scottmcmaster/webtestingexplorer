@@ -29,7 +29,7 @@ import org.openqa.selenium.WebElement;
  */
 public abstract class WebElementIdentifier {
   
-  private String frameIdentifier;
+  protected String frameIdentifier;
   
   public String getFrameIdentifier() {
     return frameIdentifier;

@@ -26,7 +26,6 @@ public class RefreshAction extends Action {
 
   @Override
   public void perform(WebDriverWrapper driver) {
-    super.perform(driver);
     driver.getDriver().navigate().refresh();
   }
 

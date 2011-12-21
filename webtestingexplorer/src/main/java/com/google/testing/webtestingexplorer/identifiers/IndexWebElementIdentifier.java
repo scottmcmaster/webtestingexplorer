@@ -40,7 +40,7 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
-    List<WebElementWithIdentifier> allElements = driver.getAllElements();
+    List<WebElementWithIdentifier> allElements = driver.getAllElementsForFrame(frameIdentifier);
     assert index < allElements.size();
     WebElementWithIdentifier elementWithId = allElements.get(index);
     return elementWithId.getElement();

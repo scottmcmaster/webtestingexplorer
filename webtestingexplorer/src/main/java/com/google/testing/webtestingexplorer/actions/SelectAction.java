@@ -39,7 +39,6 @@ public class SelectAction extends Action {
 
   @Override
   public void perform(WebDriverWrapper driver) {
-    super.perform(driver);
     Select element = new Select(identifier.findElement(driver));
     if (element.isMultiple()) {
       // TODO(smcmaster): We probably ought to have some special options for multi's.

@@ -27,7 +27,6 @@ public class BackAction extends Action {
 
   @Override
   public void perform(WebDriverWrapper driver) {
-    super.perform(driver);
     driver.getDriver().navigate().back();
   }
 

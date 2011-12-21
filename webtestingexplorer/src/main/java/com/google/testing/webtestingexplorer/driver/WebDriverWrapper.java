@@ -55,11 +55,6 @@ public class WebDriverWrapper {
   private WebDriver driver;
   private WebDriverProxy proxy;
 
-  /**
-   * The identifier of the current frame.
-   */
-  private String currentFrameIdentifier = null;
-  
   public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
     driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
@@ -100,28 +95,23 @@ public class WebDriverWrapper {
     LOGGER.log(Level.INFO, "Getting " + url);
     proxy.resetForRequest();
     driver.switchTo().defaultContent();
-    currentFrameIdentifier = null;
     driver.get(url);
     waitOnConditions(waitConditions);
   }
 
   /**
-   * Changes the current frame that the driver is looking at. Subsequent
-   * calls to methods on this class will be directed at that frame by
-   * WebDriver.
-   * 
-   * @param frameIdentifier the index to set, or null to go to the default
-   *     content.
+   * Finds an element in the given frame and leaves the frame as such
+   * so that we can work with the element without stale-element exceptions.
    */
-  public void setCurrentFrame(String frameIdentifier) {
-    this.currentFrameIdentifier = frameIdentifier;
-    if (this.currentFrameIdentifier != null) {
-      driver.switchTo().frame(this.currentFrameIdentifier);
-    } else {
+  public WebElement findElementInFrame(By by, String frameIdentifier) {
+    if (frameIdentifier == null) {
       driver.switchTo().defaultContent();
+    } else {
+      driver.switchTo().frame(frameIdentifier);
     }
+    return driver.findElement(by);
   }
-  
+
   /**
    * Gets a map of the URI(s) and corresponding status codes for the
    * last get request.
@@ -131,16 +121,20 @@ public class WebDriverWrapper {
   }
   
   /**
+   * Gets all elements in the current browser, for a single frame.
+   */
+  public List<WebElementWithIdentifier> getAllElementsForFrame(String frameIdentifier) {
+    List<WebElementWithIdentifier> allElements = Lists.newArrayList();
+    getAllElementsForFrameHelper(frameIdentifier, allElements);
+    return allElements;
+  }
+  
+  /**
    * Gets all elements in the current browser, across frames.
-   * TODO(smcmaster): This doesn't work because apparently in WebDriver you cannot
-   * hold onto elements across active frames without them getting stale.
-   * Probably we need to rework all of this to return just the identifiers, not the
-   * elements, and make the callers use the identifiers to get the elements
-   * just-in-time.
    */
   public List<WebElementWithIdentifier> getAllElements() {
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
-    getAllElementsForFrame(null, 0, allElements);
+    getAllElementsForFrameHelper(null, allElements);
     return allElements;
   }
   
@@ -148,21 +142,27 @@ public class WebDriverWrapper {
    * Recursive-helper to go across frames for getAllElements. Adds to the 
    * given list of elements.
    */
-  private void getAllElementsForFrame(String frameIdentifier,
-      int startElementIndex, List<WebElementWithIdentifier> allElements) {
+  private void getAllElementsForFrameHelper(String frameIdentifier,
+      List<WebElementWithIdentifier> allElements) {
     
-    String oldCurrentFrameIdentifier = currentFrameIdentifier;
-
-    setCurrentFrame(frameIdentifier);
+    if (frameIdentifier != null) {
+      driver.switchTo().frame(frameIdentifier);
+    } else {
+      driver.switchTo().defaultContent();
+    }
     
+    int startElementIndex = 0;
     List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
     for (WebElement element : frameElements) {
       frameElementsWithIds.add(new WebElementWithIdentifier(element,
-          generateIdentifier(startElementIndex++, element)));
+          generateIdentifier(startElementIndex++, element, frameIdentifier)));
     }
     
     for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
+      // TODO(smcmaster): This currently breaks because the elements obtained
+      // to read the first frame, are stale once we switch to read the second.
+      // Need to fix this...
       WebElement element = elementAndId.getElement();
       if ("frame".equals(element.getTagName().toLowerCase()) ||
           "iframe".equals(element.getTagName().toLowerCase())) {
@@ -171,12 +171,11 @@ public class WebDriverWrapper {
           nameOrId = element.getAttribute("id");
         }
         if (nameOrId != null) {
-          getAllElementsForFrame(nameOrId, startElementIndex, allElements);
+          getAllElementsForFrameHelper(nameOrId, allElements);
         }
       }
     }
     allElements.addAll(frameElementsWithIds);
-    setCurrentFrame(oldCurrentFrameIdentifier);
   }
   
   /**
@@ -198,7 +197,8 @@ public class WebDriverWrapper {
   /**
    * Generate identifier for a WebElement.
    */
-  private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element) {
+  private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element,
+      String frameIdentifier) {
     String name = element.getAttribute("name");
     String id = element.getAttribute("id");
 
@@ -211,7 +211,7 @@ public class WebDriverWrapper {
       identifier = new IndexWebElementIdentifier(elementIndex);
     }
 
-    identifier.setFrameIdentifier(currentFrameIdentifier);
+    identifier.setFrameIdentifier(frameIdentifier);
     return identifier;
   }
 
