@@ -165,9 +165,6 @@ public class WebDriverWrapper {
     List<String> childFrameIdentifiers = Lists.newArrayList();
     
     for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
-      // TODO(smcmaster): This currently breaks because the elements obtained
-      // to read the first frame, are stale once we switch to read the second.
-      // Need to fix this...
       WebElement element = elementAndId.getElement();
       if ("frame".equals(element.getTagName().toLowerCase()) ||
           "iframe".equals(element.getTagName().toLowerCase())) {
