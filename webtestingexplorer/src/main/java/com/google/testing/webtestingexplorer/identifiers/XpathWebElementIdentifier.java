@@ -22,6 +22,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 /**
  * @author xyuan@google.com (Xun Yuan)
  */
@@ -30,12 +32,22 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   private String xpath;
 
   public XpathWebElementIdentifier(String xpath) {
+    this(xpath, null);
+  }
+  
+  public XpathWebElementIdentifier(String xpath, String frameIdentifier) {
     this.xpath = xpath;
+    this.frameIdentifier = frameIdentifier;
   }
   
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.findElementInFrame(By.xpath(xpath), frameIdentifier);
+  }
+
+  @Override
+  public List<WebElement> findElements(WebDriverWrapper driver) {
+    return driver.findElementsInFrame(By.xpath(xpath), frameIdentifier);
   }
 
   @Override

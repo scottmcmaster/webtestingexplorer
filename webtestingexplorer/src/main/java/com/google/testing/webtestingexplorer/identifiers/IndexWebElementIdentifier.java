@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -35,15 +36,25 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   private int index;
 
   public IndexWebElementIdentifier(int index) {
-    this.index = index;
+    this(index, null);
   }
   
+  public IndexWebElementIdentifier(int index, String frameIdentifier) {
+    this.index = index;
+    this.frameIdentifier = frameIdentifier;
+  }
+
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
     List<WebElementWithIdentifier> allElements = driver.getAllElementsForFrame(frameIdentifier);
     assert index < allElements.size();
     WebElementWithIdentifier elementWithId = allElements.get(index);
     return elementWithId.getElement();
+  }
+
+  @Override
+  public List<WebElement> findElements(WebDriverWrapper driver) {
+    return Lists.newArrayList(findElement(driver));
   }
 
   @Override

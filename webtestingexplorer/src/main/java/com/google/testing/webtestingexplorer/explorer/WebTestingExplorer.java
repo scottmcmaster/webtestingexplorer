@@ -34,9 +34,12 @@ import com.google.testing.webtestingexplorer.state.StateChange;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCase;
 
+import org.openqa.selenium.WebElement;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -119,25 +122,58 @@ public class WebTestingExplorer {
     
     List<WebElementWithIdentifier> allElements = driver.getAllElements();
     for (WebElementWithIdentifier elementWithId : allElements) {
-      for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
-        if (equivalentSet.getEquivalentElementIdentifiers().contains(
-            elementWithId.getIdentifier())) {
-          if (markedEquivalentSets.containsKey(equivalentSet)) {
-            // We have already added an element from this set.
-            continue;
-          }
-          // Mark that we will add an element from this set so that we don't add
-          // any more.
-          markedEquivalentSets.put(equivalentSet, true);
-        }
-      }
+      boolean shouldAddActions = checkEquivalentElementSets(driver, markedEquivalentSets,
+          elementWithId);
       
-      List<Action> newActions = actionGenerator.generateActionsForElement(
-          driver, elementWithId);
-      actions.addAll(newActions);
+      if (shouldAddActions) {
+        List<Action> newActions = actionGenerator.generateActionsForElement(
+            driver, elementWithId);
+        actions.addAll(newActions);
+      }
     }
     
     return actions;
+  }
+
+  /**
+   * Checks to see if a given web element is equivalent to one we have already added
+   * an action for.
+   * 
+   * @param driver the driver.
+   * @param markedEquivalentSets tracks the equivalent sets that have already been addressed.
+   * @param elementWithId the element to check for equivalence to already-added elements.
+   * @return true if we should add actions for the element, false if we should skip it.
+   */
+  private boolean checkEquivalentElementSets(
+      WebDriverWrapper driver,
+      Map<EquivalentWebElementsSet, Boolean> markedEquivalentSets,
+      WebElementWithIdentifier elementWithId) {
+    
+    boolean shouldAddActions = true;
+    
+    for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
+      Set<WebElement> equivalentElements = equivalentSet.getEquivalentElements(driver);
+      
+      // TODO(smcmaster): There are a couple of untested assumptions here.
+      // First, that all object ref's for WebElements retrieved from the driver
+      // which are not stale, are the same instances. This seems reasonable since
+      // WebDriver caches them.
+      // Second, that this will work correctl across frames. That part, I kind of
+      // doubt. We may need to require that EquivalentElementSets only target
+      // a single frame and make that explicit.
+      
+      if (equivalentElements.contains(elementWithId.safeGetElement(driver))) {
+        if (markedEquivalentSets.containsKey(equivalentSet)) {
+          // We have already added an element from this set.
+          shouldAddActions = false;
+        }
+        // Mark that we will add an element from this set so that we don't add
+        // any more.
+        markedEquivalentSets.put(equivalentSet, true);        
+      }
+    }
+    
+    return shouldAddActions;
   }
 
   // As long as the test case is longer than the previous one, you don't need to

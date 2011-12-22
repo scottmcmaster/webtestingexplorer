@@ -109,6 +109,15 @@ public class WebDriverWrapper {
   }
 
   /**
+   * Finds multiple elements in the given frame and leaves the frame as such
+   * so that we can work with the element without stale-element exceptions.
+   */
+  public List<WebElement> findElementsInFrame(By by, String frameIdentifier) {
+    switchToFrame(frameIdentifier);
+    return driver.findElements(by);
+  }
+
+  /**
    * Helper method that switches to a frame, handling a null as the default content.
    * TODO(smcmaster): Currently this only works for one level of frames.
    */
@@ -224,14 +233,13 @@ public class WebDriverWrapper {
 
     WebElementIdentifier identifier;
     if (id != null && id.length() > 0) {
-      identifier = new IdWebElementIdentifier(id);
+      identifier = new IdWebElementIdentifier(id, frameIdentifier);
     } else if (name != null && name.length() > 0) {
-      identifier = new NameWebElementIdentifier(name);
+      identifier = new NameWebElementIdentifier(name, frameIdentifier);
     } else {
-      identifier = new IndexWebElementIdentifier(elementIndex);
+      identifier = new IndexWebElementIdentifier(elementIndex, frameIdentifier);
     }
 
-    identifier.setFrameIdentifier(frameIdentifier);
     return identifier;
   }
 

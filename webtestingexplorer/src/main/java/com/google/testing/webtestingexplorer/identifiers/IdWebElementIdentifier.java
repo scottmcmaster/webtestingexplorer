@@ -22,6 +22,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
@@ -30,14 +32,24 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
   private String id;
 
   public IdWebElementIdentifier(String id) {
-    this.id = id;
+    this(id, null);
   }
   
+  public IdWebElementIdentifier(String id, String frameIdentifier) {
+    this.id = id;
+    this.frameIdentifier = frameIdentifier;
+  }
+
   @Override
   public WebElement findElement(WebDriverWrapper driver) {
     return driver.findElementInFrame(By.id(id), frameIdentifier);
   }
   
+  @Override
+  public List<WebElement> findElements(WebDriverWrapper driver) {
+    return driver.findElementsInFrame(By.id(id), frameIdentifier);
+  }
+
   @Override
   public String toString() {
     return super.toString() + ",id=" + id;

@@ -17,8 +17,12 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.config;
 
 import com.google.common.collect.Sets;
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,5 +46,18 @@ public class EquivalentWebElementsSet {
   
   public void addEquivalentElementIdentifier(WebElementIdentifier identifier) {
     equivalentElementIdentifiers.add(identifier);
+  }
+  
+  /**
+   * Gets all the elements picked out as equivalent in the current state
+   * of the given driver.
+   */
+  public Set<WebElement> getEquivalentElements(WebDriverWrapper driver) {
+    Set<WebElement> allElementsWithIds = Sets.newHashSet();
+    for (WebElementIdentifier identifier : equivalentElementIdentifiers) {
+      List<WebElement> elementsWithIds = identifier.findElements(driver);
+      allElementsWithIds.addAll(elementsWithIds);
+    }
+    return allElementsWithIds;
   }
 }

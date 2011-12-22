@@ -21,6 +21,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 /**
  * To be extended by classes that know how to pull {@link WebElement}s out
  * of a driver.
@@ -46,6 +48,7 @@ public abstract class WebElementIdentifier {
   }
   
   public abstract WebElement findElement(WebDriverWrapper driver);
+  public abstract List<WebElement> findElements(WebDriverWrapper driver);
   
   @Override
   public boolean equals(Object obj) {
