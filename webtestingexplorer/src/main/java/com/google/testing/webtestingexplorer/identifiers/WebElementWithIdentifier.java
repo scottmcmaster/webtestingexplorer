@@ -2,6 +2,9 @@
 
 package com.google.testing.webtestingexplorer.identifiers;
 
+import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -15,7 +18,7 @@ import org.openqa.selenium.WebElement;
  */
 public class WebElementWithIdentifier {
 
-  private final WebElement element;
+  private WebElement element;
   private final WebElementIdentifier identifier;
   
   public WebElementWithIdentifier(WebElement element,
@@ -30,5 +33,18 @@ public class WebElementWithIdentifier {
 
   public WebElementIdentifier getIdentifier() {
     return identifier;
+  }
+  
+  /**
+   * Get the element, trying to do a refresh from the driver if the element is stale.
+   */
+  public WebElement safeGetElement(WebDriverWrapper driver) {
+    try {
+      element.getTagName();
+    } catch (StaleElementReferenceException e) {
+      // Try to refresh from the identifier.
+      element = identifier.findElement(driver);
+    }
+    return element;
   }
 }

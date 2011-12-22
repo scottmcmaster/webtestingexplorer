@@ -104,12 +104,19 @@ public class WebDriverWrapper {
    * so that we can work with the element without stale-element exceptions.
    */
   public WebElement findElementInFrame(By by, String frameIdentifier) {
-    if (frameIdentifier == null) {
-      driver.switchTo().defaultContent();
-    } else {
+    switchToFrame(frameIdentifier);
+    return driver.findElement(by);
+  }
+
+  /**
+   * Helper method that switches to a frame, handling a null as the default content.
+   * TODO(smcmaster): Currently this only works for one level of frames.
+   */
+  private void switchToFrame(String frameIdentifier) {
+    driver.switchTo().defaultContent();
+    if (frameIdentifier != null) {
       driver.switchTo().frame(frameIdentifier);
     }
-    return driver.findElement(by);
   }
 
   /**
@@ -145,11 +152,7 @@ public class WebDriverWrapper {
   private void getAllElementsForFrameHelper(String frameIdentifier,
       List<WebElementWithIdentifier> allElements) {
     
-    if (frameIdentifier != null) {
-      driver.switchTo().frame(frameIdentifier);
-    } else {
-      driver.switchTo().defaultContent();
-    }
+    switchToFrame(frameIdentifier);
     
     int startElementIndex = 0;
     List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
@@ -159,6 +162,8 @@ public class WebDriverWrapper {
           generateIdentifier(startElementIndex++, element, frameIdentifier)));
     }
     
+    List<String> childFrameIdentifiers = Lists.newArrayList();
+    
     for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
       // TODO(smcmaster): This currently breaks because the elements obtained
       // to read the first frame, are stale once we switch to read the second.
@@ -166,16 +171,34 @@ public class WebDriverWrapper {
       WebElement element = elementAndId.getElement();
       if ("frame".equals(element.getTagName().toLowerCase()) ||
           "iframe".equals(element.getTagName().toLowerCase())) {
-        String nameOrId = element.getAttribute("name");
-        if (nameOrId == null) {
-          nameOrId = element.getAttribute("id");
-        }
+        String nameOrId = calculateFrameIdentifier(element);
         if (nameOrId != null) {
-          getAllElementsForFrameHelper(nameOrId, allElements);
+          childFrameIdentifiers.add(nameOrId);
         }
       }
     }
     allElements.addAll(frameElementsWithIds);
+    
+    // Now do all the child frames.
+    for (String childFrameIdentifier : childFrameIdentifiers) {
+      getAllElementsForFrameHelper(childFrameIdentifier, allElements);
+      // Switch back so that the next frame id is resolved relative to the correct location.
+      switchToFrame(frameIdentifier);
+    }
+  }
+
+  /**
+   * Figures out the best frame identifier to use for the given element.
+   * 
+   * @param element assumed to be a frame or iframe.
+   * @return the identifier, which theoretically may be null.
+   */
+  private String calculateFrameIdentifier(WebElement element) {
+    String nameOrId = element.getAttribute("name");
+    if (nameOrId == null) {
+      nameOrId = element.getAttribute("id");
+    }
+    return nameOrId;
   }
   
   /**

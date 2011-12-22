@@ -45,7 +45,7 @@ public class ActionGenerator {
    */
   public List<Action> generateActionsForElement(WebDriverWrapper driver,
       WebElementWithIdentifier elementWithId) {
-    WebElement element = elementWithId.getElement();
+    WebElement element = elementWithId.safeGetElement(driver);
     WebElementIdentifier identifier = elementWithId.getIdentifier();
     String type = element.getAttribute("type");
     String role = element.getAttribute("role");
