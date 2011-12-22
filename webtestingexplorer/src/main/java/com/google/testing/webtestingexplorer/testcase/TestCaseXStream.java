@@ -17,12 +17,17 @@ package com.google.testing.webtestingexplorer.testcase;
 
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+import com.google.testing.webtestingexplorer.actions.BackAction;
 import com.google.testing.webtestingexplorer.actions.ClickAction;
+import com.google.testing.webtestingexplorer.actions.ForwardAction;
+import com.google.testing.webtestingexplorer.actions.RefreshAction;
+import com.google.testing.webtestingexplorer.actions.SelectAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.XpathWebElementIdentifier;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -41,12 +46,17 @@ public class TestCaseXStream {
     XStream xstream = new XStream(new StaxDriver());
     xstream.alias("ActionSequence", ActionSequence.class);
     xstream.alias("Action", Action.class);
+    xstream.alias("BackAction", BackAction.class);
     xstream.alias("ClickAction", ClickAction.class);
+    xstream.alias("ForwardAction", ForwardAction.class);
+    xstream.alias("RefreshAction", RefreshAction.class);
+    xstream.alias("SelectAction", SelectAction.class);
     xstream.alias("SetTextAction", SetTextAction.class);
     xstream.alias("WebElementIdentifier", WebElementIdentifier.class);
     xstream.alias("NameWebElementIdentifier", NameWebElementIdentifier.class);
     xstream.alias("IdWebElementIdentifier", IdWebElementIdentifier.class);
     xstream.alias("IndexWebElementIdentifier", IndexWebElementIdentifier.class);
+    xstream.alias("XpathWebElementIdentifier", XpathWebElementIdentifier.class);
     xstream.alias("TestCase", TestCase.class);
     return xstream;
   }
