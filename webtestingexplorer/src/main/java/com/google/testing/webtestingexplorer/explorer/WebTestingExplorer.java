@@ -126,7 +126,7 @@ public class WebTestingExplorer {
           elementWithId);
       
       if (shouldAddActions) {
-        List<Action> newActions = actionGenerator.generateActionsForElement(
+        Set<Action> newActions = actionGenerator.generateActionsForElement(
             driver, elementWithId);
         actions.addAll(newActions);
       }
@@ -224,6 +224,7 @@ public class WebTestingExplorer {
         }
       }
       driver.close();
+      LOGGER.info("Current queue length: " + actionSequences.size());
     }
   }
 

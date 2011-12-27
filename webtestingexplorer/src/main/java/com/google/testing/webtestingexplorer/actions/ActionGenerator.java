@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.actions;
 
+import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.config.ActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
@@ -24,8 +25,7 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifie
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Generates possible {@link Action}s given an element and a configuration.
@@ -43,7 +43,7 @@ public class ActionGenerator {
   /**
    * Builds the list of actions to take on a given element.
    */
-  public List<Action> generateActionsForElement(WebDriverWrapper driver,
+  public Set<Action> generateActionsForElement(WebDriverWrapper driver,
       WebElementWithIdentifier elementWithId) {
     WebElement element = elementWithId.safeGetElement(driver);
     WebElementIdentifier identifier = elementWithId.getIdentifier();
@@ -53,10 +53,10 @@ public class ActionGenerator {
     
     // WebDriver can only interact with visible elements.
     if (!element.isDisplayed() || !element.isEnabled()) {
-      return new ArrayList<Action>();
+      return Sets.newHashSet();
     }
     
-    List<Action> actions = new ArrayList<Action>();
+    Set<Action> actions = Sets.newHashSet();
     
     // Look for a specific action configuration.
     for (ActionGeneratorConfig actionConfig : config.getActionGeneratorConfigs()) {

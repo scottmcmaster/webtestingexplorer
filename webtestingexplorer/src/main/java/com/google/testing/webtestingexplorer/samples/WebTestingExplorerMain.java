@@ -15,13 +15,13 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.samples;
 
+import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.actions.Action;
-import com.google.testing.webtestingexplorer.actions.ClickAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.config.IdentifierActionGeneratorConfig;
+import com.google.testing.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.OracleConfig;
-import com.google.testing.webtestingexplorer.config.TagActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
@@ -31,8 +31,7 @@ import com.google.testing.webtestingexplorer.oracles.JSErrorCollectorOracle;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Entry point for the application that tries things out.
@@ -57,26 +56,15 @@ public class WebTestingExplorerMain {
         .addActionGeneratorConfig(new IdentifierActionGeneratorConfig(
             new NameWebElementIdentifier("feedback_email")) {          
           @Override
-          public List<Action> generateActions(WebElementWithIdentifier elementWithId) {
+          public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
             // Try valid and invalid email addresses.
-            List<Action> actions = new ArrayList<Action>();
+            Set<Action> actions = Sets.newHashSet();
             actions.add(new SetTextAction(elementWithId.getIdentifier(), "bob@example.com"));
             actions.add(new SetTextAction(elementWithId.getIdentifier(), "invalid_email"));
             return actions;
           }
         })
-        .addActionGeneratorConfig(new TagActionGeneratorConfig("a") {
-          @Override
-          public List<Action> generateActions(WebElementWithIdentifier elementWithId) {
-            // Only click on "javascript:" anchors.
-            List<Action> actions = new ArrayList<Action>();
-            String href = elementWithId.getElement().getAttribute("href");
-            if (href != null && href.startsWith("javascript:")) {
-              actions.add(new ClickAction(elementWithId.getIdentifier()));
-            }
-            return actions;
-          }
-        });
+        .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());
     new WebTestingExplorer(config).run();    
   }
 }

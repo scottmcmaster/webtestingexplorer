@@ -18,7 +18,7 @@ package com.google.testing.webtestingexplorer.config;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Customizations to the action generation process.
@@ -27,5 +27,5 @@ import java.util.List;
  */
 public interface ActionGeneratorConfig {
   boolean matches(WebElementWithIdentifier elementWithId);
-  List<Action> generateActions(WebElementWithIdentifier elementWithId);
+  Set<Action> generateActions(WebElementWithIdentifier elementWithId);
 }
