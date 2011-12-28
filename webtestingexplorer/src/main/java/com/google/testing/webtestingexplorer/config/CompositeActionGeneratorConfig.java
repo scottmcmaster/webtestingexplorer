@@ -48,5 +48,4 @@ public class CompositeActionGeneratorConfig implements ActionGeneratorConfig {
     Set<Action> secondActions = second.generateActions(elementWithId);
     return Sets.union(firstActions, secondActions);
   }
-
 }
