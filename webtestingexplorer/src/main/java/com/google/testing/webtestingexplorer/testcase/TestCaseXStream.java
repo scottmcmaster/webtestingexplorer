@@ -28,6 +28,10 @@ import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifi
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.XpathWebElementIdentifier;
+import com.google.testing.webtestingexplorer.state.CountOfElementsState;
+import com.google.testing.webtestingexplorer.state.CustomizedPropertiesElementsState;
+import com.google.testing.webtestingexplorer.state.ElementsState;
+import com.google.testing.webtestingexplorer.state.VisibleElementsState;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -57,6 +61,10 @@ public class TestCaseXStream {
     xstream.alias("IdWebElementIdentifier", IdWebElementIdentifier.class);
     xstream.alias("IndexWebElementIdentifier", IndexWebElementIdentifier.class);
     xstream.alias("XpathWebElementIdentifier", XpathWebElementIdentifier.class);
+    xstream.alias("CountOfElementsState", CountOfElementsState.class);
+    xstream.alias("CustomizedPropertiesElementsState", CustomizedPropertiesElementsState.class);
+    xstream.alias("ElementsState", ElementsState.class);
+    xstream.alias("VisibleElementsState", VisibleElementsState.class);
     xstream.alias("TestCase", TestCase.class);
     return xstream;
   }

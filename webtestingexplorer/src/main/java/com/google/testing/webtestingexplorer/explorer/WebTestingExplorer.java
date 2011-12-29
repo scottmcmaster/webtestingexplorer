@@ -194,7 +194,7 @@ public class WebTestingExplorer {
       stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
       if (stateChange.isStateChanged()) {
         if (config.getTestCaseWriter() != null) {
-          writeTestCase(testCaseCount, actionSequence);
+          writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState());
         }
       }
       
@@ -225,7 +225,8 @@ public class WebTestingExplorer {
   /**
    * Creates and writes out a test case from the given action sequence.
    */
-  private void writeTestCase(int testCaseCount, final ActionSequence actionSequence) {
+  private void writeTestCase(int testCaseCount, final ActionSequence actionSequence,
+      List<State> finalState) {
     String oracleConfigFactoryClassName = null;
     if (config.getOracleConfigFactory() != null) {
       oracleConfigFactoryClassName = config.getOracleConfigFactory().getClass().getName();
@@ -237,7 +238,7 @@ public class WebTestingExplorer {
           config.getWaitConditionConfigFactory().getClass().getName();
     }
     
-    TestCase testCase = new TestCase(config.getUrl(), actionSequence,
+    TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
         oracleConfigFactoryClassName, waitConditionConfigFactoryClassName);
     config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
   }

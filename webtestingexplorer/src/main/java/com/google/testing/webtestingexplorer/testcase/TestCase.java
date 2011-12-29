@@ -16,6 +16,9 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.testcase;
 
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+import com.google.testing.webtestingexplorer.state.State;
+
+import java.util.List;
 
 /**
  * Represents a test case.
@@ -28,11 +31,14 @@ public class TestCase {
   private ActionSequence actionSequence;
   private String oracleConfigFactoryClassName;
   private String waitConditionConfigFactoryClassName;
+  private List<State> finalState;
   
   public TestCase(String url, ActionSequence actionSequence,
-      String oracleConfigFactoryClassName, String waitConditionConfigFactoryClassName) {
+      List<State> finalState, String oracleConfigFactoryClassName,
+      String waitConditionConfigFactoryClassName) {
     this.url = url;
     this.actionSequence = actionSequence;
+    this.finalState = finalState;
     this.oracleConfigFactoryClassName = oracleConfigFactoryClassName;
     this.waitConditionConfigFactoryClassName = waitConditionConfigFactoryClassName;
   }
@@ -51,5 +57,9 @@ public class TestCase {
 
   public String getWaitConditionConfigFactoryClassName() {
     return waitConditionConfigFactoryClassName;
+  }
+  
+  public List<State> getFinalState() {
+    return finalState;
   }
 }
