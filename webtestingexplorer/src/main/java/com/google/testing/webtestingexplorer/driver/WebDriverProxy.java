@@ -49,28 +49,24 @@ public class WebDriverProxy {
    * The amount of time we wait between checks that each request has a matching
    * response.
    */
-  private long responseWaitIntervalMillis;
+  private long responseWaitIntervalMillis = 1000;
 
   /**
    * The amount of time we wait in total for all responses to come back.
    */
-  private long responseWaitTimeoutMillis;
+  private long responseWaitTimeoutMillis = 30000;
   
   private Proxy proxy;
   private List<URI> requestURIs = new ArrayList<URI>();
   private List<Integer> statusCodes = new ArrayList<Integer>();
-  
-  public WebDriverProxy(long responseWaitIntervalMillis,
-      long responseWaitTimeoutMillis) throws Exception {
-    this.responseWaitIntervalMillis = responseWaitIntervalMillis;
-    this.responseWaitTimeoutMillis = responseWaitTimeoutMillis;
-    
-    // Start the proxy.
-    // TODO(smcmaster): This port should be configurable.
-    ProxyServer server = new ProxyServer(4444);
-    server.start();
 
-    server.addRequestInterceptor(new HttpRequestInterceptor() {
+  private ProxyServer proxyServer;
+  
+  public WebDriverProxy() throws Exception {
+    proxyServer = new ProxyServer(4444);
+    proxyServer.start();
+
+    proxyServer.addRequestInterceptor(new HttpRequestInterceptor() {
       @SuppressWarnings("unused") // exception spec
       @Override
       public void process(HttpRequest request, HttpContext context)
@@ -85,7 +81,7 @@ public class WebDriverProxy {
       }
     });
     
-    server.addResponseInterceptor(new HttpResponseInterceptor() {      
+    proxyServer.addResponseInterceptor(new HttpResponseInterceptor() {      
       @SuppressWarnings("unused") // exception spec
       @Override
       public void process(HttpResponse response, HttpContext context)
@@ -95,7 +91,26 @@ public class WebDriverProxy {
     });
     
     // Stash the Selenium proxy object.
-    proxy = server.seleniumProxy();
+    proxy = proxyServer.seleniumProxy();
+  }
+
+  /**
+   * Shuts down the proxy we started, thereby freeing up the port.
+   */
+  public void stop() {
+    try {
+      proxyServer.stop();
+    } catch (Exception useless) {
+      LOGGER.warning("Failed to nicely stop the proxy server");
+    }
+  }
+
+  public void setResponseWaitIntervalMillis(long responseWaitIntervalMillis) {
+    this.responseWaitIntervalMillis = responseWaitIntervalMillis;
+  }
+
+  public void setResponseWaitTimeoutMillis(long responseWaitTimeoutMillis) {
+    this.responseWaitTimeoutMillis = responseWaitTimeoutMillis;
   }
 
   /**

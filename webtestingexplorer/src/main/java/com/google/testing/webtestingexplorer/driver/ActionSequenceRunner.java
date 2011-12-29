@@ -47,22 +47,11 @@ public class ActionSequenceRunner {
   }
   
   private WebDriverProxy proxy;
-  private OracleConfig oracleConfig;
-  private WaitConditionConfig waitConditionConfig;
   private WebDriverWrapper driver;
-  private long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
-  private long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
 
-  public ActionSequenceRunner(OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig)
+  public ActionSequenceRunner()
       throws Exception {
-    this.oracleConfig = oracleConfig;
-    this.waitConditionConfig = waitConditionConfig;
-    
-    if (waitConditionConfig != null) {
-      waitIntervalMillis = waitConditionConfig.getWaitIntervalMillis();
-      waitTimeoutMillis = waitConditionConfig.getWaitTimeoutMillis();
-    }
-    this.proxy = new WebDriverProxy(waitIntervalMillis, waitTimeoutMillis);
+    this.proxy = new WebDriverProxy();
   }
   
   public WebDriverWrapper getDriver() {
@@ -74,7 +63,17 @@ public class ActionSequenceRunner {
    * @throws Exception 
    */
   public void runActionSequence(String url, ActionSequence actionSequence,
+      OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
       BeforeActionCallback beforeActionCallback) throws Exception {
+    
+    long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
+    long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
+    if (waitConditionConfig != null) {
+      waitIntervalMillis = waitConditionConfig.getWaitIntervalMillis();
+      waitTimeoutMillis = waitConditionConfig.getWaitTimeoutMillis();
+    }
+    updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
+    
     // TODO(smcmaster): We ought to manage the lifetime of the driver
     // in here instead of passing it as a parameter. But that is not entirely
     // straightforward because we need to provide the driver to callers while
@@ -82,14 +81,14 @@ public class ActionSequenceRunner {
     // Probably need to add more callbacks.
     driver = new WebDriverWrapper(proxy, waitIntervalMillis, waitTimeoutMillis);
 
-    loadUrl(driver, url);
+    loadUrl(driver, url, waitConditionConfig);
     
     for (int i = 0; i < actionSequence.getActions().size(); ++i) {
       Action action = actionSequence.getActions().get(i);
       if (beforeActionCallback != null) {
         beforeActionCallback.onBeforeAction(action);
       }
-      performAction(driver, action);
+      performAction(driver, action, waitConditionConfig);
       
       if (oracleConfig != null) {
         // Check for failures.
@@ -104,7 +103,23 @@ public class ActionSequenceRunner {
     }
   }
 
-  private void loadUrl(WebDriverWrapper driver, String url) {
+  /**
+   * Cleans up nicely.
+   */
+  public void shutdown() {
+    proxy.stop();
+  }
+
+  /**
+   * Pushes the wait time values into the proxy.
+   */
+  private void updateProxyResponseWaitTimes(long waitIntervalMillis, long waitTimeoutMillis) {
+    proxy.setResponseWaitIntervalMillis(waitTimeoutMillis);
+    proxy.setResponseWaitTimeoutMillis(waitTimeoutMillis);
+  }
+  
+  private void loadUrl(WebDriverWrapper driver, String url,
+      WaitConditionConfig waitConditionConfig) {
     List<WaitCondition> initialWaitConditions = null;
     if (waitConditionConfig != null) {
       waitConditionConfig.getInitialWaitConditions();
@@ -131,7 +146,8 @@ public class ActionSequenceRunner {
     }
   }
 
-  private void performAction(WebDriverWrapper driver, Action action) {
+  private void performAction(WebDriverWrapper driver, Action action,
+      WaitConditionConfig waitConditionConfig) {
     // We should reset the proxy on each action (keeping in mind that we
     // don't really know which actions will actually trigger http
     // request/responses.

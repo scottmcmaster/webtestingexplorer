@@ -21,13 +21,10 @@ import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.config.IdentifierActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
-import com.google.testing.webtestingexplorer.config.OracleConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
-import com.google.testing.webtestingexplorer.oracles.HttpStatusCodeOracle;
-import com.google.testing.webtestingexplorer.oracles.JSErrorCollectorOracle;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
@@ -42,15 +39,12 @@ public class WebTestingExplorerMain {
 
   public static void main(String[] args) throws Exception {
     String url = args[0];
-    OracleConfig oracleConfig = new OracleConfig()
-        .addAfterActionOracle(new HttpStatusCodeOracle().setDisallowedStatusCodes(500, 503))
-        .addAfterActionOracle(new JSErrorCollectorOracle());
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
-        .setOracleConfig(oracleConfig)
+        .setOracleConfigFactory(new SampleOracleConfigFactory())
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
         .addActionGeneratorConfig(new IdentifierActionGeneratorConfig(

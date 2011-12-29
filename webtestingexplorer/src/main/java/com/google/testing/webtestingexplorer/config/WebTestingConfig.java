@@ -39,14 +39,14 @@ public class WebTestingConfig {
   private List<EquivalentWebElementsSet> equivalentWebElementSets = Lists.newArrayList();
   
   /**
-   * The wait condition configuration.
+   * The wait condition configuration factory.
    */
-  private WaitConditionConfig waitConditionConfig;
+  private WaitConditionConfigFactory waitConditionConfigFactory;
   
   /**
-   * The oracle configuration.
+   * The oracle configuration factory.
    */
-  private OracleConfig oracleConfig;
+  private OracleConfigFactory oracleConfigFactory;
   
   /**
    * A list of action sequences we execute to get into the interesting
@@ -58,20 +58,35 @@ public class WebTestingConfig {
   }
   
   public WaitConditionConfig getWaitConditionConfig() {
-    return waitConditionConfig;
+    if (waitConditionConfigFactory == null) {
+      return null;
+    }
+    return waitConditionConfigFactory.createWaitConditionConfig();
   }
   
-  public WebTestingConfig setWaitConditionConfig(WaitConditionConfig waitConditionConfig) {
-    this.waitConditionConfig = waitConditionConfig;
+  public WaitConditionConfigFactory getWaitConditionConfigFactory() {
+    return waitConditionConfigFactory;
+  }
+  
+  public WebTestingConfig setWaitConditionConfigFactory(
+      WaitConditionConfigFactory waitConditionConfigFactory) {
+    this.waitConditionConfigFactory = waitConditionConfigFactory;
     return this;
   }
   
   public OracleConfig getOracleConfig() {
-    return oracleConfig;
+    if (oracleConfigFactory == null) {
+      return null;
+    }
+    return oracleConfigFactory.createOracleConfig();
   }
   
-  public WebTestingConfig setOracleConfig(OracleConfig oracleConfig) {
-    this.oracleConfig = oracleConfig;
+  public OracleConfigFactory getOracleConfigFactory() {
+    return oracleConfigFactory;
+  }
+  
+  public WebTestingConfig setOracleConfigFactory(OracleConfigFactory oracleConfigFactory) {
+    this.oracleConfigFactory = oracleConfigFactory;
     return this;
   }
   
