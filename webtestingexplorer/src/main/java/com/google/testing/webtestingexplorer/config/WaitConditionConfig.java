@@ -28,6 +28,21 @@ import java.util.List;
  */
 public class WaitConditionConfig {
 
+  public static final int DEFAULT_WAIT_TIMEOUT_MILLIS = 30000;
+  public static final int DEFAULT_WAIT_INTERVAL_MILLIS = 1000;
+
+  /**
+   * The amount of time we wait between checking each condition.
+   * Defaults to 1000ms.
+   */
+  private long waitIntervalMillis = DEFAULT_WAIT_INTERVAL_MILLIS;
+  
+  /**
+   * The amount of time we wait in total for wait conditions to become true.
+   * Defaults to 30000ms.
+   */
+  private long waitTimeoutMillis = DEFAULT_WAIT_TIMEOUT_MILLIS;
+  
   /**
    * A list of wait conditions that apply when first loading the url.
    */
@@ -55,4 +70,22 @@ public class WaitConditionConfig {
     afterActionWaitConditions.add(waitCondition);
     return this;
   }  
+  
+  public long getWaitIntervalMillis() {
+    return waitIntervalMillis;
+  }
+  
+  public WaitConditionConfig setWaitIntervalMillis(long waitIntervalMillis) {
+    this.waitIntervalMillis = waitIntervalMillis;
+    return this;
+  }
+  
+  public long getWaitTimeoutMillis() {
+    return waitTimeoutMillis;
+  }
+  
+  public WaitConditionConfig setWaitTimeoutMillis(long waitTimeoutMillis) {
+    this.waitTimeoutMillis = waitTimeoutMillis;
+    return this;
+  }
 }

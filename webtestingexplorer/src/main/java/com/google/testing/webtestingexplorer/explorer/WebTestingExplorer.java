@@ -65,14 +65,11 @@ public class WebTestingExplorer {
   }
 
   public void run() throws Exception {
-    // Init.
-    WebDriverWrapper driver = new WebDriverWrapper(runner.getProxy());
-    
     // Rip.
-    Stack<ActionSequence> actionSequences = buildInitialActionSequences(driver);
+    Stack<ActionSequence> actionSequences = buildInitialActionSequences();
     
     // Term.
-    driver.close();
+    runner.getDriver().close();
 
     // Replay.
     replay(actionSequences, config.getMaxLength());
@@ -81,25 +78,25 @@ public class WebTestingExplorer {
     // actions, if the state changes are identical, the test cases are redundant.  
   }
 
-  private Stack<ActionSequence> buildInitialActionSequences(WebDriverWrapper driver) {
+  private Stack<ActionSequence> buildInitialActionSequences() throws Exception {
     List<ActionSequence> initialActionSequences = new ArrayList<ActionSequence>(config.getInitialActionSequences());
     // Add an empty one as the default.
     initialActionSequences.add(new ActionSequence());
     
     Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
-      runner.runActionSequence(config.getUrl(), initialActionSequence, driver, null);
-      List<Action> actions = getAllPossibleActionsInCurrentState(driver);
+      runner.runActionSequence(config.getUrl(), initialActionSequence, null);
+      List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(action);
         checkPushActionSequence(actionSequences, sequence);
       }
-      driver.close();
+      runner.getDriver().close();
     }
     return actionSequences;
   }
 
-  private List<Action> getAllPossibleActionsInCurrentState(WebDriverWrapper driver) {
+  private List<Action> getAllPossibleActionsInCurrentState() {
     List<Action> actions = new ArrayList<Action>();
 
     // Look for browser actions.
@@ -120,14 +117,14 @@ public class WebTestingExplorer {
       markedEquivalentSets.put(equivalentSet, false);
     }
     
-    List<WebElementWithIdentifier> allElements = driver.getAllElements();
+    List<WebElementWithIdentifier> allElements = runner.getDriver().getAllElements();
     for (WebElementWithIdentifier elementWithId : allElements) {
-      boolean shouldAddActions = checkEquivalentElementSets(driver, markedEquivalentSets,
+      boolean shouldAddActions = checkEquivalentElementSets(markedEquivalentSets,
           elementWithId);
       
       if (shouldAddActions) {
         Set<Action> newActions = actionGenerator.generateActionsForElement(
-            driver, elementWithId);
+            runner.getDriver(), elementWithId);
         actions.addAll(newActions);
       }
     }
@@ -139,30 +136,28 @@ public class WebTestingExplorer {
    * Checks to see if a given web element is equivalent to one we have already added
    * an action for.
    * 
-   * @param driver the driver.
    * @param markedEquivalentSets tracks the equivalent sets that have already been addressed.
    * @param elementWithId the element to check for equivalence to already-added elements.
    * @return true if we should add actions for the element, false if we should skip it.
    */
   private boolean checkEquivalentElementSets(
-      WebDriverWrapper driver,
       Map<EquivalentWebElementsSet, Boolean> markedEquivalentSets,
       WebElementWithIdentifier elementWithId) {
     
     boolean shouldAddActions = true;
     
     for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
-      Set<WebElement> equivalentElements = equivalentSet.getEquivalentElements(driver);
+      Set<WebElement> equivalentElements = equivalentSet.getEquivalentElements(runner.getDriver());
       
       // TODO(smcmaster): There are a couple of untested assumptions here.
       // First, that all object ref's for WebElements retrieved from the driver
       // which are not stale, are the same instances. This seems reasonable since
       // WebDriver caches them.
-      // Second, that this will work correctl across frames. That part, I kind of
+      // Second, that this will work correctly across frames. That part, I kind of
       // doubt. We may need to require that EquivalentElementSets only target
       // a single frame and make that explicit.
       
-      if (equivalentElements.contains(elementWithId.safeGetElement(driver))) {
+      if (equivalentElements.contains(elementWithId.safeGetElement(runner.getDriver()))) {
         if (markedEquivalentSets.containsKey(equivalentSet)) {
           // We have already added an element from this set.
           shouldAddActions = false;
@@ -184,19 +179,18 @@ public class WebTestingExplorer {
       final ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
-      final WebDriverWrapper driver = new WebDriverWrapper(runner.getProxy());
       final StateChange stateChange = new StateChange();
-      runner.runActionSequence(config.getUrl(), actionSequence, driver, new BeforeActionCallback() {
+      runner.runActionSequence(config.getUrl(), actionSequence, new BeforeActionCallback() {
         @Override
         public void onBeforeAction(Action action) {
           if (action == actionSequence.getLastAction()) {
-            stateChange.setBeforeState(createStateSnapshot(driver));
+            stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
           }
         }
       });
 
       // Check the state and add a new test case if it has changed.
-      stateChange.setAfterState(createStateSnapshot(driver));   
+      stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
       if (stateChange.isStateChanged()) {
         if (config.getTestCaseWriter() != null) {
           TestCase testCase = new TestCase(config.getUrl(), actionSequence);
@@ -216,14 +210,14 @@ public class WebTestingExplorer {
       //        All elements? Elements with ids/names?
       if (actionSequence.getLength() < maxSequenceLength) {
         // Extend.
-        List<Action> actions = getAllPossibleActionsInCurrentState(driver);
+        List<Action> actions = getAllPossibleActionsInCurrentState();
         for (Action action : actions) {
           ActionSequence extendedSequence = new ActionSequence(actionSequence);
           extendedSequence.addAction(action);
           checkPushActionSequence(actionSequences, extendedSequence);
         }
       }
-      driver.close();
+      runner.getDriver().close();
       LOGGER.info("Current queue length: " + actionSequences.size());
     }
   }

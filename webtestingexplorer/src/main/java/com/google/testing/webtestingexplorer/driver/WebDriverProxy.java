@@ -45,11 +45,26 @@ public class WebDriverProxy {
 
   private final static Logger LOGGER = Logger.getLogger(WebDriverProxy.class.getName());
 
+  /**
+   * The amount of time we wait between checks that each request has a matching
+   * response.
+   */
+  private long responseWaitIntervalMillis;
+
+  /**
+   * The amount of time we wait in total for all responses to come back.
+   */
+  private long responseWaitTimeoutMillis;
+  
   private Proxy proxy;
   private List<URI> requestURIs = new ArrayList<URI>();
   private List<Integer> statusCodes = new ArrayList<Integer>();
   
-  public WebDriverProxy() throws Exception {
+  public WebDriverProxy(long responseWaitIntervalMillis,
+      long responseWaitTimeoutMillis) throws Exception {
+    this.responseWaitIntervalMillis = responseWaitIntervalMillis;
+    this.responseWaitTimeoutMillis = responseWaitTimeoutMillis;
+    
     // Start the proxy.
     // TODO(smcmaster): This port should be configurable.
     ProxyServer server = new ProxyServer(4444);
@@ -98,14 +113,19 @@ public class WebDriverProxy {
   public Map<URI, Integer> getLastRequestStatusMap() {
     Map<URI, Integer> statusMap = new HashMap<URI, Integer>();
     // If something isn't back yet, wait a short time for it.
-    // TODO(smcmaster): This should be smarter, and handle the case where
-    // something never comes back in a large amount of time.
-    if (requestURIs.size() != statusCodes.size()) {
+    long startMillis = System.currentTimeMillis();
+    while (requestURIs.size() != statusCodes.size()) {
       try {
         LOGGER.log(Level.INFO, "Waiting for all requests to return");
-        Thread.sleep(1000);
+        Thread.sleep(responseWaitIntervalMillis);
       } catch (InterruptedException useless) { }
+      
+      if (System.currentTimeMillis() - startMillis > responseWaitTimeoutMillis) {
+        LOGGER.log(Level.WARNING, "Timeout waiting for responses");
+        break;
+      }
     }
+    
     for (int i = 0; i < requestURIs.size(); i++) {
       statusMap.put(requestURIs.get(i), statusCodes.get(i));
     }

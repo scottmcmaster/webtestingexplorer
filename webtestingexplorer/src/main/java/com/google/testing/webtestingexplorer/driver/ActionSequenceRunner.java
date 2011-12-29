@@ -49,29 +49,39 @@ public class ActionSequenceRunner {
   private WebDriverProxy proxy;
   private OracleConfig oracleConfig;
   private WaitConditionConfig waitConditionConfig;
+  private WebDriverWrapper driver;
+  private long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
+  private long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
 
   public ActionSequenceRunner(OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig)
       throws Exception {
     this.oracleConfig = oracleConfig;
     this.waitConditionConfig = waitConditionConfig;
-    this.proxy = new WebDriverProxy();
+    
+    if (waitConditionConfig != null) {
+      waitIntervalMillis = waitConditionConfig.getWaitIntervalMillis();
+      waitTimeoutMillis = waitConditionConfig.getWaitTimeoutMillis();
+    }
+    this.proxy = new WebDriverProxy(waitIntervalMillis, waitTimeoutMillis);
   }
   
-  public WebDriverProxy getProxy() {
-    return proxy;
+  public WebDriverWrapper getDriver() {
+    return driver;
   }
   
   /**
    * Executes the given action sequence using the given driver.
+   * @throws Exception 
    */
-  public void runActionSequence(String url, ActionSequence actionSequence, WebDriverWrapper driver,
-      BeforeActionCallback beforeActionCallback) {
+  public void runActionSequence(String url, ActionSequence actionSequence,
+      BeforeActionCallback beforeActionCallback) throws Exception {
     // TODO(smcmaster): We ought to manage the lifetime of the driver
     // in here instead of passing it as a parameter. But that is not entirely
     // straightforward because we need to provide the driver to callers while
     // it is still open so that they can do things like examine state.
     // Probably need to add more callbacks.
-    
+    driver = new WebDriverWrapper(proxy, waitIntervalMillis, waitTimeoutMillis);
+
     loadUrl(driver, url);
     
     for (int i = 0; i < actionSequence.getActions().size(); ++i) {

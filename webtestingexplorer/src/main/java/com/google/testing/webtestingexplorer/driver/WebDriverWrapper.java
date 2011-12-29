@@ -54,8 +54,11 @@ public class WebDriverWrapper {
 	
   private WebDriver driver;
   private WebDriverProxy proxy;
+  private long waitIntervalMillis;
+  private long waitTimeoutMillis;
 
-  public WebDriverWrapper(WebDriverProxy proxy) throws Exception {
+  public WebDriverWrapper(WebDriverProxy proxy,
+      long waitIntervalMillis, long waitTimeoutMillis) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
     driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
     
@@ -81,6 +84,8 @@ public class WebDriverWrapper {
     profile.setPreference("browser.chrome.site_icons", false);
     
     driver = new FirefoxDriver(profile);
+    this.waitIntervalMillis = waitIntervalMillis;
+    this.waitTimeoutMillis = waitTimeoutMillis;
     this.proxy = proxy;
   }
   
@@ -275,7 +280,6 @@ public class WebDriverWrapper {
   
   /**
    * Waits for the given list of conditions to be true before returning.
-   * TODO(smcmaster): Make the wait between checks configurable, and add a timeout.
    */
   public void waitOnConditions(List<WaitCondition> waitConditions) {
     if (waitConditions == null) {
@@ -285,6 +289,7 @@ public class WebDriverWrapper {
     for (WaitCondition waitCondition : waitConditions) {
       waitCondition.reset();
     }
+    long startMillis = System.currentTimeMillis();
     while (true) {
       boolean allCanContinue = true;
       String conditionDescription = "";
@@ -295,12 +300,19 @@ public class WebDriverWrapper {
           break;
         }
       }
+      
       if (allCanContinue) {
         break;
       }
+      
+      if (System.currentTimeMillis() - startMillis > waitTimeoutMillis) {
+        LOGGER.log(Level.WARNING, "Timeout waiting for wait conditions");
+        break;
+      }
+      
       LOGGER.log(Level.INFO, "Waiting for " + conditionDescription);
       try {
-        Thread.sleep(1000);
+        Thread.sleep(waitIntervalMillis);
       } catch (InterruptedException useless) {
       }
     }
