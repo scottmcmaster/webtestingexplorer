@@ -15,7 +15,6 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
@@ -25,7 +24,7 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
  */
 public class NullStateChecker implements StateChecker {
   @Override
-  public State createState(WebDriverWrapper driver, Action lastAction) {
+  public State createState(WebDriverWrapper driver) {
     return new NullState();
   }
 

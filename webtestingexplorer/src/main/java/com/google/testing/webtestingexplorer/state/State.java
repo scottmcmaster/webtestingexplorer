@@ -21,5 +21,11 @@ package com.google.testing.webtestingexplorer.state;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public interface State {
-
+  /**
+   * Creates the checker appropriate to this state.
+   * When exploring, the state checker creates states and (potentially) saves
+   * them to a test case for later replaying. When replaying, we ask the state
+   * to create the appropriate checker.
+   */
+  StateChecker createStateChecker();
 }

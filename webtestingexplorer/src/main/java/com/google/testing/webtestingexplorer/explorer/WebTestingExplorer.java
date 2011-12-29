@@ -266,7 +266,7 @@ public class WebTestingExplorer {
   private List<State> createStateSnapshot(WebDriverWrapper driver) {
     List<State> stateList = new ArrayList<State>();
     for (StateChecker stateChecker : config.getStateCheckers()) {
-      stateList.add(stateChecker.createState(driver, null));
+      stateList.add(stateChecker.createState(driver));
     }
     return stateList;
   }

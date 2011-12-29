@@ -139,4 +139,9 @@ public class CustomizedPropertiesElementsState extends ElementsState {
     }
     return "";
   }
+
+  @Override
+  public StateChecker createStateChecker() {
+    return new CustomizedPropertiesElementsStateChecker(customizedProperties);
+  }
 }

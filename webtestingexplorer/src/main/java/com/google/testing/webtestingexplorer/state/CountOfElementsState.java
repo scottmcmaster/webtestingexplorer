@@ -36,4 +36,9 @@ public class CountOfElementsState implements State {
     }
     return numElements == ((CountOfElementsState) other).numElements;
   }
+
+  @Override
+  public StateChecker createStateChecker() {
+    return new CountOfElementsStateChecker();
+  }
 }

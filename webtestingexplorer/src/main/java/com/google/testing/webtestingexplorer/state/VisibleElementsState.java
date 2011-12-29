@@ -95,4 +95,9 @@ public class VisibleElementsState extends ElementsState {
 
     return allProperties;
   }
+
+  @Override
+  public StateChecker createStateChecker() {
+    return new VisibleElementsStateChecker();
+  }
 }

@@ -136,6 +136,7 @@ public class ActionSequenceRunner {
       Action action) {
     List<FailureReason> failureReasons = new ArrayList<FailureReason>();
     for (Oracle oracle : oracles) {
+      LOGGER.info("Checking for failures using oracle " + oracle.getClass().getSimpleName());
       failureReasons.addAll(oracle.check(driver));
     }
     if (!failureReasons.isEmpty()) {

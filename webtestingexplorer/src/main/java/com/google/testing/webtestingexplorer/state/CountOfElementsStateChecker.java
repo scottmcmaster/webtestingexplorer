@@ -15,7 +15,6 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**
@@ -27,7 +26,7 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 public class CountOfElementsStateChecker implements StateChecker {
 
   @Override
-  public State createState(WebDriverWrapper driver, Action lastAction) {
+  public State createState(WebDriverWrapper driver) {
     int numElements = driver.getAllElements().size();
     return new CountOfElementsState(numElements);
   }

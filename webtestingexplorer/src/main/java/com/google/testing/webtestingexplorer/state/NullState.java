@@ -29,4 +29,9 @@ public class NullState implements State {
   public boolean equals(Object obj) {
     return true;
   }
+
+  @Override
+  public StateChecker createStateChecker() {
+    return new NullStateChecker();
+  }
 }

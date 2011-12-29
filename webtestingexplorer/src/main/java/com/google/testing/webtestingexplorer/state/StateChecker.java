@@ -25,5 +25,5 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public interface StateChecker {
-  State createState(WebDriverWrapper driver, Action lastAction);
+  State createState(WebDriverWrapper driver);
 }

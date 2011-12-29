@@ -15,7 +15,6 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class CustomizedPropertiesElementsStateChecker implements StateChecker {
 	}
 	
 	@Override
-	public State createState(WebDriverWrapper driver, Action lastAction) {
+	public State createState(WebDriverWrapper driver) {
 		String htmlString = driver.getAllElementsProperties(properties);
 		return new CustomizedPropertiesElementsState(properties, htmlString);
 	}
