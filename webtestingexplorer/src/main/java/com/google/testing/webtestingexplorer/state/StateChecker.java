@@ -15,7 +15,6 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
-import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 /**

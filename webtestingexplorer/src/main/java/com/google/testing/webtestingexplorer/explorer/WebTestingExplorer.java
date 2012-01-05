@@ -74,7 +74,9 @@ public class WebTestingExplorer {
     replay(actionSequences, config.getMaxLength());
 
     // We can add another step, which is to take the generated test cases and reorder
-    // actions, if the state changes are identical, the test cases are redundant.  
+    // actions, if the state changes are identical, the test cases are redundant.
+    
+    runner.shutdown();
   }
 
   private Stack<ActionSequence> buildInitialActionSequences() throws Exception {

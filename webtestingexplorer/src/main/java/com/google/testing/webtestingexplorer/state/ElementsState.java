@@ -73,34 +73,27 @@ public abstract class ElementsState implements State {
       return false;
     }
 
-    boolean isEqual = true;
     for (Map.Entry<WebElementIdentifier, Map<String, String>> entry : elementProperties.entrySet()) {
       Map<String, String> otherProperties = otherState.elementProperties.get(entry.getKey());
       if (otherProperties == null) {
-        isEqual = false;
-        break;
+        return false;
       }
 
       Map<String, String> theseProperties = entry.getValue();
       
       if (theseProperties.size() != otherProperties.size()) {
-        isEqual = false;
-        break;
+        return false;
       }
 
       for (Map.Entry<String, String> thesePropertyEntry : theseProperties.entrySet()) {
         String key = thesePropertyEntry.getKey();
         
         if (!thesePropertyEntry.getValue().equalsIgnoreCase(otherProperties.get(key))) {
-          isEqual = false;
-          break;
+          return false;
         }
-      }
-      if (!isEqual) {
-        break;
       }
     }
 
-    return isEqual;
+    return true;
   }
 }
