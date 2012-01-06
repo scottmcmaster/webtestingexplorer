@@ -60,7 +60,7 @@ public class WebTestingExplorer {
   public WebTestingExplorer(WebTestingConfig config) throws Exception {
     this.config = config;
     this.actionGenerator = new ActionGenerator(config);
-    this.runner = new ActionSequenceRunner();
+    this.runner = new ActionSequenceRunner(config.getWebDriverFactory());
   }
 
   public void run() throws Exception {

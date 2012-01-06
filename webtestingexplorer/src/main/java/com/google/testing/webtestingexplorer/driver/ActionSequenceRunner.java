@@ -48,10 +48,12 @@ public class ActionSequenceRunner {
   
   private WebDriverProxy proxy;
   private WebDriverWrapper driver;
-
-  public ActionSequenceRunner()
+  private WebDriverFactory driverFactory;
+  
+  public ActionSequenceRunner(WebDriverFactory driverFactory)
       throws Exception {
     this.proxy = new WebDriverProxy();
+    this.driverFactory = driverFactory;
   }
   
   public WebDriverWrapper getDriver() {
@@ -75,11 +77,12 @@ public class ActionSequenceRunner {
     updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
     
     // TODO(smcmaster): We ought to manage the lifetime of the driver
-    // in here instead of passing it as a parameter. But that is not entirely
+    // in here instead of leaving it around to be cleaned up later.
+    // But that is not entirely
     // straightforward because we need to provide the driver to callers while
     // it is still open so that they can do things like examine state.
     // Probably need to add more callbacks.
-    driver = new WebDriverWrapper(proxy, waitIntervalMillis, waitTimeoutMillis);
+    driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis);
 
     loadUrl(driver, url, waitConditionConfig);
     

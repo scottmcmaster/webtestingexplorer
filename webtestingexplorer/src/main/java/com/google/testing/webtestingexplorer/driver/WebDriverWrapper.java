@@ -24,17 +24,10 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifie
 import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
-import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URI;
 import java.util.List;
@@ -57,33 +50,9 @@ public class WebDriverWrapper {
   private long waitIntervalMillis;
   private long waitTimeoutMillis;
 
-  public WebDriverWrapper(WebDriverProxy proxy,
+  public WebDriverWrapper(WebDriverFactory driverFactory, WebDriverProxy proxy,
       long waitIntervalMillis, long waitTimeoutMillis) throws Exception {
-    DesiredCapabilities driverCapabilities = new DesiredCapabilities();
-    driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
-    
-    // Use a custom profile that trusts the cybervillians cert
-    // (to use Selenium with the BrowserMob proxy).
-    ProfilesIni allProfiles = new ProfilesIni();
-    System.setProperty("webdriver.firefox.profile","webtestingexplorer");
-    String browserProfile = System.getProperty("webdriver.firefox.profile");
-    FirefoxProfile profile = allProfiles.getProfile(browserProfile); 
-    profile.setAcceptUntrustedCertificates(true);
-    profile.setAssumeUntrustedCertificateIssuer(false);
-
-    // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
-    JavaScriptError.addExtension(profile);
-    profile.setProxyPreferences(proxy.getSeleniumProxy());
-    
-    // The following preferences control Firefox's default behavior of sending
-    // requests for favicon.ico, which results in lots of bogus 404's for sites
-    // that don't have favicons. If people want to use the tool to specifically
-    // look for 404's AND they have favicons, perhaps we should make this
-    // configurable.
-    profile.setPreference("browser.chrome.favicons", false);
-    profile.setPreference("browser.chrome.site_icons", false);
-    
-    driver = new FirefoxDriver(profile);
+    driver = driverFactory.createWebDriver(proxy);
     this.waitIntervalMillis = waitIntervalMillis;
     this.waitTimeoutMillis = waitTimeoutMillis;
     this.proxy = proxy;

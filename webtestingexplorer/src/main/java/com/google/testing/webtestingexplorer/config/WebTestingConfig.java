@@ -17,6 +17,8 @@ package com.google.testing.webtestingexplorer.config;
 
 import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
+import com.google.testing.webtestingexplorer.driver.FirefoxWebDriverFactory;
+import com.google.testing.webtestingexplorer.driver.WebDriverFactory;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
@@ -37,6 +39,7 @@ public class WebTestingConfig {
   private boolean useRefreshButtonAction;
   private List<ActionSequenceFilter> actionSequenceFilters = Lists.newArrayList();
   private List<EquivalentWebElementsSet> equivalentWebElementSets = Lists.newArrayList();
+  private WebDriverFactory driverFactory = new FirefoxWebDriverFactory();
   
   /**
    * The wait condition configuration factory.
@@ -187,6 +190,15 @@ public class WebTestingConfig {
   
   public WebTestingConfig withRefreshButtonAction() {
     useRefreshButtonAction = true;
+    return this;
+  }
+  
+  public WebDriverFactory getWebDriverFactory() {
+    return driverFactory;
+  }
+  
+  public WebTestingConfig setWebDriverFactory(WebDriverFactory driverFactory) {
+    this.driverFactory = driverFactory;
     return this;
   }
 }
