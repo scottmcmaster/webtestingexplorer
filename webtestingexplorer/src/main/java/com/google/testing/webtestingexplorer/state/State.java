@@ -15,6 +15,8 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
+import java.util.List;
+
 /**
  * Supports different state representations.
  * 
@@ -28,4 +30,12 @@ public interface State {
    * to create the appropriate checker.
    */
   StateChecker createStateChecker();
+  
+  /**
+   * Checks for differences between this state and the given one.
+   * 
+   * @param other the state to diff against.
+   * @return a list of differences, which may be empty if there are none.
+   */
+  List<StateDifference> diff(State other);
 }

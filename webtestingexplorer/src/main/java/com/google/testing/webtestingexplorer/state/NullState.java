@@ -15,6 +15,10 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 /**
  * No-op state class (the default if you don't specify a factory in the config).
  * 
@@ -33,5 +37,10 @@ public class NullState implements State {
   @Override
   public StateChecker createStateChecker() {
     return new NullStateChecker();
+  }
+
+  @Override
+  public List<StateDifference> diff(State other) {
+    return Lists.newArrayList();
   }
 }

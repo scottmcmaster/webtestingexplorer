@@ -15,6 +15,7 @@
  */
 package com.google.testing.webtestingexplorer.state;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.XpathWebElementIdentifier;
@@ -143,5 +144,15 @@ public class CustomizedPropertiesElementsState extends ElementsState {
   @Override
   public StateChecker createStateChecker() {
     return new CustomizedPropertiesElementsStateChecker(customizedProperties);
+  }
+
+  @Override
+  public List<StateDifference> diff(State other) {
+    // TODO(xyuan): Create a useful implementation of this and a unit test.
+    List<StateDifference> result = Lists.newArrayList();
+    if (!equals(other)) {
+      result.add(new StateDifference("Objects not equal", "equals", "equals"));
+    }
+    return result;
   }
 }

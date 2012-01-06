@@ -18,6 +18,7 @@ package com.google.testing.webtestingexplorer.oracles;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.state.State;
 import com.google.testing.webtestingexplorer.state.StateChecker;
+import com.google.testing.webtestingexplorer.state.StateDifference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,9 @@ public class FinalStateCheckOracle implements Oracle {
     for (State expectedFinalState : finalState) {
       StateChecker checker = expectedFinalState.createStateChecker();
       State actualFinalState = checker.createState(driver);
-      if (!actualFinalState.equals(expectedFinalState)) {
-        result.add(createFailureReason(actualFinalState, expectedFinalState));      
+      List<StateDifference> diff = actualFinalState.diff(expectedFinalState);
+      if (!diff.isEmpty()) {
+        result.add(createFailureReason(actualFinalState.getClass().getSimpleName(), diff));      
       }
     }
     return result;
@@ -53,14 +55,23 @@ public class FinalStateCheckOracle implements Oracle {
   /**
    * Creates a failure message for two states presumed to not be equal.
    * 
-   * @param actualFinalState the actual (observed) final state.
-   * @param expectedFinalState the expected final state.
+   * @param stateClassName the name of the state that is failing.
+   * @param diff the differences in state.
    * @return a failure reason suitable for logging as the output.
    */
-  private FailureReason createFailureReason(State actualFinalState, State expectedFinalState) {
-    // TODO(smcmaster): Provide an API for letting states format their differences
-    // appropriately based on what they are doing.
-    String message = "State check failed for state: " + actualFinalState.getClass().getSimpleName();
-    return new FailureReason(message);
+  private FailureReason createFailureReason(String stateClassName, List<StateDifference> diff) {
+    StringBuilder message = new StringBuilder("State check failed for state: ");
+    message.append(stateClassName);
+    message.append('\n');
+    for (StateDifference difference : diff) {
+      message.append("   ");
+      message.append(difference.getProperty());
+      message.append(": actual -- ");
+      message.append(difference.getFirstStateValue());
+      message.append(", expected -- ");
+      message.append(difference.getSecondStateValue());
+      message.append('\n');
+    }
+    return new FailureReason(message.toString());
   }
 }

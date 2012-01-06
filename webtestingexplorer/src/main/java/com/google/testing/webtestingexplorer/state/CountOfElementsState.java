@@ -15,6 +15,10 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
@@ -34,11 +38,24 @@ public class CountOfElementsState implements State {
     if (!(other instanceof CountOfElementsState)) {
       return false;
     }
-    return numElements == ((CountOfElementsState) other).numElements;
+    return diff((CountOfElementsState) other).isEmpty();
   }
 
   @Override
   public StateChecker createStateChecker() {
     return new CountOfElementsStateChecker();
+  }
+
+  @Override
+  public List<StateDifference> diff(State otherState) {
+    if (!(otherState instanceof CountOfElementsState)) {
+      throw new IllegalArgumentException("Invalid state class: " + otherState.getClass().getName());
+    }
+    List<StateDifference> result = Lists.newArrayList();
+    CountOfElementsState other = (CountOfElementsState) otherState;
+    if (numElements != other.numElements) {
+      result.add(new StateDifference("numElements", numElements, other.numElements));
+    }
+    return result;
   }
 }
