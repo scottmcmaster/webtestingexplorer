@@ -20,6 +20,8 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * @author xyuan@google.com (Xun Yuan)
  *
@@ -38,7 +40,7 @@ public class CustomizedPropertiesElementsStateChecker implements StateChecker {
 	
 	@Override
 	public State createState(WebDriverWrapper driver) {
-		String htmlString = driver.getAllElementsProperties(properties);
-		return new CustomizedPropertiesElementsState(properties, htmlString);
+		String xmlString = driver.getAllElementsProperties(properties);
+		return new CustomizedPropertiesElementsState(properties, xmlString);
 	}
 }

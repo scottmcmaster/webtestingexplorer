@@ -26,8 +26,11 @@ import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
+import com.google.testing.webtestingexplorer.state.CustomizedPropertiesElementsStateChecker;
+import com.google.testing.webtestingexplorer.state.VisibleElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -42,8 +45,10 @@ public class WebTestingExplorerMain {
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))
         .setUrl(url)
-        .setMaxLength(5)
-        .addStateChecker(new CountOfElementsStateChecker())
+        .setMaxLength(1)
+        //.addStateChecker(new CountOfElementsStateChecker())
+        //.addStateChecker(new VisibleElementsStateChecker())
+        .addStateChecker(new CustomizedPropertiesElementsStateChecker(new ArrayList()))
         .setOracleConfigFactory(new SampleOracleConfigFactory())
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))

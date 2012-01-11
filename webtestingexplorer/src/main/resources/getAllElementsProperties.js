@@ -34,9 +34,9 @@ function getAllElementsPropertiesWrapper() {
       return true;
     }
     
-    function escapeDoubleQuote(s) {
+    function escapeSpecialChars(s) {
       if (typeof s == "string") {
-        return s.replace(/"/g, "");
+        return s.replace(/["><\s\r\t&]/g, " ");
       }
       return s;
     }
@@ -46,12 +46,12 @@ function getAllElementsPropertiesWrapper() {
 	    
 	  var xpath = getXpathExpression(n);
 	  if (xpath.length > 1) {
-		  xmlString += "<element>";
+		  xmlString += '<element>';
 		  xmlString += '<xpath>' + xpath + '</xpath>';
 		  
-		  xmlString += '<attribute tagName="' + escapeDoubleQuote(n.tagName) + '" />';
+		  xmlString += '<attribute tagName="' + escapeSpecialChars(n.tagName) + '" />';
 		  if (n.nodeValue != null && !/^\s*$/.test(n.nodeValue)) {
-		    xmlString += '<attribute nodeValue="' + escapeDoubleQuote(n.nodeValue) + '" />';
+		    xmlString += '<attribute nodeValue="' + escapeSpecialChars(n.nodeValue) + '" />';
 		  }
 		  var attributes = n.attributes;
 		  if (attributes != null) {
@@ -62,7 +62,7 @@ function getAllElementsPropertiesWrapper() {
 		        continue;
 		      }
 		      var value = attribute.value;
-		      xmlString += '<attribute ' + name + '="' + escapeDoubleQuote(value) + '" />';
+		      xmlString += '<attribute ' + name + '="' + escapeSpecialChars(value) + '" />';
 		    }  
 		  }
 		  xmlString += '</element>';
