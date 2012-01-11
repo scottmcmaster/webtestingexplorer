@@ -32,4 +32,9 @@ public class StateDifference {
   public Object getSecondStateValue() {
     return secondStateValue;
   }
+  
+  public String toString() {
+    return "DiffKey:" + property + 
+        " V1:" + firstStateValue.toString() + " V2:" + secondStateValue.toString();
+  }
 }

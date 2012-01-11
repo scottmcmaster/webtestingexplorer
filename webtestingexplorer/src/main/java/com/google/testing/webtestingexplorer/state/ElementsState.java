@@ -15,6 +15,7 @@
  */
 package com.google.testing.webtestingexplorer.state;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
@@ -95,5 +96,73 @@ public abstract class ElementsState implements State {
     }
 
     return true;
+  }
+  
+  @Override
+  public List<StateDifference> diff(State other) {
+    // TODO(xyuan): Create a unit test.
+    if (!(other.getClass().getName().equalsIgnoreCase(this.getClass().getName()))) {
+      throw new IllegalArgumentException("Invalid state class: " + other.getClass().getName());
+    }
+    List<StateDifference> result = Lists.newArrayList();
+    
+    ElementsState otherState = (ElementsState)other;
+    diffOneWay(this, otherState, true, result);
+    diffOneWay(otherState, this, false, result);
+   
+    return result;
+  }
+  
+  private void diffOneWay(ElementsState thisState, ElementsState otherState, 
+      boolean leftToRight, List<StateDifference> stateDiff) {
+    for (Map.Entry<WebElementIdentifier, Map<String, String>> entry : thisState.elementProperties.entrySet()) {
+      WebElementIdentifier identifier = entry.getKey();
+      Map<String, String> theseProperties = entry.getValue();     
+      Map<String, String> otherProperties = otherState.elementProperties.get(identifier);
+      
+      // Check if this difference has already been recorded
+      String diffKey = "ElementDiff:" + identifier.toString();
+      if (stateDiff.contains(diffKey)) {
+        continue;
+      }
+        
+      // Check existence of an element
+      if (otherProperties == null) {
+        if (leftToRight) {
+          stateDiff.add(new StateDifference(diffKey, theseProperties, ""));
+        } else {
+          stateDiff.add(new StateDifference(diffKey, "", theseProperties));
+        }
+      } else {  
+        // Check whether the element has same set of properties
+        for (Map.Entry<String, String> thesePropertyEntry : theseProperties.entrySet()) {
+          String key = thesePropertyEntry.getKey();
+          String value = thesePropertyEntry.getValue();
+          String otherValue = otherProperties.get(key);
+          
+          // Check if this difference has already been recorded
+          diffKey = "PropertyDiff: identity-" + identifier.toString() + " property-" + key;
+          if (stateDiff.contains(diffKey)) {
+            continue;
+          }
+          if (otherValue == null) {
+            if (leftToRight) {
+              stateDiff.add(new StateDifference(diffKey, value, ""));
+            } else {
+              stateDiff.add(new StateDifference(diffKey, "", value));
+            }
+          } else {
+            // Check if this difference has already been recorded
+            diffKey = "PropertyValueDiff: identity-" + identifier.toString() + " property-" + key;
+            if (stateDiff.contains(diffKey)) {
+              continue;
+            }
+            if (!value.equalsIgnoreCase(otherProperties.get(key))) {
+              stateDiff.add(new StateDifference(diffKey, value, otherProperties.get(key)));
+            }
+          }
+        }// for
+      }    
+    }// for
   }
 }

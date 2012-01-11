@@ -68,6 +68,7 @@ public class ActionSequenceRunner {
       OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
       BeforeActionCallback beforeActionCallback) throws Exception {
     
+    LOGGER.info("At url: " + url + " Run action sequence: " + actionSequence.toString());
     long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
     long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
     if (waitConditionConfig != null) {

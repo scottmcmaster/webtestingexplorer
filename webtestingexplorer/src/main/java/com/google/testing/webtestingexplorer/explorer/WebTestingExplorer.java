@@ -131,6 +131,7 @@ public class WebTestingExplorer {
       }
     }
     
+    LOGGER.info("All possible actions in current state: " + actions.toString());
     return actions;
   }
 
