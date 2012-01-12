@@ -50,9 +50,9 @@ public class CountOfElementsStateTest {
     
     diff = first.diff(third);
     assertEquals(1, diff.size());
-    StateDifference difference = diff.get(0);
+    PropertyValueStateDifference difference = (PropertyValueStateDifference) diff.get(0);
     assertEquals("numElements", difference.getProperty());
-    assertEquals(1, difference.getFirstStateValue());
-    assertEquals(2, difference.getSecondStateValue());
+    assertEquals("1", difference.formatFirstValue());
+    assertEquals("2", difference.formatSecondValue());
   }  
 }

@@ -1,40 +1,39 @@
-// Copyright 2012 Google Inc. All Rights Reserved.
+/*
+Copyright 2012 Google Inc. All Rights Reserved.
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.google.testing.webtestingexplorer.state;
 
 /**
- * Encapsulates a difference in a subset (for example, a single web element
- * property) of the state.
+ * Represents a difference between two states.
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class StateDifference {
+public interface StateDifference {
 
-  private final String property;
-  private final Object firstStateValue;
-  private final Object secondStateValue;
+  /**
+   * Formats the first state's "value" as a string.
+   */
+  String formatFirstValue();
   
-  public StateDifference(String property, Object firstStateValue, Object secondStateValue) {
-    super();
-    this.property = property;
-    this.firstStateValue = firstStateValue;
-    this.secondStateValue = secondStateValue;
-  }
-
-  public String getProperty() {
-    return property;
-  }
+  /**
+   * Formats the second state's "value" as a string.
+   */
+  String formatSecondValue();
   
-  public Object getFirstStateValue() {
-    return firstStateValue;
-  }
-  
-  public Object getSecondStateValue() {
-    return secondStateValue;
-  }
-  
-  public String toString() {
-    return "DiffKey:" + property + 
-        " V1:" + firstStateValue.toString() + " V2:" + secondStateValue.toString();
-  }
+  /**
+   * Formats the entire difference as a string.
+   */
+  String formatDifference();
 }

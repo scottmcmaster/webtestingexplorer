@@ -65,11 +65,10 @@ public class FinalStateCheckOracle implements Oracle {
     message.append('\n');
     for (StateDifference difference : diff) {
       message.append("   ");
-      message.append(difference.getProperty());
-      message.append(": actual -- ");
-      message.append(difference.getFirstStateValue());
+      message.append("actual -- ");
+      message.append(difference.formatFirstValue());
       message.append(", expected -- ");
-      message.append(difference.getSecondStateValue());
+      message.append(difference.formatSecondValue());
       message.append('\n');
     }
     return new FailureReason(message.toString());

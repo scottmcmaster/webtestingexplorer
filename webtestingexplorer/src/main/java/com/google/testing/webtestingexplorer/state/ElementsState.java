@@ -129,9 +129,9 @@ public abstract class ElementsState implements State {
       // Check existence of an element
       if (otherProperties == null) {
         if (leftToRight) {
-          stateDiff.add(new StateDifference(diffKey, theseProperties, ""));
+          stateDiff.add(new PropertyValueStateDifference(diffKey, theseProperties, ""));
         } else {
-          stateDiff.add(new StateDifference(diffKey, "", theseProperties));
+          stateDiff.add(new PropertyValueStateDifference(diffKey, "", theseProperties));
         }
       } else {  
         // Check whether the element has same set of properties
@@ -147,9 +147,9 @@ public abstract class ElementsState implements State {
           }
           if (otherValue == null) {
             if (leftToRight) {
-              stateDiff.add(new StateDifference(diffKey, value, ""));
+              stateDiff.add(new PropertyValueStateDifference(diffKey, value, ""));
             } else {
-              stateDiff.add(new StateDifference(diffKey, "", value));
+              stateDiff.add(new PropertyValueStateDifference(diffKey, "", value));
             }
           } else {
             // Check if this difference has already been recorded
@@ -158,7 +158,7 @@ public abstract class ElementsState implements State {
               continue;
             }
             if (!value.equalsIgnoreCase(otherProperties.get(key))) {
-              stateDiff.add(new StateDifference(diffKey, value, otherProperties.get(key)));
+              stateDiff.add(new PropertyValueStateDifference(diffKey, value, otherProperties.get(key)));
             }
           }
         }// for

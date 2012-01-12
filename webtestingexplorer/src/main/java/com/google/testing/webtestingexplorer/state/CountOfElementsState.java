@@ -54,7 +54,7 @@ public class CountOfElementsState implements State {
     List<StateDifference> result = Lists.newArrayList();
     CountOfElementsState other = (CountOfElementsState) otherState;
     if (numElements != other.numElements) {
-      result.add(new StateDifference("numElements", numElements, other.numElements));
+      result.add(new PropertyValueStateDifference("numElements", numElements, other.numElements));
     }
     return result;
   }

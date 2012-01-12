@@ -55,7 +55,7 @@ public class FinalStateCheckOracleTest {
     List<FailureReason> result = oracle.check(null);
     assertEquals(1, result.size());
     assertEquals(
-        "State check failed for state: CountOfElementsState\n   numElements: actual -- 2, expected -- 1\n",
+        "State check failed for state: CountOfElementsState\n   actual -- 2, expected -- 1\n",
         result.get(0).getMessage());
   }
   
@@ -68,7 +68,7 @@ public class FinalStateCheckOracleTest {
     List<FailureReason> result = oracle.check(null);
     assertEquals(1, result.size());
     assertEquals(
-        "State check failed for state: CountOfElementsState\n   numElements: actual -- 2, expected -- 1\n",
+        "State check failed for state: CountOfElementsState\n   actual -- 2, expected -- 1\n",
         result.get(0).getMessage());
   }
   
