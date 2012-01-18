@@ -16,10 +16,13 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
@@ -33,6 +36,15 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
 
   public XpathWebElementIdentifier(String xpath) {
     this(xpath, null);
+  }
+  
+  public XpathWebElementIdentifier(WebDriver driver, WebElement element) {
+    StringBuilder jsString = new StringBuilder();
+    jsString.append(JavaScriptUtil.getJavaScriptFromFile("/getXpathFromWebElement.js"));
+
+    // Execute js
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    xpath = (String) js.executeScript(jsString.toString(), element);
   }
   
   public XpathWebElementIdentifier(String xpath, String frameIdentifier) {
