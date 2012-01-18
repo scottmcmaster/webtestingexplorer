@@ -28,25 +28,25 @@ public class PropertyValueStateDifferenceTest {
 
   @Test
   public void formatFirstValue() {
-    PropertyValueStateDifference diff = new PropertyValueStateDifference("prop", "first", null);
+    PropertyValueStateDifference diff = new PropertyValueStateDifference(null, "prop", "first", null);
     assertEquals("first", diff.formatFirstValue());
     
-    diff = new PropertyValueStateDifference("prop", null, null);
+    diff = new PropertyValueStateDifference(null, "prop", null, null);
     assertEquals("null", diff.formatFirstValue());
   }
 
   @Test
   public void formatSecondValue() {
-    PropertyValueStateDifference diff = new PropertyValueStateDifference("prop", null, "second");
+    PropertyValueStateDifference diff = new PropertyValueStateDifference(null, "prop", null, "second");
     assertEquals("second", diff.formatSecondValue());
     
-    diff = new PropertyValueStateDifference("prop", null, null);
+    diff = new PropertyValueStateDifference(null, "prop", null, null);
     assertEquals("null", diff.formatSecondValue());
   }
 
   @Test
   public void formatDifference() {
-    PropertyValueStateDifference diff = new PropertyValueStateDifference("prop", "first", "second");
-    assertEquals("DiffKey:prop V1:first V2:second", diff.formatDifference());
+    PropertyValueStateDifference diff = new PropertyValueStateDifference(null, "prop", "first", "second");
+    assertEquals("DiffKey:element-null property-prop V1:first V2:second", diff.formatDifference());
   }
 }

@@ -63,7 +63,7 @@ public class PropertyValueStateDifference implements StateDifference {
 
   @Override
   public String formatDifference() {
-    return "DiffKey: element-" + identifier.toString() + " property:" + property + 
-        " V1:" + formatFirstValue() + " V2:" + formatSecondValue();
+    return "DiffKey:element-" + (identifier != null? identifier.toString() : "null") + 
+        " property-" + property + " V1:" + formatFirstValue() + " V2:" + formatSecondValue();
   }
 }

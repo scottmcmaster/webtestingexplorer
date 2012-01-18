@@ -56,7 +56,7 @@ public class MissingWebElementStateDifference implements StateDifference {
 
   @Override
   public String formatDifference() {
-    return "DiffKey:" + identifier.toString() + 
+    return "DiffKey:element-" + identifier.toString() + 
         " V1:" + formatFirstValue() + " V2:" + formatSecondValue();
   }
 }
