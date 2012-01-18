@@ -62,45 +62,20 @@ public abstract class ElementsState implements State {
   @Override
   public boolean equals(Object other) {
     if (other == this) {
+      // Same states
       return true;
     }
     if (!(other instanceof ElementsState)) {
+      // Compare with non-ElementsState instance
       return false;
     }
 
     ElementsState otherState = (ElementsState) other;
-    int propertiesSize = elementProperties.size();
-    if (propertiesSize != otherState.elementProperties.size()) {
-      return false;
-    }
-
-    for (Map.Entry<WebElementIdentifier, Map<String, String>> entry : elementProperties.entrySet()) {
-      Map<String, String> otherProperties = otherState.elementProperties.get(entry.getKey());
-      if (otherProperties == null) {
-        return false;
-      }
-
-      Map<String, String> theseProperties = entry.getValue();
-      
-      if (theseProperties.size() != otherProperties.size()) {
-        return false;
-      }
-
-      for (Map.Entry<String, String> thesePropertyEntry : theseProperties.entrySet()) {
-        String key = thesePropertyEntry.getKey();
-        
-        if (!thesePropertyEntry.getValue().equalsIgnoreCase(otherProperties.get(key))) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+    return this.diff(otherState).isEmpty();
   }
   
   @Override
   public List<StateDifference> diff(State other) {
-    // TODO(xyuan): Create a unit test.
     if (!(other.getClass().getName().equalsIgnoreCase(this.getClass().getName()))) {
       throw new IllegalArgumentException("Invalid state class: " + other.getClass().getName());
     }
