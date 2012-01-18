@@ -105,62 +105,60 @@ public abstract class ElementsState implements State {
       throw new IllegalArgumentException("Invalid state class: " + other.getClass().getName());
     }
     List<StateDifference> result = Lists.newArrayList();
+    List<String> diffKeys = Lists.newArrayList();
     
     ElementsState otherState = (ElementsState)other;
-    diffOneWay(this, otherState, true, result);
-    diffOneWay(otherState, this, false, result);
+    diffOneWay(this, otherState, true, result, diffKeys);
+    diffOneWay(otherState, this, false, result, diffKeys);
    
     return result;
   }
   
   private void diffOneWay(ElementsState thisState, ElementsState otherState, 
-      boolean leftToRight, List<StateDifference> stateDiff) {
+      boolean leftToRight, List<StateDifference> stateDiff, List<String> diffKeys) {
     for (Map.Entry<WebElementIdentifier, Map<String, String>> entry : thisState.elementProperties.entrySet()) {
       WebElementIdentifier identifier = entry.getKey();
       Map<String, String> theseProperties = entry.getValue();     
       Map<String, String> otherProperties = otherState.elementProperties.get(identifier);
       
       // Check if this difference has already been recorded
-      String diffKey = "ElementDiff:" + identifier.toString();
-      if (stateDiff.contains(diffKey)) {
+      String diffKey = identifier.toString();
+      if (diffKeys.contains(diffKey)) {
         continue;
       }
         
       // Check existence of an element
       if (otherProperties == null) {
         if (leftToRight) {
-          stateDiff.add(new PropertyValueStateDifference(diffKey, theseProperties, ""));
+          stateDiff.add(new MissingWebElementStateDifference(identifier, theseProperties, null));        
         } else {
-          stateDiff.add(new PropertyValueStateDifference(diffKey, "", theseProperties));
+          stateDiff.add(new MissingWebElementStateDifference(identifier, null, theseProperties));
         }
+        diffKeys.add(diffKey);
       } else {  
         // Check whether the element has same set of properties
         for (Map.Entry<String, String> thesePropertyEntry : theseProperties.entrySet()) {
           String key = thesePropertyEntry.getKey();
           String value = thesePropertyEntry.getValue();
           String otherValue = otherProperties.get(key);
+          diffKey = identifier.toString() + key;
           
           // Check if this difference has already been recorded
-          diffKey = "PropertyDiff: identity-" + identifier.toString() + " property-" + key;
-          if (stateDiff.contains(diffKey)) {
+          if (diffKeys.contains(diffKey)) {
             continue;
           }
+          diffKeys.add(diffKey);
           if (otherValue == null) {
             if (leftToRight) {
-              stateDiff.add(new PropertyValueStateDifference(diffKey, value, ""));
+              stateDiff.add(new PropertyValueStateDifference(null, key, value, null));
             } else {
-              stateDiff.add(new PropertyValueStateDifference(diffKey, "", value));
+              stateDiff.add(new PropertyValueStateDifference(null, key, null, value));
             }
           } else {
-            // Check if this difference has already been recorded
-            diffKey = "PropertyValueDiff: identity-" + identifier.toString() + " property-" + key;
-            if (stateDiff.contains(diffKey)) {
-              continue;
-            }
             if (!value.equalsIgnoreCase(otherProperties.get(key))) {
-              stateDiff.add(new PropertyValueStateDifference(diffKey, value, otherProperties.get(key)));
+              stateDiff.add(new PropertyValueStateDifference(identifier, key, value, otherProperties.get(key)));             
             }
-          }
+          }          
         }// for
       }    
     }// for

@@ -1,5 +1,5 @@
 /*
-Copyright 2011 Google Inc. All Rights Reserved.
+Copyright 2012 Google Inc. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,30 +20,23 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 /**
  * A difference in a property which has two different values.
  * 
- * @author scott.d.mcmaster@gmail.com (Scott McMaster)
+ * @author xyuan@google.com (Xun Yuan)
  */
-public class PropertyValueStateDifference implements StateDifference {
-  
+public class MissingWebElementStateDifference implements StateDifference {
+
   private final WebElementIdentifier identifier;
-  private final String property;
   private final Object firstStateValue;
   private final Object secondStateValue;
   
-  public PropertyValueStateDifference(WebElementIdentifier identifier, 
-      String property, Object firstStateValue, Object secondStateValue) {
+  public MissingWebElementStateDifference(WebElementIdentifier identifier, Object firstStateValue, Object secondStateValue) {
     super();
     this.identifier = identifier;
-    this.property = property;
     this.firstStateValue = firstStateValue;
     this.secondStateValue = secondStateValue;
   }
 
   public WebElementIdentifier getElementIdentifier() {
     return identifier;
-  }
-  
-  public String getProperty() {
-    return property;
   }
   
   @Override
@@ -63,7 +56,7 @@ public class PropertyValueStateDifference implements StateDifference {
 
   @Override
   public String formatDifference() {
-    return "DiffKey: element-" + identifier.toString() + " property:" + property + 
+    return "DiffKey:" + identifier.toString() + 
         " V1:" + formatFirstValue() + " V2:" + formatSecondValue();
   }
 }
