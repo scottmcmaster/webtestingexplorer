@@ -24,11 +24,16 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifie
 import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -289,5 +294,21 @@ public class WebDriverWrapper {
 
   public void close() {
     driver.close();
+    
+    // Work around crazy WebDriver bug described here:
+    // http://code.google.com/p/selenium/issues/detail?id=1934.
+    List<String> profileDirs = Lists.newArrayList("anonymous*webdriver-profile", "userprofile*copy");
+    File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+    FilenameFilter profileDirsFilter = new WildcardFileFilter(profileDirs);
+    File[] files = tmpDir.listFiles(profileDirsFilter);
+    for (File profileDir : files) {
+      LOGGER.info("Cleaning up tmp profile directory: " + profileDir.getAbsolutePath());
+      try {
+        FileUtils.deleteDirectory(profileDir);
+      } catch (IOException e) {
+        LOGGER.log(Level.WARNING,
+            "Failed to delete tmp profile directory: " + profileDir.getAbsolutePath(), e);
+      }
+    }
   }
 }
