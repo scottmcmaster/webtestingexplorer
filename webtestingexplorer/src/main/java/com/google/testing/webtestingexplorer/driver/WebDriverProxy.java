@@ -142,7 +142,11 @@ public class WebDriverProxy {
     }
     
     for (int i = 0; i < requestURIs.size(); i++) {
-      statusMap.put(requestURIs.get(i), statusCodes.get(i));
+      Integer statusCode = null;
+      if (i < statusCodes.size()) {
+        statusCode = statusCodes.get(i);
+      }
+      statusMap.put(requestURIs.get(i), statusCode);
     }
     return statusMap;
   }

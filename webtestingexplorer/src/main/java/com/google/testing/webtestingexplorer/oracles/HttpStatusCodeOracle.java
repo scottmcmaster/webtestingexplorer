@@ -68,7 +68,7 @@ public class HttpStatusCodeOracle implements Oracle {
     Map<URI, Integer> statusCodes = driver.getLastRequestStatusMap();
     for (Map.Entry<URI, Integer> entry : statusCodes.entrySet()) {
       URI uri = entry.getKey();
-      int statusCode = entry.getValue();
+      Integer statusCode = entry.getValue();
       if (!allowedStatusCodes.isEmpty()) {
         // Make sure this code is allowed.
         if (!allowedStatusCodes.contains(statusCodes)) {
