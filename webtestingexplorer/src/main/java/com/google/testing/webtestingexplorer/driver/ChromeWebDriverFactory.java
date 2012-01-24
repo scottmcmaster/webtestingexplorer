@@ -33,4 +33,9 @@ public class ChromeWebDriverFactory implements WebDriverFactory {
     driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
     return new ChromeDriver(driverCapabilities);
   }
+
+  @Override
+  public boolean shouldUseProxy() {
+    return false;
+  }
 }

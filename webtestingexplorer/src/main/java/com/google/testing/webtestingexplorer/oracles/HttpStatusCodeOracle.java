@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Flags failures based on allowed/disallowed http status codes.
@@ -31,6 +32,8 @@ import java.util.Set;
  */
 public class HttpStatusCodeOracle implements Oracle {
   
+  private final static Logger LOGGER = Logger.getLogger(HttpStatusCodeOracle.class.getName());
+
   /**
    * If non-empty, the set of status codes that any response MUST
    * be in.
@@ -65,6 +68,11 @@ public class HttpStatusCodeOracle implements Oracle {
   @Override
   public List<FailureReason> check(WebDriverWrapper driver) {
     List<FailureReason> result = new ArrayList<FailureReason>();
+    if (!driver.isUsingProxy()) {
+      LOGGER.warning("HttpStatusCodeOracle requires use of proxy, skipping checks");
+      return result;
+    }
+    
     Map<URI, Integer> statusCodes = driver.getLastRequestStatusMap();
     for (Map.Entry<URI, Integer> entry : statusCodes.entrySet()) {
       URI uri = entry.getKey();

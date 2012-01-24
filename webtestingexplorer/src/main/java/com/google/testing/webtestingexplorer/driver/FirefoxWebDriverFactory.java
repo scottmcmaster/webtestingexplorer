@@ -31,10 +31,22 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  */
 public class FirefoxWebDriverFactory implements WebDriverFactory {
 
+  private final boolean shouldUseProxy;
+  
+  public FirefoxWebDriverFactory() {
+    this(true);
+  }
+  
+  public FirefoxWebDriverFactory(boolean shouldUseProxy) {
+    this.shouldUseProxy = shouldUseProxy;
+  }
+  
   @Override
   public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
-    driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
+    if (proxy != null) {
+      driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
+    }
     
     // Use a custom profile that trusts the cybervillians cert
     // (to use Selenium with the BrowserMob proxy).
@@ -47,7 +59,9 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
 
     // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
     JavaScriptError.addExtension(profile);
-    profile.setProxyPreferences(proxy.getSeleniumProxy());
+    if (proxy != null) {
+      profile.setProxyPreferences(proxy.getSeleniumProxy());
+    }
     
     // The following preferences control Firefox's default behavior of sending
     // requests for favicon.ico, which results in lots of bogus 404's for sites
@@ -58,5 +72,10 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     profile.setPreference("browser.chrome.site_icons", false);
     
     return new FirefoxDriver(profile);
+  }
+
+  @Override
+  public boolean shouldUseProxy() {
+    return shouldUseProxy;
   }
 }

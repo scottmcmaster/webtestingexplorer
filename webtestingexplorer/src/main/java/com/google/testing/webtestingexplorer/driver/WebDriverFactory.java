@@ -28,4 +28,10 @@ public interface WebDriverFactory {
    * Creates a {@link WebDriver} with a proxy.
    */
   WebDriver createWebDriver(WebDriverProxy proxy) throws Exception;
+  
+  /**
+   * Whether or not the {@link WebDriver} should be configured to send requests
+   * through a proxy server of our own creation.
+   */
+  boolean shouldUseProxy();
 }

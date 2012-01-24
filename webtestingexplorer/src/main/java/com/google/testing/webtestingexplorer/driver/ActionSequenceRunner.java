@@ -52,7 +52,9 @@ public class ActionSequenceRunner {
   
   public ActionSequenceRunner(WebDriverFactory driverFactory)
       throws Exception {
-    this.proxy = new WebDriverProxy();
+    if (driverFactory.shouldUseProxy()) {
+      this.proxy = new WebDriverProxy();
+    }
     this.driverFactory = driverFactory;
   }
   
@@ -111,15 +113,19 @@ public class ActionSequenceRunner {
    * Cleans up nicely.
    */
   public void shutdown() {
-    proxy.stop();
+    if (proxy != null) {
+      proxy.stop();
+    }
   }
 
   /**
    * Pushes the wait time values into the proxy.
    */
   private void updateProxyResponseWaitTimes(long waitIntervalMillis, long waitTimeoutMillis) {
-    proxy.setResponseWaitIntervalMillis(waitTimeoutMillis);
-    proxy.setResponseWaitTimeoutMillis(waitTimeoutMillis);
+    if (proxy != null) {
+      proxy.setResponseWaitIntervalMillis(waitTimeoutMillis);
+      proxy.setResponseWaitTimeoutMillis(waitTimeoutMillis);
+    }
   }
   
   private void loadUrl(WebDriverWrapper driver, String url,
@@ -153,10 +159,12 @@ public class ActionSequenceRunner {
 
   private void performAction(WebDriverWrapper driver, Action action,
       WaitConditionConfig waitConditionConfig) {
-    // We should reset the proxy on each action (keeping in mind that we
-    // don't really know which actions will actually trigger http
-    // request/responses.
-    proxy.resetForRequest();
+    if (proxy != null) {
+      // We should reset the proxy on each action (keeping in mind that we
+      // don't really know which actions will actually trigger http
+      // request/responses.
+      proxy.resetForRequest();
+    }
     
     action.perform(driver);
     if (waitConditionConfig != null) {

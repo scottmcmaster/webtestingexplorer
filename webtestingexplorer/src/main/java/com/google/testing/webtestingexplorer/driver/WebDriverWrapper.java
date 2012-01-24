@@ -16,6 +16,7 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.driver;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
@@ -68,11 +69,20 @@ public class WebDriverWrapper {
   }
   
   /**
+   * @return whether or not the driver is configured to use a proxy.
+   */
+  public boolean isUsingProxy() {
+    return (proxy != null);
+  }
+  
+  /**
    * Gets the given url and waits for the wait conditions to be satisifed.
    */
   public void get(String url, List<WaitCondition> waitConditions) {
     LOGGER.log(Level.INFO, "Getting " + url);
-    proxy.resetForRequest();
+    if (proxy != null) {
+      proxy.resetForRequest();
+    }
     driver.switchTo().defaultContent();
     driver.get(url);
     waitOnConditions(waitConditions);
@@ -112,6 +122,9 @@ public class WebDriverWrapper {
    * last get request.
    */
   public Map<URI, Integer> getLastRequestStatusMap() {
+    if (proxy == null) {
+      return Maps.newHashMap();
+    }
     return proxy.getLastRequestStatusMap();
   }
   

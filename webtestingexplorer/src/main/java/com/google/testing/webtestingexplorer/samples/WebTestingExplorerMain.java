@@ -22,6 +22,7 @@ import com.google.testing.webtestingexplorer.config.IdentifierActionGeneratorCon
 import com.google.testing.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
+import com.google.testing.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
@@ -45,6 +46,7 @@ public class WebTestingExplorerMain {
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
         .setOracleConfigFactory(new SampleOracleConfigFactory())
+        .setWebDriverFactory(new FirefoxWebDriverFactory(true))
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
         .addActionGeneratorConfig(new IdentifierActionGeneratorConfig(
