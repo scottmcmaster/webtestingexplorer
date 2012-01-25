@@ -16,12 +16,16 @@ limitations under the License.
 
 package com.google.testing.webtestingexplorer.oracles;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
+import org.openqa.selenium.firefox.FirefoxDriver;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Looks for Javascript errors using JSErrorCollector.
@@ -31,8 +35,15 @@ import java.util.List;
  */
 public class JSErrorCollectorOracle implements Oracle {
 
+  private final static Logger LOGGER = Logger.getLogger(JSErrorCollectorOracle.class.getName());
+
   @Override
   public List<FailureReason> check(WebDriverWrapper driver) {
+    if (!(driver.getDriver() instanceof FirefoxDriver)) {
+      LOGGER.warning("JSErrorCollectorOracle requires FirefoxDriver, skipping checks");
+      return Lists.newArrayList();
+    }
+    
     List<FailureReason> result = new ArrayList<FailureReason>();
     List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver.getDriver());
     for (JavaScriptError jsError : jsErrors) {

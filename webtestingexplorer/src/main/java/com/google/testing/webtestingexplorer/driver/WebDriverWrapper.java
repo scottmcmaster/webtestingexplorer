@@ -306,7 +306,10 @@ public class WebDriverWrapper {
   }
 
   public void close() {
-    driver.close();
+    for (String windowHandle : driver.getWindowHandles()) {
+      driver.switchTo().window(windowHandle);
+      driver.close();
+    }
     
     // Work around crazy WebDriver bug described here:
     // http://code.google.com/p/selenium/issues/detail?id=1934.

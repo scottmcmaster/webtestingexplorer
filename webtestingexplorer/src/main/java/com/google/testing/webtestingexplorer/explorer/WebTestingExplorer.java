@@ -67,9 +67,6 @@ public class WebTestingExplorer {
     // Rip.
     Stack<ActionSequence> actionSequences = buildInitialActionSequences();
     
-    // Term.
-    runner.getDriver().close();
-
     // Replay.
     replay(actionSequences, config.getMaxLength());
 

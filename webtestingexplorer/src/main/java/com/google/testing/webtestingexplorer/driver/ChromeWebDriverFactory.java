@@ -30,7 +30,9 @@ public class ChromeWebDriverFactory implements WebDriverFactory {
   @Override
   public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
     DesiredCapabilities driverCapabilities = new DesiredCapabilities();
-    driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
+    if (proxy != null) {
+      driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
+    }
     return new ChromeDriver(driverCapabilities);
   }
 
