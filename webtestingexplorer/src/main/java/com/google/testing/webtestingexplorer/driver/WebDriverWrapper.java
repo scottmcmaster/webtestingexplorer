@@ -128,6 +128,10 @@ public class WebDriverWrapper {
     return proxy.getLastRequestStatusMap();
   }
   
+  public WebDriverProxy getProxy() {
+    return proxy;
+  }
+  
   /**
    * Gets all elements in the current browser, for a single frame.
    */

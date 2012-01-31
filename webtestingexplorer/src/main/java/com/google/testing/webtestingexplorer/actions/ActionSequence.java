@@ -61,6 +61,9 @@ public class ActionSequence {
   public String toString() {
     String result = "";
     for (Action action : actions) {
+      if (action.isInitial()) {
+        continue;
+      }
       result += action.toString();
       result += ",";
     }

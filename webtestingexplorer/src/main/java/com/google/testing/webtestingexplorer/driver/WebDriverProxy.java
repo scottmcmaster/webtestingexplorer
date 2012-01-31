@@ -120,6 +120,14 @@ public class WebDriverProxy {
     return proxy;
   }
   
+  public int getRequestCount() {
+    return requestURIs.size();
+  }
+  
+  public int getResponseCount() {
+    return statusCodes.size();
+  }
+  
   public void resetForRequest() {
     requestURIs = new ArrayList<URI>();
     statusCodes = new ArrayList<Integer>();

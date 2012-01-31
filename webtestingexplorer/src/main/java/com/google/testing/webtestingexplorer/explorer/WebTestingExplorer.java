@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.explorer;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
@@ -77,9 +78,7 @@ public class WebTestingExplorer {
   }
 
   private Stack<ActionSequence> buildInitialActionSequences() throws Exception {
-    List<ActionSequence> initialActionSequences = new ArrayList<ActionSequence>(config.getInitialActionSequences());
-    // Add an empty one as the default.
-    initialActionSequences.add(new ActionSequence());
+    List<ActionSequence> initialActionSequences = Lists.newArrayList(config.getInitialActionSequences());
     
     Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
@@ -87,7 +86,8 @@ public class WebTestingExplorer {
           config.getWaitConditionConfig(), null);
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
-        ActionSequence sequence = new ActionSequence(action);
+        ActionSequence sequence = new ActionSequence(initialActionSequence);
+        sequence.addAction(action);
         checkPushActionSequence(actionSequences, sequence);
       }
       runner.getDriver().close();
@@ -96,6 +96,8 @@ public class WebTestingExplorer {
   }
 
   private List<Action> getAllPossibleActionsInCurrentState() {
+    LOGGER.info("Getting actions from " + runner.getDriver().getDriver().getCurrentUrl());
+    
     List<Action> actions = new ArrayList<Action>();
 
     // Look for browser actions.

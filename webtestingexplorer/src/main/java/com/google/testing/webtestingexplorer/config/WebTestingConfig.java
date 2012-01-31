@@ -22,7 +22,6 @@ import com.google.testing.webtestingexplorer.driver.WebDriverFactory;
 import com.google.testing.webtestingexplorer.state.StateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,8 +53,10 @@ public class WebTestingConfig {
   /**
    * A list of action sequences we execute to get into the interesting
    * initial state(s) to start exploration.
+   * Has an empty action sequence for a default; if you don't want to explore
+   * starting from empty, you should explicitly remove this in your setup.
    */
-  private List<ActionSequence> initialActionSequences = new ArrayList<ActionSequence>();
+  private List<ActionSequence> initialActionSequences = Lists.newArrayList(new ActionSequence());
   
   public WebTestingConfig() {
   }
@@ -149,6 +150,11 @@ public class WebTestingConfig {
   
   public List<ActionSequence> getInitialActionSequences() {
     return initialActionSequences;
+  }
+  
+  public WebTestingConfig clearInitialActionSequences() {
+    initialActionSequences.clear();
+    return this;
   }
   
   public WebTestingConfig addInitialActionSequence(ActionSequence initialActionSequence) {
