@@ -56,6 +56,7 @@ public class ActionSequenceRunner {
       this.proxy = new WebDriverProxy();
     }
     this.driverFactory = driverFactory;
+    this.driverFactory.init();
   }
   
   public WebDriverWrapper getDriver() {

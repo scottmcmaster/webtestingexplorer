@@ -40,4 +40,9 @@ public class ChromeWebDriverFactory implements WebDriverFactory {
   public boolean shouldUseProxy() {
     return false;
   }
+
+  @Override
+  public void init() throws Exception {
+    // Nothing to do.
+  }
 }

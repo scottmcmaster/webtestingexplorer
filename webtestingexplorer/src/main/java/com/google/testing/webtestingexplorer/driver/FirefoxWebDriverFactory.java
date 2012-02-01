@@ -21,8 +21,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Creates {@link FirefoxDriver}s.
@@ -32,6 +30,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public class FirefoxWebDriverFactory implements WebDriverFactory {
 
   private final boolean shouldUseProxy;
+  private FirefoxProfile profile;
   
   public FirefoxWebDriverFactory() {
     this(true);
@@ -42,26 +41,18 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
   }
   
   @Override
-  public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
-    DesiredCapabilities driverCapabilities = new DesiredCapabilities();
-    if (proxy != null) {
-      driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
-    }
-    
+  public void init() throws Exception {
     // Use a custom profile that trusts the cybervillians cert
     // (to use Selenium with the BrowserMob proxy).
     ProfilesIni allProfiles = new ProfilesIni();
     System.setProperty("webdriver.firefox.profile","webtestingexplorer");
     String browserProfile = System.getProperty("webdriver.firefox.profile");
-    FirefoxProfile profile = allProfiles.getProfile(browserProfile); 
+    profile = allProfiles.getProfile(browserProfile); 
     profile.setAcceptUntrustedCertificates(true);
     profile.setAssumeUntrustedCertificateIssuer(false);
 
     // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
     JavaScriptError.addExtension(profile);
-    if (proxy != null) {
-      profile.setProxyPreferences(proxy.getSeleniumProxy());
-    }
     
     // The following preferences control Firefox's default behavior of sending
     // requests for favicon.ico, which results in lots of bogus 404's for sites
@@ -69,8 +60,14 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     // look for 404's AND they have favicons, perhaps we should make this
     // configurable.
     profile.setPreference("browser.chrome.favicons", false);
-    profile.setPreference("browser.chrome.site_icons", false);
-    
+    profile.setPreference("browser.chrome.site_icons", false);    
+  }
+
+  @Override
+  public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
+    if (proxy != null) {
+      profile.setProxyPreferences(proxy.getSeleniumProxy());
+    }
     return new FirefoxDriver(profile);
   }
 

@@ -25,6 +25,11 @@ import org.openqa.selenium.WebDriver;
 public interface WebDriverFactory {
 
   /**
+   * Called to allow the factory to perform any necessary initialization.
+   */
+  public void init() throws Exception;
+  
+  /**
    * Creates a {@link WebDriver} with a proxy.
    */
   WebDriver createWebDriver(WebDriverProxy proxy) throws Exception;
