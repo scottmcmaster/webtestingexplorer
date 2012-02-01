@@ -23,6 +23,7 @@ import com.google.testing.webtestingexplorer.actions.ForwardAction;
 import com.google.testing.webtestingexplorer.actions.RefreshAction;
 import com.google.testing.webtestingexplorer.actions.SelectAction;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
+import com.google.testing.webtestingexplorer.identifiers.AttributeValueWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
@@ -66,6 +67,7 @@ public class TestCaseXStream {
     xstream.alias("ElementsState", ElementsState.class);
     xstream.alias("VisibleElementsState", VisibleElementsState.class);
     xstream.alias("TestCase", TestCase.class);
+    xstream.alias("AttributeValueWebElementIdentifier", AttributeValueWebElementIdentifier.class);
     return xstream;
   }
 }
