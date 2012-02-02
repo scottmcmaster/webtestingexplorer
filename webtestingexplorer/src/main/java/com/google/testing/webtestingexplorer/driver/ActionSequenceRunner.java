@@ -168,6 +168,7 @@ public class ActionSequenceRunner {
     }
     
     action.perform(driver);
+    driver.invalidateElementsCache();
     if (waitConditionConfig != null) {
       driver.waitOnConditions(waitConditionConfig.getAfterActionWaitConditions());
     }

@@ -21,6 +21,8 @@ import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
+import java.util.logging.Logger;
+
 /**
  * Helper class that pairs a {@link WebElement} with its
  * {@link WebElementIdentifier}. It should be noted that identifiers can be
@@ -31,6 +33,8 @@ import org.openqa.selenium.WebElement;
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public class WebElementWithIdentifier {
+
+  private final static Logger LOGGER = Logger.getLogger(WebElementWithIdentifier.class.getName());
 
   private WebElement element;
   private final WebElementIdentifier identifier;
@@ -57,6 +61,7 @@ public class WebElementWithIdentifier {
       element.getTagName();
     } catch (StaleElementReferenceException e) {
       // Try to refresh from the identifier.
+      LOGGER.info("Stale element, trying to refresh " + identifier);
       element = identifier.findElement(driver);
     }
     return element;

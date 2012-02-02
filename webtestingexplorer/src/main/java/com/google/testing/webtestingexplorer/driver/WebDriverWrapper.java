@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.driver;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
@@ -29,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -55,7 +57,20 @@ public class WebDriverWrapper {
   private WebDriverProxy proxy;
   private long waitIntervalMillis;
   private long waitTimeoutMillis;
-
+  
+  // TODO(smcmaster): Hook this to a command-line flag.
+  private boolean useElementsCache = false;
+  
+  /**
+   * A cache of the results of getAllElements(ForFrame).
+   */
+  private List<WebElementWithIdentifier> elementsCache;
+  
+  /**
+   * The last frame we loaded elements for; used for caching.
+   */
+  private String lastFrameIdentifier;
+  
   public WebDriverWrapper(WebDriverFactory driverFactory, WebDriverProxy proxy,
       long waitIntervalMillis, long waitTimeoutMillis) throws Exception {
     driver = driverFactory.createWebDriver(proxy);
@@ -75,11 +90,16 @@ public class WebDriverWrapper {
     return (proxy != null);
   }
   
+  public void setUseElementsCache(boolean useElementsCache) {
+    this.useElementsCache = useElementsCache;
+  }
+
   /**
    * Gets the given url and waits for the wait conditions to be satisifed.
    */
   public void get(String url, List<WaitCondition> waitConditions) {
     LOGGER.log(Level.INFO, "Getting " + url);
+    invalidateElementsCache();
     if (proxy != null) {
       proxy.resetForRequest();
     }
@@ -111,6 +131,10 @@ public class WebDriverWrapper {
    * TODO(smcmaster): Currently this only works for one level of frames.
    */
   private void switchToFrame(String frameIdentifier) {
+    if (Objects.equal(frameIdentifier, lastFrameIdentifier)) {
+      return;
+    }
+    
     driver.switchTo().defaultContent();
     if (frameIdentifier != null) {
       driver.switchTo().frame(frameIdentifier);
@@ -133,11 +157,29 @@ public class WebDriverWrapper {
   }
   
   /**
+   * Clears out any cached lists of {@link WebElementIdentifier}s.
+   */
+  public void invalidateElementsCache() {
+    elementsCache = null;
+    lastFrameIdentifier = null;
+  }
+  
+  /**
    * Gets all elements in the current browser, for a single frame.
    */
   public List<WebElementWithIdentifier> getAllElementsForFrame(String frameIdentifier) {
+    if (Objects.equal(frameIdentifier, lastFrameIdentifier) && validateElementsCache()) {
+      LOGGER.log(Level.FINE, "Using cached elements for frame " + frameIdentifier);
+      return elementsCache;
+    }
+    LOGGER.log(Level.FINE, "Getting all elements for frame " + frameIdentifier);
+
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
     getAllElementsForFrameHelper(frameIdentifier, allElements);
+    lastFrameIdentifier = frameIdentifier;
+    if (useElementsCache) {
+      elementsCache = allElements;
+    }
     return allElements;
   }
   
@@ -145,11 +187,33 @@ public class WebDriverWrapper {
    * Gets all elements in the current browser, across frames.
    */
   public List<WebElementWithIdentifier> getAllElements() {
+    if (lastFrameIdentifier == null && validateElementsCache()) {
+      LOGGER.log(Level.FINE, "Using cached elements");
+      return elementsCache;
+    }
+    LOGGER.log(Level.FINE, "Getting all elements");
+    
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
     getAllElementsForFrameHelper(null, allElements);
+    lastFrameIdentifier = null;
+    if (useElementsCache) {
+      elementsCache = allElements;
+    }
     return allElements;
   }
   
+  private boolean validateElementsCache() {
+    if (elementsCache == null || elementsCache.size() == 0) {
+      return false;
+    }
+    try {
+      // The next call will trigger stale-element if we are stale.
+      elementsCache.get(0).getElement().getTagName();
+      return true;
+    } catch (StaleElementReferenceException e) {
+      return false;
+    }
+  }
   /**
    * Recursive-helper to go across frames for getAllElements. Adds to the 
    * given list of elements.
