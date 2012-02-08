@@ -17,7 +17,6 @@ package com.google.testing.webtestingexplorer.driver;
 
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
-import com.google.testing.webtestingexplorer.config.OracleConfig;
 import com.google.testing.webtestingexplorer.config.WaitConditionConfig;
 import com.google.testing.webtestingexplorer.oracles.Failure;
 import com.google.testing.webtestingexplorer.oracles.FailureReason;
@@ -65,18 +64,18 @@ public class ActionSequenceRunner {
   
   /**
    * Executes the given action sequence using the given driver.
+   * @param config TODO(smcmaster):
    * @throws Exception 
    */
-  public void runActionSequence(String url, ActionSequence actionSequence,
-      OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
-      BeforeActionCallback beforeActionCallback) throws Exception {
+  public void runActionSequence(ActionSequenceRunnerConfig config) throws Exception {
     
-    LOGGER.info("At url: " + url + " Run action sequence: " + actionSequence.toString());
+    LOGGER.info("At url: " + config.getUrl() + " Run action sequence: "
+        + config.getActionSequence().toString());
     long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
     long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
-    if (waitConditionConfig != null) {
-      waitIntervalMillis = waitConditionConfig.getWaitIntervalMillis();
-      waitTimeoutMillis = waitConditionConfig.getWaitTimeoutMillis();
+    if (config.getWaitConditionConfig() != null) {
+      waitIntervalMillis = config.getWaitConditionConfig().getWaitIntervalMillis();
+      waitTimeoutMillis = config.getWaitConditionConfig().getWaitTimeoutMillis();
     }
     updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
     
@@ -86,27 +85,29 @@ public class ActionSequenceRunner {
     // straightforward because we need to provide the driver to callers while
     // it is still open so that they can do things like examine state.
     // Probably need to add more callbacks.
-    driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis);
+    driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis,
+        false);
 
-    loadUrl(driver, url, waitConditionConfig);
+    loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
     
-    for (int i = 0; i < actionSequence.getActions().size(); ++i) {
-      Action action = actionSequence.getActions().get(i);
-      if (beforeActionCallback != null) {
-        beforeActionCallback.onBeforeAction(action);
+    for (int i = 0; i < config.getActionSequence().getActions().size(); ++i) {
+      Action action = config.getActionSequence().getActions().get(i);
+      if (config.getBeforeActionCallback() != null) {
+        config.getBeforeActionCallback().onBeforeAction(action);
       }
-      performAction(driver, action, waitConditionConfig);
+      performAction(driver, action, config.getWaitConditionConfig());
       
-      if (oracleConfig != null) {
+      if (config.getOracleConfig() != null) {
         // Check for failures.
-        checkForFailures(oracleConfig.getAfterActionOracles(), driver, actionSequence, action);
+        checkForFailures(config.getOracleConfig().getAfterActionOracles(), driver,
+            config.getActionSequence(), action);
       }
     }
     
-    if (oracleConfig != null) {
+    if (config.getOracleConfig() != null) {
       // Check for failures.
-      checkForFailures(oracleConfig.getFinalOracles(), driver, actionSequence,
-          actionSequence.getLastAction());
+      checkForFailures(config.getOracleConfig().getFinalOracles(), driver, config.getActionSequence(),
+          config.getActionSequence().getLastAction());
     }
   }
 

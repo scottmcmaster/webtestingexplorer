@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.samples;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
@@ -29,6 +30,11 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifie
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
 
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,8 +44,18 @@ import java.util.Set;
  */
 public class WebTestingExplorerMain {
 
-  public static void main(String[] args) throws Exception {
-    String url = args[0];
+  @Option(name="-useElementsCache", usage="Whether or not to try your luck with our "+
+      "WebDriver Elements cache")
+  private boolean useElementsCache = false;
+  
+  @Argument
+  private List<String> arguments = Lists.newArrayList();
+  
+  private void run(String[] args) throws Exception {
+    CmdLineParser parser = new CmdLineParser(this);
+    parser.parseArgument(args);
+    String url = arguments.get(0);
+    
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))
         .setUrl(url)
@@ -62,5 +78,9 @@ public class WebTestingExplorerMain {
         })
         .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());
     new WebTestingExplorer(config).run();    
+  }
+
+  public static void main(String[] args) throws Exception {
+    new WebTestingExplorerMain().run(args);
   }
 }

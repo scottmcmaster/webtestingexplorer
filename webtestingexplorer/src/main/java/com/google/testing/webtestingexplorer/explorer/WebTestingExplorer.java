@@ -27,6 +27,7 @@ import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.EquivalentWebElementsSet;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
+import com.google.testing.webtestingexplorer.driver.ActionSequenceRunnerConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
@@ -82,8 +83,12 @@ public class WebTestingExplorer {
     
     Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
-      runner.runActionSequence(config.getUrl(), initialActionSequence, config.getOracleConfig(),
-          config.getWaitConditionConfig(), null);
+      runner.runActionSequence(new ActionSequenceRunnerConfig(
+          config.getUrl(),
+          initialActionSequence,
+          config.getOracleConfig(),
+          config.getWaitConditionConfig(),
+          null));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(initialActionSequence);
@@ -182,15 +187,19 @@ public class WebTestingExplorer {
       ++testCaseCount;
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
       final StateChange stateChange = new StateChange();
-      runner.runActionSequence(config.getUrl(), actionSequence, config.getOracleConfig(),
-          config.getWaitConditionConfig(), new BeforeActionCallback() {
-        @Override
-        public void onBeforeAction(Action action) {
-          if (action == actionSequence.getLastAction()) {
-            stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
-          }
-        }
-      });
+      runner.runActionSequence(new ActionSequenceRunnerConfig(
+          config.getUrl(),
+          actionSequence,
+          config.getOracleConfig(),
+          config.getWaitConditionConfig(),
+          new BeforeActionCallback() {
+              @Override
+              public void onBeforeAction(Action action) {
+                if (action == actionSequence.getLastAction()) {
+                  stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
+                }
+              }
+             }));
 
       // Check the state and add a new test case if it has changed.
       stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   

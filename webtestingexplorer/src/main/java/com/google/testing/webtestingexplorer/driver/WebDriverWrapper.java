@@ -56,10 +56,8 @@ public class WebDriverWrapper {
   private WebDriver driver;
   private WebDriverProxy proxy;
   private long waitIntervalMillis;
-  private long waitTimeoutMillis;
-  
-  // TODO(smcmaster): Hook this to a command-line flag.
-  private boolean useElementsCache = false;
+  private long waitTimeoutMillis;  
+  private boolean useElementsCache;
   
   /**
    * A cache of the results of getAllElements(ForFrame).
@@ -72,11 +70,13 @@ public class WebDriverWrapper {
   private String lastFrameIdentifier;
   
   public WebDriverWrapper(WebDriverFactory driverFactory, WebDriverProxy proxy,
-      long waitIntervalMillis, long waitTimeoutMillis) throws Exception {
+      long waitIntervalMillis, long waitTimeoutMillis, boolean useElementsCache)
+          throws Exception {
     driver = driverFactory.createWebDriver(proxy);
     this.waitIntervalMillis = waitIntervalMillis;
     this.waitTimeoutMillis = waitTimeoutMillis;
     this.proxy = proxy;
+    this.useElementsCache = useElementsCache;
   }
   
   public WebDriver getDriver() {
