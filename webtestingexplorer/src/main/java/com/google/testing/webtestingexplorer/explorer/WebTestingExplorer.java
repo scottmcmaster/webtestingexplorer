@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -186,50 +187,59 @@ public class WebTestingExplorer {
       final ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
-      final StateChange stateChange = new StateChange();
-      runner.runActionSequence(new ActionSequenceRunnerConfig(
-          config.getUrl(),
-          actionSequence,
-          config.getOracleConfig(),
-          config.getWaitConditionConfig(),
-          new BeforeActionCallback() {
-              @Override
-              public void onBeforeAction(Action action) {
-                if (action == actionSequence.getLastAction()) {
-                  stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
+      try {
+        final StateChange stateChange = new StateChange();
+        runner.runActionSequence(new ActionSequenceRunnerConfig(
+            config.getUrl(),
+            actionSequence,
+            config.getOracleConfig(),
+            config.getWaitConditionConfig(),
+            new BeforeActionCallback() {
+                @Override
+                public void onBeforeAction(Action action) {
+                  if (action == actionSequence.getLastAction()) {
+                    stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
+                  }
                 }
-              }
-             }));
-
-      // Check the state and add a new test case if it has changed.
-      stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
-      if (stateChange.isStateChanged()) {
-        if (config.getTestCaseWriter() != null) {
-          writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState());
+               }));
+  
+        // Check the state and add a new test case if it has changed.
+        stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
+        if (stateChange.isStateChanged()) {
+          if (config.getTestCaseWriter() != null) {
+            writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState());
+          }
         }
-      }
-      
-      // I wonder if there is a better way to identify test cases than to check just
-      // initial vs. final state. As it is, we generate lots of redundant test cases
-      // (for example, on the feedback form, each additional repeated click of the submit
-      // button results in a new test case)...
-      
-      // Options for checking state:
-      //    Need to ignore the element we just took an action on.
-      //    Look for new or removed elements.
-      //    Look at some CSS properties (disabled, color, etc.) for some subset of elements.
-      //        All elements? Elements with ids/names?
-      if (actionSequence.getLength() < maxSequenceLength) {
-        // Extend.
-        List<Action> actions = getAllPossibleActionsInCurrentState();
-        for (Action action : actions) {
-          ActionSequence extendedSequence = new ActionSequence(actionSequence);
-          extendedSequence.addAction(action);
-          checkPushActionSequence(actionSequences, extendedSequence);
+        
+        // I wonder if there is a better way to identify test cases than to check just
+        // initial vs. final state. As it is, we generate lots of redundant test cases
+        // (for example, on the feedback form, each additional repeated click of the submit
+        // button results in a new test case)...
+        
+        // Options for checking state:
+        //    Need to ignore the element we just took an action on.
+        //    Look for new or removed elements.
+        //    Look at some CSS properties (disabled, color, etc.) for some subset of elements.
+        //        All elements? Elements with ids/names?
+        if (actionSequence.getLength() < maxSequenceLength) {
+          // Extend.
+          List<Action> actions = getAllPossibleActionsInCurrentState();
+          for (Action action : actions) {
+            ActionSequence extendedSequence = new ActionSequence(actionSequence);
+            extendedSequence.addAction(action);
+            checkPushActionSequence(actionSequences, extendedSequence);
+          }
         }
+        LOGGER.info("Current queue length: " + actionSequences.size());
+        runner.getDriver().close();
+      } catch (Exception e) {
+        String source = runner.getDriver().getDriver().getPageSource();
+        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + actionSequence.toString() +
+            ", page source:\n" + source,
+            e);
+      } finally {
+        try { runner.getDriver().close(); } catch (Exception e) {}
       }
-      runner.getDriver().close();
-      LOGGER.info("Current queue length: " + actionSequences.size());
     }
   }
 
