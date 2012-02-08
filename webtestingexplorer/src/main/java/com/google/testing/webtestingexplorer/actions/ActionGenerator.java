@@ -26,6 +26,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generates possible {@link Action}s given an element and a configuration.
@@ -33,6 +35,8 @@ import java.util.Set;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class ActionGenerator {
+
+  private final static Logger LOGGER = Logger.getLogger(ActionGenerator.class.getName());
 
   private WebTestingConfig config;
 
@@ -45,6 +49,8 @@ public class ActionGenerator {
    */
   public Set<Action> generateActionsForElement(WebDriverWrapper driver,
       WebElementWithIdentifier elementWithId) {
+    LOGGER.log(Level.FINE, "Generating actions for element " + elementWithId.getIdentifier());
+    
     WebElement element = elementWithId.safeGetElement(driver);
     WebElementIdentifier identifier = elementWithId.getIdentifier();
     String type = element.getAttribute("type");

@@ -17,6 +17,7 @@ package com.google.testing.webtestingexplorer.wait;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -62,6 +63,7 @@ public class RequestResponseWaitCondition implements WaitCondition {
     do {
       currentRequestCount = requestCount;
       try {
+        LOGGER.log(Level.FINE, "Waiting for request/response pairs");
         Thread.sleep(requestDelayMillis);
       } catch (InterruptedException useless) {}
       requestCount = driver.getProxy().getRequestCount();

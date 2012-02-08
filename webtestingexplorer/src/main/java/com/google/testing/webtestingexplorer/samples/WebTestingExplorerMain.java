@@ -48,6 +48,9 @@ public class WebTestingExplorerMain {
       "WebDriver Elements cache")
   private boolean useElementsCache = false;
   
+  @Option(name="-outputDir", usage="Directory to save test cases in")
+  private String outputDir = "/tmp/webtestexplorer";
+  
   @Argument
   private List<String> arguments = Lists.newArrayList();
   
@@ -57,7 +60,7 @@ public class WebTestingExplorerMain {
     String url = arguments.get(0);
     
     WebTestingConfig config = new WebTestingConfig()
-        .setTestCaseWriter(new TestCaseWriter("/tmp/webtestexplorer"))
+        .setTestCaseWriter(new TestCaseWriter(outputDir))
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())

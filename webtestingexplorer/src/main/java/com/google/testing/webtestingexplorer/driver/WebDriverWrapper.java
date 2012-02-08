@@ -113,8 +113,11 @@ public class WebDriverWrapper {
    * so that we can work with the element without stale-element exceptions.
    */
   public WebElement findElementInFrame(By by, String frameIdentifier) {
-    switchToFrame(frameIdentifier);
-    return driver.findElement(by);
+    List<WebElement> elements = findElementsInFrame(by, frameIdentifier);
+    if (elements.size() > 1) {
+      LOGGER.warning("Found multiple elements for " + by + ", returning the first one");
+    }
+    return elements.get(0);
   }
 
   /**
@@ -122,6 +125,7 @@ public class WebDriverWrapper {
    * so that we can work with the element without stale-element exceptions.
    */
   public List<WebElement> findElementsInFrame(By by, String frameIdentifier) {
+    LOGGER.log(Level.FINE, "Looking for elements " + by + " in frame " + frameIdentifier);
     switchToFrame(frameIdentifier);
     return driver.findElements(by);
   }
@@ -227,12 +231,22 @@ public class WebDriverWrapper {
     List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
     for (WebElement element : frameElements) {
-      frameElementsWithIds.add(new WebElementWithIdentifier(element,
-          generateIdentifier(startElementIndex++, element, frameIdentifier)));
+      try {
+        // Filter out some elements we don't take actions on.
+        if (!isActionable(element)) {
+          continue;
+        }
+        frameElementsWithIds.add(new WebElementWithIdentifier(element,
+            generateIdentifier(startElementIndex++, element, frameIdentifier)));
+      } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, "Exception evaluating element", e);
+        throw new RuntimeException(e);
+      }
     }
     
     List<String> childFrameIdentifiers = Lists.newArrayList();
     
+    // TODO(smcmaster): We could also filter out iframes if we changed this logic.
     for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
       WebElement element = elementAndId.getElement();
       if ("frame".equals(element.getTagName().toLowerCase()) ||
@@ -243,8 +257,7 @@ public class WebDriverWrapper {
         }
       }
     }
-    allElements.addAll(frameElementsWithIds);
-    
+        
     // Now do all the child frames.
     for (String childFrameIdentifier : childFrameIdentifiers) {
       getAllElementsForFrameHelper(childFrameIdentifier, allElements);
@@ -253,6 +266,21 @@ public class WebDriverWrapper {
     }
   }
 
+  /**
+   * @return whether or not any action might make sense on this element.
+   */
+  private boolean isActionable(WebElement element) {
+    String tagName = element.getTagName().toLowerCase();
+    if ("meta".equals(tagName) ||
+        "script".equals(tagName) ||
+        "title".equals(tagName) ||
+        "style".equals(tagName) ||
+        "body".equals(tagName)) {
+      return false;
+    }
+    return true;
+  }
+  
   /**
    * Figures out the best frame identifier to use for the given element.
    * 
