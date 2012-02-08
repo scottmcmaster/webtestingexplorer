@@ -257,7 +257,8 @@ public class WebDriverWrapper {
         }
       }
     }
-        
+    allElements.addAll(frameElementsWithIds);
+    
     // Now do all the child frames.
     for (String childFrameIdentifier : childFrameIdentifiers) {
       getAllElementsForFrameHelper(childFrameIdentifier, allElements);
