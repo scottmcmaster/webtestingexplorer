@@ -203,6 +203,7 @@ public class WebDriverWrapper {
     if (useElementsCache) {
       elementsCache = allElements;
     }
+    getDriver().switchTo().defaultContent();
     return allElements;
   }
   
@@ -276,6 +277,8 @@ public class WebDriverWrapper {
         "script".equals(tagName) ||
         "title".equals(tagName) ||
         "style".equals(tagName) ||
+        "html".equals(tagName) ||
+        "head".equals(tagName) ||
         "body".equals(tagName)) {
       return false;
     }
@@ -319,14 +322,15 @@ public class WebDriverWrapper {
       String frameIdentifier) {
     String name = element.getAttribute("name");
     String id = element.getAttribute("id");
-
+    String tagName = element.getTagName();
+    
     WebElementIdentifier identifier;
     if (id != null && id.length() > 0) {
-      identifier = new IdWebElementIdentifier(id, frameIdentifier);
+      identifier = new IdWebElementIdentifier(id, frameIdentifier, tagName);
     } else if (name != null && name.length() > 0) {
-      identifier = new NameWebElementIdentifier(name, frameIdentifier);
+      identifier = new NameWebElementIdentifier(name, frameIdentifier, tagName);
     } else {
-      identifier = new IndexWebElementIdentifier(elementIndex, frameIdentifier);
+      identifier = new IndexWebElementIdentifier(elementIndex, frameIdentifier, tagName);
     }
 
     return identifier;

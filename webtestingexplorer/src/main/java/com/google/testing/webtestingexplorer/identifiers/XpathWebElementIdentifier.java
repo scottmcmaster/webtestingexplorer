@@ -35,10 +35,11 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   private String xpath;
 
   public XpathWebElementIdentifier(String xpath) {
-    this(xpath, null);
+    this(xpath, null, null);
   }
   
   public XpathWebElementIdentifier(WebDriver driver, WebElement element) {
+    super(null, null);
     StringBuilder jsString = new StringBuilder();
     jsString.append(JavaScriptUtil.getJavaScriptFromFile("/getXpathFromWebElement.js"));
 
@@ -47,9 +48,9 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
     xpath = (String) js.executeScript(jsString.toString(), element);
   }
   
-  public XpathWebElementIdentifier(String xpath, String frameIdentifier) {
+  public XpathWebElementIdentifier(String xpath, String frameIdentifier, String tagName) {
+    super(frameIdentifier, tagName);
     this.xpath = xpath;
-    this.frameIdentifier = frameIdentifier;
   }
   
   @Override

@@ -32,12 +32,12 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
   private String id;
 
   public IdWebElementIdentifier(String id) {
-    this(id, null);
+    this(id, null, null);
   }
   
-  public IdWebElementIdentifier(String id, String frameIdentifier) {
+  public IdWebElementIdentifier(String id, String frameIdentifier, String tagName) {
+    super(frameIdentifier, tagName);
     this.id = id;
-    this.frameIdentifier = frameIdentifier;
   }
 
   @Override

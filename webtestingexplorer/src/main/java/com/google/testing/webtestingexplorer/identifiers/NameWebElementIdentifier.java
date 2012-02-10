@@ -32,12 +32,12 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
   private String name;
 
   public NameWebElementIdentifier(String name) {
-    this(name, null);
+    this(name, null, null);
   }
   
-  public NameWebElementIdentifier(String name, String frameIdentifier) {
+  public NameWebElementIdentifier(String name, String frameIdentifier, String tagName) {
+    super(frameIdentifier, tagName);
     this.name = name;
-    this.frameIdentifier = frameIdentifier;
   }
 
   @Override

@@ -33,6 +33,24 @@ public abstract class WebElementIdentifier {
   
   protected String frameIdentifier;
   
+  /**
+   * The tag name is used for validity checking and debugging.
+   */
+  protected String tagName;
+  
+  public WebElementIdentifier(String frameIdentifier, String tagName) {
+    this.tagName = tagName;
+    this.frameIdentifier = frameIdentifier;
+  }
+  
+  public String getTagName() {
+    return tagName;
+  }
+  
+  public void setTagName(String tagName) {
+    this.tagName = tagName;
+  }
+  
   public String getFrameIdentifier() {
     return frameIdentifier;
   }
@@ -44,7 +62,7 @@ public abstract class WebElementIdentifier {
   @Override
   public String toString() {
     String frameIdentifierDesc = (frameIdentifier == null ? "none" : frameIdentifier);
-    return "frame=" + frameIdentifierDesc;
+    return "frame=" + frameIdentifierDesc + ",tag=" + tagName;
   }
   
   public abstract WebElement findElement(WebDriverWrapper driver);
@@ -59,11 +77,12 @@ public abstract class WebElementIdentifier {
       return false;
     }
     WebElementIdentifier other = (WebElementIdentifier) obj;
-    return new EqualsBuilder().append(frameIdentifier, other.frameIdentifier).isEquals();
+    return new EqualsBuilder().append(frameIdentifier, other.frameIdentifier)
+        .append(tagName, other.tagName).isEquals();
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(frameIdentifier).hashCode();
+    return new HashCodeBuilder().append(frameIdentifier).append(tagName).hashCode();
   }
 }

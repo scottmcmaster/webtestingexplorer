@@ -24,10 +24,11 @@ package com.google.testing.webtestingexplorer.identifiers;
 public class AttributeValueWebElementIdentifier extends XpathWebElementIdentifier {
 
   public AttributeValueWebElementIdentifier(String name, String value) {
-    this(name, value, null);
+    this(name, value, null, null);
   }
   
-  public AttributeValueWebElementIdentifier(String name, String value, String frameIdentifier) {
-    super(String.format("//*[@%s='%s']", name, value), frameIdentifier);
+  public AttributeValueWebElementIdentifier(String name, String value, String frameIdentifier,
+      String tagName) {
+    super(String.format("//*[@%s='%s']", name, value), frameIdentifier, tagName);
   }
 }

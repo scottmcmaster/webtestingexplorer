@@ -36,12 +36,12 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   private int index;
 
   public IndexWebElementIdentifier(int index) {
-    this(index, null);
+    this(index, null, null);
   }
   
-  public IndexWebElementIdentifier(int index, String frameIdentifier) {
+  public IndexWebElementIdentifier(int index, String frameIdentifier, String tagName) {
+    super(frameIdentifier, tagName);
     this.index = index;
-    this.frameIdentifier = frameIdentifier;
   }
 
   @Override
