@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 public class WebDriverWrapper {
 	
   private final static Logger LOGGER = Logger.getLogger(WebDriverWrapper.class.getName());
-	
+
   private WebDriver driver;
   private WebDriverProxy proxy;
   private long waitIntervalMillis;
@@ -231,12 +231,21 @@ public class WebDriverWrapper {
     int startElementIndex = 0;
     List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
+    List<WebElement> childFrames = Lists.newArrayList();
+    
     for (WebElement element : frameElements) {
       try {
         // Filter out some elements we don't take actions on.
         if (!isActionable(element)) {
           continue;
         }
+        
+        // Save frames to use later.
+        if (isFrame(element)) {
+          childFrames.add(element);
+          continue;
+        }
+        
         frameElementsWithIds.add(new WebElementWithIdentifier(element,
             generateIdentifier(startElementIndex++, element, frameIdentifier)));
       } catch (Exception e) {
@@ -244,21 +253,17 @@ public class WebDriverWrapper {
         throw new RuntimeException(e);
       }
     }
+    allElements.addAll(frameElementsWithIds);
     
+
+    // Iterate over the child frames.
     List<String> childFrameIdentifiers = Lists.newArrayList();
-    
-    // TODO(smcmaster): We could also filter out iframes if we changed this logic.
-    for (WebElementWithIdentifier elementAndId : frameElementsWithIds) {
-      WebElement element = elementAndId.getElement();
-      if ("frame".equals(element.getTagName().toLowerCase()) ||
-          "iframe".equals(element.getTagName().toLowerCase())) {
-        String nameOrId = calculateFrameIdentifier(element);
-        if (nameOrId != null) {
-          childFrameIdentifiers.add(nameOrId);
-        }
+    for (WebElement childFrame : childFrames) {
+      String nameOrId = calculateFrameIdentifier(childFrame);
+      if (nameOrId != null) {
+        childFrameIdentifiers.add(nameOrId);
       }
     }
-    allElements.addAll(frameElementsWithIds);
     
     // Now do all the child frames.
     for (String childFrameIdentifier : childFrameIdentifiers) {
@@ -268,6 +273,18 @@ public class WebDriverWrapper {
     }
   }
 
+  /**
+   * @return whether the given element is a frame or not.
+   */
+  private boolean isFrame(WebElement element) {
+    String tagName = element.getTagName().toLowerCase();
+    if ("frame".equals(tagName) ||
+        "iframe".equals(tagName)) {
+      return true;
+    }
+    return false;
+  }
+  
   /**
    * @return whether or not any action might make sense on this element.
    */
