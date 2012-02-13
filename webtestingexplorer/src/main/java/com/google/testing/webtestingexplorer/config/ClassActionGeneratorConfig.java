@@ -15,7 +15,10 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.config;
 
+import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
+
+import java.util.Set;
 
 /**
  * Matches elements based on the value of the class attribute.
@@ -33,6 +36,7 @@ public abstract class ClassActionGeneratorConfig implements ActionGeneratorConfi
   @Override
   public boolean matches(WebElementWithIdentifier elementWithId) {
     String classAttributeValue = elementWithId.getElement().getAttribute("class");
-    return classValue.equals(classAttributeValue);
+    Set<String> classes = Sets.newHashSet(classAttributeValue.split("\\w"));
+    return classes.contains(classValue);
   }
 }

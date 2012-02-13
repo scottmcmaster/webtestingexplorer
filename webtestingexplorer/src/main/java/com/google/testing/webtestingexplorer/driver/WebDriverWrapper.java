@@ -431,7 +431,8 @@ public class WebDriverWrapper {
     
     // Work around crazy WebDriver bug described here:
     // http://code.google.com/p/selenium/issues/detail?id=1934.
-    List<String> profileDirs = Lists.newArrayList("anonymous*webdriver-profile", "userprofile*copy");
+    List<String> profileDirs = Lists.newArrayList("anonymous*webdriver-profile",
+        "userprofile*copy", "seleniumSslSupport*");
     File tmpDir = new File(System.getProperty("java.io.tmpdir"));
     FilenameFilter profileDirsFilter = new WildcardFileFilter(profileDirs);
     File[] files = tmpDir.listFiles(profileDirsFilter);
