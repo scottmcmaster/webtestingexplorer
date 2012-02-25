@@ -36,7 +36,7 @@ public abstract class MultiCriterionActionGeneratorConfig implements ActionGener
   
   /**
    * Any of the criteria that you don't want to check may be left null.
-   * If all are null, the generator config does not match anything.
+   * If all are null, the generator config matches everything.
    */
   public MultiCriterionActionGeneratorConfig(String tag, String id,
       String name, String className) {

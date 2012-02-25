@@ -38,11 +38,12 @@ import com.google.testing.webtestingexplorer.testcase.TestCase;
 
 import org.openqa.selenium.WebElement;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +69,7 @@ public class WebTestingExplorer {
 
   public void run() throws Exception {
     // Rip.
-    Stack<ActionSequence> actionSequences = buildInitialActionSequences();
+    Deque<ActionSequence> actionSequences = buildInitialActionSequences();
     
     // Replay.
     replay(actionSequences, config.getMaxLength());
@@ -79,10 +80,10 @@ public class WebTestingExplorer {
     runner.shutdown();
   }
 
-  private Stack<ActionSequence> buildInitialActionSequences() throws Exception {
+  private Deque<ActionSequence> buildInitialActionSequences() throws Exception {
     List<ActionSequence> initialActionSequences = Lists.newArrayList(config.getInitialActionSequences());
     
-    Stack<ActionSequence> actionSequences = new Stack<ActionSequence>();
+    Deque<ActionSequence> actionSequences = new ArrayDeque<ActionSequence>();
     for (ActionSequence initialActionSequence : initialActionSequences) {
       runner.runActionSequence(new ActionSequenceRunnerConfig(
           config.getUrl(),
@@ -181,7 +182,7 @@ public class WebTestingExplorer {
 
   // As long as the test case is longer than the previous one, you don't need to
   // restart the browser.
-  private void replay(Stack<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
+  private void replay(Deque<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
     while (!actionSequences.isEmpty()) {
       final ActionSequence actionSequence = actionSequences.pop();
@@ -268,10 +269,10 @@ public class WebTestingExplorer {
    * Adds the given action sequence to the queue to be run assuming it passes
    * all filtering.
    */
-  private void checkPushActionSequence(Stack<ActionSequence> actionSequences,
+  private void checkPushActionSequence(Deque<ActionSequence> actionSequences,
       ActionSequence sequence) {
     for (ActionSequenceFilter filter : config.getActionSequenceFilters()) {
-      if (filter.shouldExplore(sequence)) {
+      if (filter.shouldExplore(sequence, actionSequences)) {
         actionSequences.push(sequence);
       }
     }

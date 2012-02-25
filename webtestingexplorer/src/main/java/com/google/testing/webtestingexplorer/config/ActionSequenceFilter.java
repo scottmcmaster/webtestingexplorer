@@ -18,6 +18,8 @@ package com.google.testing.webtestingexplorer.config;
 
 import com.google.testing.webtestingexplorer.actions.ActionSequence;
 
+import java.util.Deque;
+
 /**
  * Checks to see if a given {@link ActionSequence} should be explored or not.
  * 
@@ -25,7 +27,11 @@ import com.google.testing.webtestingexplorer.actions.ActionSequence;
  */
 public interface ActionSequenceFilter {
   /**
+   * @param actionSequence the action sequence to evaluate.
+   * @param existingActionSequences all the action sequences we are currently
+   *    set to explore (in case we want to de-dupe or anything like that).
    * @return true if we want to explore this sequence and beyond, false if not.
    */
-  boolean shouldExplore(ActionSequence actionSequence);
+  boolean shouldExplore(ActionSequence actionSequence,
+      Deque<ActionSequence> existingActionSequences);
 }
