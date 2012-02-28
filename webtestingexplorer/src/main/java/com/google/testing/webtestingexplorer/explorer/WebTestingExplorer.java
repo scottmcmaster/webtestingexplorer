@@ -185,6 +185,7 @@ public class WebTestingExplorer {
   private void replay(Deque<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
     while (!actionSequences.isEmpty()) {
+      LOGGER.info("Current queue size: " + actionSequences.size());
       final ActionSequence actionSequence = actionSequences.pop();
       ++testCaseCount;
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());

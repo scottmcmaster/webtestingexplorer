@@ -18,13 +18,17 @@ package com.google.testing.webtestingexplorer.samples;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.actions.Action;
+import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
+import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.MultiCriterionActionGeneratorConfig;
+import com.google.testing.webtestingexplorer.config.OrderInsensitiveActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
+import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.state.CountOfElementsStateChecker;
 import com.google.testing.webtestingexplorer.testcase.TestCaseWriter;
@@ -67,6 +71,7 @@ public class WebTestingExplorerMain {
         .setWebDriverFactory(new FirefoxWebDriverFactory(true))
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
+        .addActionSequenceFilter(createNoTextboxOrderingActionSequenceFilter())
         .addActionGeneratorConfig(new MultiCriterionActionGeneratorConfig(
             null, null, ".*email.*", null) {          
           @Override
@@ -80,6 +85,21 @@ public class WebTestingExplorerMain {
         })
         .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());
     new WebTestingExplorer(config).run();    
+  }
+
+  private ActionSequenceFilter createNoTextboxOrderingActionSequenceFilter() {
+    Set<Action> actions = Sets.newHashSet();
+    actions.addAll(ActionGenerator.createDefaultTextWidgetActions(
+        new NameWebElementIdentifier("feedback_name")));
+    actions.addAll(ActionGenerator.createDefaultTextWidgetActions(
+        new NameWebElementIdentifier("feedback_affiliation")));
+    actions.addAll(ActionGenerator.createDefaultTextWidgetActions(
+        new NameWebElementIdentifier("feedback_email")));
+    actions.addAll(ActionGenerator.createDefaultTextWidgetActions(
+        new NameWebElementIdentifier("feedback_comments")));
+    actions.addAll(ActionGenerator.createDefaultSelectWidgetActions(
+        new NameWebElementIdentifier("feedback_category"), 2));
+    return new OrderInsensitiveActionSequenceFilter(actions);
   }
 
   public static void main(String[] args) throws Exception {

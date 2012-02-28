@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.actions;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.config.ActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
@@ -25,6 +26,9 @@ import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifie
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,14 +80,14 @@ public class ActionGenerator {
       if ("submit".equals(type)) {
         actions.add(new ClickAction(identifier));
       } else if ("text".equals(type) || "password".equals(type)) {
-        actions.add(new SetTextAction(identifier, "TESTING"));
+        actions.addAll(createDefaultTextWidgetActions(identifier));
       } else if ("checkbox".equals(type) || "radio".equals(type)) {
         // TODO(smcmaster): I think ClickAction should be fine for these and they don't
         // need their own specific action types. But I need to confirm on an example...
         actions.add(new ClickAction(identifier));
       }
     } else if ("textarea".equals(element.getTagName())) {
-      actions.add(new SetTextAction(identifier, "TESTING"));
+      actions.addAll(createDefaultTextWidgetActions(identifier));
     } else if ("a".equals(element.getTagName())) {
       actions.add(new ClickAction(identifier));
     } else if ("button".equals(element.getTagName()) ||
@@ -93,13 +97,34 @@ public class ActionGenerator {
       // Default to selecting each of the first two options.
       // TODO(smcmaster): Enhance the API to allow customizing this behavior.
       Select select = new Select(element);
+      int numActions = 0;
       if (select.getOptions().size() >= 0) {
-        actions.add(new SelectAction(identifier, 0));
+        ++numActions;
       }
       if (select.getOptions().size() >= 1) {
-        actions.add(new SelectAction(identifier, 1));
+        ++numActions;
       }
+      actions.addAll(createDefaultSelectWidgetActions(identifier, numActions));
     }
     return actions;
+  }
+
+  /**
+   * Creates the requested number of SelectActions for the given element.
+   */
+  public static List<Action> createDefaultSelectWidgetActions(
+      WebElementIdentifier identifier, int numActions) {
+    List<Action> actions = Lists.newArrayList();
+    for (int i = 1; i <= numActions; ++i) {
+      actions.add(new SelectAction(identifier, i));
+    }
+    return actions;
+  }
+
+  /**
+   * Creates the standard SetTextAction for the given element.
+   */
+  public static List<Action> createDefaultTextWidgetActions(WebElementIdentifier identifier) {
+    return Lists.<Action>newArrayList(new SetTextAction(identifier, "TESTING"));
   }
 }
