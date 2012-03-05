@@ -45,6 +45,31 @@ public class ActionSequenceRunner {
     void onBeforeAction(Action action);
   }
   
+  /**
+   * Includes result information about an action sequence execution.
+   */
+  public static class ActionSequenceResult {
+    /**
+     * Any failures that occurred. The list may be null or empty.
+     */
+    private final List<FailureReason> failures;
+    
+    public ActionSequenceResult(List<FailureReason> failures) {
+      this.failures = failures;
+    }
+    
+    public List<FailureReason> getFailures() {
+      return failures;
+    }
+
+    /**
+     * @return whether or not we have errors.
+     */
+    public boolean hasErrors() {
+      return failures != null && !failures.isEmpty();
+    }
+  }
+  
   private WebDriverProxy proxy;
   private WebDriverWrapper driver;
   private WebDriverFactory driverFactory;
@@ -67,7 +92,8 @@ public class ActionSequenceRunner {
    * @param config TODO(smcmaster):
    * @throws Exception 
    */
-  public void runActionSequence(ActionSequenceRunnerConfig config) throws Exception {
+  public ActionSequenceResult runActionSequence(ActionSequenceRunnerConfig config)
+      throws Exception {
     
     LOGGER.info("At url: " + config.getUrl() + " Run action sequence: "
         + config.getActionSequence().toString());
@@ -104,11 +130,14 @@ public class ActionSequenceRunner {
       }
     }
     
+    List<FailureReason> failures = null;
     if (config.getOracleConfig() != null) {
       // Check for failures.
-      checkForFailures(config.getOracleConfig().getFinalOracles(), driver, config.getActionSequence(),
-          config.getActionSequence().getLastAction());
+      failures = checkForFailures(config.getOracleConfig().getFinalOracles(), driver,
+          config.getActionSequence(), config.getActionSequence().getLastAction());
     }
+    
+    return new ActionSequenceResult(failures);
   }
 
   /**
@@ -140,9 +169,9 @@ public class ActionSequenceRunner {
   }
 
   /**
-   * Checks the given oracles for failures.
+   * Checks the given oracles for failures and returns any it finds in a list.
    */
-  private void checkForFailures(List<Oracle> oracles,
+  private List<FailureReason> checkForFailures(List<Oracle> oracles,
       WebDriverWrapper driver,
       ActionSequence actionSequence,
       Action action) {
@@ -157,6 +186,7 @@ public class ActionSequenceRunner {
       failure.addReasons(failureReasons);
       LOGGER.log(Level.INFO, "Failure detected: " + failure);
     }
+    return failureReasons;
   }
 
   private void performAction(WebDriverWrapper driver, Action action,

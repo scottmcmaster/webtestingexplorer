@@ -27,6 +27,7 @@ import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.EquivalentWebElementsSet;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner;
+import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.ActionSequenceResult;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunnerConfig;
 import com.google.testing.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
@@ -184,6 +185,8 @@ public class WebTestingExplorer {
   // restart the browser.
   private void replay(Deque<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
+    int failedCaseCount = 0;
+    int errorCaseCount = 0;
     while (!actionSequences.isEmpty()) {
       LOGGER.info("Current queue size: " + actionSequences.size());
       final ActionSequence actionSequence = actionSequences.pop();
@@ -191,7 +194,7 @@ public class WebTestingExplorer {
       LOGGER.info("" + testCaseCount + ": " + actionSequence.toString());
       try {
         final StateChange stateChange = new StateChange();
-        runner.runActionSequence(new ActionSequenceRunnerConfig(
+        ActionSequenceResult result = runner.runActionSequence(new ActionSequenceRunnerConfig(
             config.getUrl(),
             actionSequence,
             config.getOracleConfig(),
@@ -204,7 +207,10 @@ public class WebTestingExplorer {
                   }
                 }
                }));
-  
+        if (result.hasErrors()) {
+          ++failedCaseCount;
+        }
+        
         // Check the state and add a new test case if it has changed.
         stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
         if (stateChange.isStateChanged()) {
@@ -239,9 +245,13 @@ public class WebTestingExplorer {
         LOGGER.log(Level.SEVERE, "Exception running action sequence: " + actionSequence.toString() +
             ", page source:\n" + source,
             e);
+        ++errorCaseCount;
       } finally {
         try { runner.getDriver().close(); } catch (Exception e) {}
       }
+      
+      LOGGER.info(String.format("Run: %d, Failed: %d, Errors: %d",
+          testCaseCount, failedCaseCount, errorCaseCount));
     }
   }
 
