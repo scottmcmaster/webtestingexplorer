@@ -15,7 +15,9 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -35,11 +37,11 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   private String xpath;
 
   public XpathWebElementIdentifier(String xpath) {
-    this(xpath, null, null);
+    this(xpath, null);
   }
   
   public XpathWebElementIdentifier(WebDriver driver, WebElement element) {
-    super(null, null);
+    super(null);
     StringBuilder jsString = new StringBuilder();
     jsString.append(JavaScriptUtil.getJavaScriptFromFile("/getXpathFromWebElement.js"));
 
@@ -48,19 +50,24 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
     xpath = (String) js.executeScript(jsString.toString(), element);
   }
   
-  public XpathWebElementIdentifier(String xpath, String frameIdentifier, String tagName) {
-    super(frameIdentifier, tagName);
+  public XpathWebElementIdentifier(String xpath, String frameIdentifier) {
+    super(frameIdentifier);
     this.xpath = xpath;
   }
   
   @Override
-  public WebElement findElement(WebDriverWrapper driver) {
-    return driver.findElementInFrame(By.xpath(xpath), frameIdentifier);
+  public WebElementWrapper findElement(WebDriverWrapper driver) {
+    return new WebElementWrapper(driver.findElementInFrame(By.xpath(xpath), frameIdentifier));
   }
 
   @Override
-  public List<WebElement> findElements(WebDriverWrapper driver) {
-    return driver.findElementsInFrame(By.xpath(xpath), frameIdentifier);
+  public List<WebElementWrapper> findElements(WebDriverWrapper driver) {
+    List<WebElement> elements = driver.findElementsInFrame(By.xpath(xpath), frameIdentifier);
+    List<WebElementWrapper> result = Lists.newArrayList();
+    for (WebElement element : elements) {
+      result.add(new WebElementWrapper(element));
+    }
+    return result;
   }
 
   @Override

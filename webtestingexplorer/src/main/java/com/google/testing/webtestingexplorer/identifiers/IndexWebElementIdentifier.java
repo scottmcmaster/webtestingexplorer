@@ -17,10 +17,10 @@ package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
@@ -36,24 +36,24 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   private int index;
 
   public IndexWebElementIdentifier(int index) {
-    this(index, null, null);
+    this(index, null);
   }
   
-  public IndexWebElementIdentifier(int index, String frameIdentifier, String tagName) {
-    super(frameIdentifier, tagName);
+  public IndexWebElementIdentifier(int index, String frameIdentifier) {
+    super(frameIdentifier);
     this.index = index;
   }
 
   @Override
-  public WebElement findElement(WebDriverWrapper driver) {
+  public WebElementWrapper findElement(WebDriverWrapper driver) {
     List<WebElementWithIdentifier> allElements = driver.getAllElementsForFrame(frameIdentifier);
     assert index < allElements.size();
     WebElementWithIdentifier elementWithId = allElements.get(index);
-    return elementWithId.getElement();
+    return new WebElementWrapper(elementWithId.getElement());
   }
 
   @Override
-  public List<WebElement> findElements(WebDriverWrapper driver) {
+  public List<WebElementWrapper> findElements(WebDriverWrapper driver) {
     return Lists.newArrayList(findElement(driver));
   }
 

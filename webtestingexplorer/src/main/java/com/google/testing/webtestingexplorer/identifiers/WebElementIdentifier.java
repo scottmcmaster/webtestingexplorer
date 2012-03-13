@@ -16,6 +16,7 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -33,22 +34,8 @@ public abstract class WebElementIdentifier {
   
   protected String frameIdentifier;
   
-  /**
-   * The tag name is used for validity checking and debugging.
-   */
-  protected String tagName;
-  
-  public WebElementIdentifier(String frameIdentifier, String tagName) {
-    this.tagName = tagName;
+  public WebElementIdentifier(String frameIdentifier) {
     this.frameIdentifier = frameIdentifier;
-  }
-  
-  public String getTagName() {
-    return tagName;
-  }
-  
-  public void setTagName(String tagName) {
-    this.tagName = tagName;
   }
   
   public String getFrameIdentifier() {
@@ -62,11 +49,11 @@ public abstract class WebElementIdentifier {
   @Override
   public String toString() {
     String frameIdentifierDesc = (frameIdentifier == null ? "none" : frameIdentifier);
-    return "frame=" + frameIdentifierDesc + ",tag=" + tagName;
+    return "frame=" + frameIdentifierDesc;
   }
   
-  public abstract WebElement findElement(WebDriverWrapper driver);
-  public abstract List<WebElement> findElements(WebDriverWrapper driver);
+  public abstract WebElementWrapper findElement(WebDriverWrapper driver);
+  public abstract List<WebElementWrapper> findElements(WebDriverWrapper driver);
   
   @Override
   public boolean equals(Object obj) {
@@ -78,11 +65,11 @@ public abstract class WebElementIdentifier {
     }
     WebElementIdentifier other = (WebElementIdentifier) obj;
     return new EqualsBuilder().append(frameIdentifier, other.frameIdentifier)
-        .append(tagName, other.tagName).isEquals();
+        .isEquals();
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(frameIdentifier).append(tagName).hashCode();
+    return new HashCodeBuilder().append(frameIdentifier).hashCode();
   }
 }

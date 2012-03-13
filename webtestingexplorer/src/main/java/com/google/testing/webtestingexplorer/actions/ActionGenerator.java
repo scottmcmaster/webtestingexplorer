@@ -53,7 +53,6 @@ public class ActionGenerator {
    */
   public Set<Action> generateActionsForElement(WebDriverWrapper driver,
       WebElementWithIdentifier elementWithId) {
-    LOGGER.log(Level.FINE, "Generating actions for element " + elementWithId.getIdentifier());
     
     WebElement element = elementWithId.safeGetElement(driver);
     WebElementIdentifier identifier = elementWithId.getIdentifier();
@@ -106,6 +105,7 @@ public class ActionGenerator {
       }
       actions.addAll(createDefaultSelectWidgetActions(identifier, numActions));
     }
+    LOGGER.log(Level.FINE, "Generated actions for element " + elementWithId.getIdentifier());
     return actions;
   }
 

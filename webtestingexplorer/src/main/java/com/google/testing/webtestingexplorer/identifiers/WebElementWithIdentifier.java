@@ -17,6 +17,7 @@ limitations under the License.
 package com.google.testing.webtestingexplorer.identifiers;
 
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -36,10 +37,10 @@ public class WebElementWithIdentifier {
 
   private final static Logger LOGGER = Logger.getLogger(WebElementWithIdentifier.class.getName());
 
-  private WebElement element;
+  private WebElementWrapper element;
   private final WebElementIdentifier identifier;
   
-  public WebElementWithIdentifier(WebElement element,
+  public WebElementWithIdentifier(WebElementWrapper element,
       WebElementIdentifier identifier) {
     this.element = element;
     this.identifier = identifier;

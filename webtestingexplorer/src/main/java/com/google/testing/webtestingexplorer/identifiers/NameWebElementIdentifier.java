@@ -15,7 +15,9 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.identifiers;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -32,22 +34,27 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
   private String name;
 
   public NameWebElementIdentifier(String name) {
-    this(name, null, null);
+    this(name, null);
   }
   
-  public NameWebElementIdentifier(String name, String frameIdentifier, String tagName) {
-    super(frameIdentifier, tagName);
+  public NameWebElementIdentifier(String name, String frameIdentifier) {
+    super(frameIdentifier);
     this.name = name;
   }
 
   @Override
-  public WebElement findElement(WebDriverWrapper driver) {
-    return driver.findElementInFrame(By.name(name), frameIdentifier);
+  public WebElementWrapper findElement(WebDriverWrapper driver) {
+    return new WebElementWrapper(driver.findElementInFrame(By.name(name), frameIdentifier));
   }
 
   @Override
-  public List<WebElement> findElements(WebDriverWrapper driver) {
-    return driver.findElementsInFrame(By.name(name), frameIdentifier);
+  public List<WebElementWrapper> findElements(WebDriverWrapper driver) {
+    List<WebElement> elements = driver.findElementsInFrame(By.name(name), frameIdentifier);
+    List<WebElementWrapper> result = Lists.newArrayList();
+    for (WebElement element : elements) {
+      result.add(new WebElementWrapper(element));
+    }
+    return result;
   }
 
   @Override

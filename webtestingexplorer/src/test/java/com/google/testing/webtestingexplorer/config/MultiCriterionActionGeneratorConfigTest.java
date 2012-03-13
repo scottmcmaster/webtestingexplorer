@@ -19,11 +19,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.google.testing.webtestingexplorer.actions.Action;
+import com.google.testing.webtestingexplorer.driver.WebElementWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
-import org.openqa.selenium.WebElement;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void matchesName() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, null, ".*email.*", null);
     
@@ -46,7 +46,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void noMatchesName() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, null, ".* notemail.*", null);
     
@@ -56,7 +56,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void matchesId() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, ".*email.*", null, null);
     
@@ -66,7 +66,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void noMatchesId() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, ".* notemail.*", null, null);
     
@@ -76,7 +76,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void matchesClassName() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, null, null, ".*email.*");
     
@@ -86,7 +86,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void noMatchesClassName() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         null, null, null, ".* notemail.*");
     
@@ -96,7 +96,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void matchesTag() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         "a", null, null, null);
     
@@ -106,7 +106,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void noMatchesTag() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         "p", null, null, null);
     
@@ -116,7 +116,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void matchesMultiple() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         "a", ".*email.*", null, null);
     
@@ -126,7 +126,7 @@ public class MultiCriterionActionGeneratorConfigTest {
 
   @Test
   public void noMatchesMultiple() {
-    WebElement element = createMockWebElement();
+    WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
         "p", ".*email.*", null, null);
     
@@ -146,8 +146,8 @@ public class MultiCriterionActionGeneratorConfigTest {
     return config;
   }
 
-  private WebElement createMockWebElement() {
-    WebElement element = EasyMock.createNiceMock(WebElement.class);
+  private WebElementWrapper createMockWebElement() {
+    WebElementWrapper element = EasyMock.createNiceMock(WebElementWrapper.class);
     EasyMock.expect(element.getAttribute("name")).andReturn("feedback_email_name").anyTimes();
     EasyMock.expect(element.getAttribute("id")).andReturn("feedback_email_id").anyTimes();
     EasyMock.expect(element.getAttribute("class")).andReturn("feedback_email_class").anyTimes();

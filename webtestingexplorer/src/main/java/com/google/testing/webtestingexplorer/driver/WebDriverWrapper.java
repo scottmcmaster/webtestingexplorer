@@ -235,18 +235,20 @@ public class WebDriverWrapper {
     
     for (WebElement element : frameElements) {
       try {
+        WebElementWrapper elementWrapper = new WebElementWrapper(element);
+        
         // Filter out some elements we don't take actions on.
-        if (!isActionable(element)) {
+        if (!isActionable(elementWrapper)) {
           continue;
         }
         
         // Save frames to use later.
-        if (isFrame(element)) {
-          childFrames.add(element);
+        if (isFrame(elementWrapper)) {
+          childFrames.add(elementWrapper);
           continue;
         }
         
-        frameElementsWithIds.add(new WebElementWithIdentifier(element,
+        frameElementsWithIds.add(new WebElementWithIdentifier(elementWrapper,
             generateIdentifier(startElementIndex++, element, frameIdentifier)));
       } catch (Exception e) {
         LOGGER.log(Level.SEVERE, "Exception evaluating element", e);
@@ -276,7 +278,7 @@ public class WebDriverWrapper {
   /**
    * @return whether the given element is a frame or not.
    */
-  private boolean isFrame(WebElement element) {
+  private boolean isFrame(WebElementWrapper element) {
     String tagName = element.getTagName().toLowerCase();
     if ("frame".equals(tagName) ||
         "iframe".equals(tagName)) {
@@ -288,10 +290,11 @@ public class WebDriverWrapper {
   /**
    * @return whether or not any action might make sense on this element.
    */
-  private boolean isActionable(WebElement element) {
+  private boolean isActionable(WebElementWrapper element) {
     String tagName = element.getTagName().toLowerCase();
     if ("meta".equals(tagName) ||
         "script".equals(tagName) ||
+        "noscript".equals(tagName) ||
         "title".equals(tagName) ||
         "style".equals(tagName) ||
         "html".equals(tagName) ||
@@ -337,20 +340,18 @@ public class WebDriverWrapper {
    */
   private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element,
       String frameIdentifier) {
-    String name = element.getAttribute("name");
     String id = element.getAttribute("id");
-    String tagName = element.getTagName();
     
-    WebElementIdentifier identifier;
     if (id != null && id.length() > 0) {
-      identifier = new IdWebElementIdentifier(id, frameIdentifier, tagName);
-    } else if (name != null && name.length() > 0) {
-      identifier = new NameWebElementIdentifier(name, frameIdentifier, tagName);
+      return new IdWebElementIdentifier(id, frameIdentifier);
     } else {
-      identifier = new IndexWebElementIdentifier(elementIndex, frameIdentifier, tagName);
+      String name = element.getAttribute("name");
+      if (name != null && name.length() > 0) {
+        return new NameWebElementIdentifier(name, frameIdentifier);
+      } else {
+        return new IndexWebElementIdentifier(elementIndex, frameIdentifier);
+      }
     }
-
-    return identifier;
   }
 
   /**
