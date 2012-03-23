@@ -31,16 +31,32 @@ public class TestCase {
   private ActionSequence actionSequence;
   private String oracleConfigFactoryClassName;
   private String waitConditionConfigFactoryClassName;
+  private String actionableWebElementSelectorFactoryClassName;
+  private String statefulWebElementSelectorFactoryClassName;
   private List<State> finalState;
   
   public TestCase(String url, ActionSequence actionSequence,
       List<State> finalState, String oracleConfigFactoryClassName,
-      String waitConditionConfigFactoryClassName) {
+      String waitConditionConfigFactoryClassName,
+      String actionableWebElementSelectorFactoryClassName,
+      String statefulWebElementSelectorFactoryClassName) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.finalState = finalState;
     this.oracleConfigFactoryClassName = oracleConfigFactoryClassName;
     this.waitConditionConfigFactoryClassName = waitConditionConfigFactoryClassName;
+    this.actionableWebElementSelectorFactoryClassName =
+        actionableWebElementSelectorFactoryClassName;
+    this.statefulWebElementSelectorFactoryClassName =
+        statefulWebElementSelectorFactoryClassName;
+  }
+
+  public String getActionableWebElementSelectorFactoryClassName() {
+    return actionableWebElementSelectorFactoryClassName;
+  }
+
+  public String getStatefulWebElementSelectorFactoryClassName() {
+    return statefulWebElementSelectorFactoryClassName;
   }
 
   public String getUrl() {

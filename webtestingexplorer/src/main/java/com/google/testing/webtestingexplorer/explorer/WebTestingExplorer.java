@@ -275,8 +275,21 @@ public class WebTestingExplorer {
           config.getWaitConditionConfigFactory().getClass().getName();
     }
     
+    String actionableWebElementSelectorFactoryClassName = null;
+    if (config.getActionableWebElementSelectorFactory() != null) {
+      actionableWebElementSelectorFactoryClassName =
+          config.getActionableWebElementSelectorFactory().getClass().getName();
+    }
+    
+    String statefulWebElementSelectorFactoryClassName = null;
+    if (config.getStatefulWebElementSelectorFactory() != null) {
+      statefulWebElementSelectorFactoryClassName =
+          config.getStatefulWebElementSelectorFactory().getClass().getName();
+    }
+    
     TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
-        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName);
+        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName,
+        actionableWebElementSelectorFactoryClassName, statefulWebElementSelectorFactoryClassName);
     config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
   }
 
