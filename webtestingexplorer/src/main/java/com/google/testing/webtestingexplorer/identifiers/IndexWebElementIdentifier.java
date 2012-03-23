@@ -74,7 +74,7 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
 
   @Override
   public String toString() {
-    return  super.toString() + ",index=" + index;
+    return super.toString() + ",index=" + index + ",basis=" + basis;
   }
   
   @Override
@@ -87,11 +87,16 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   	}
   	IndexWebElementIdentifier other = (IndexWebElementIdentifier) obj;
     return new EqualsBuilder().appendSuper(super.equals(obj))
-        .append(index, other.index).isEquals();
+        .append(index, other.index)
+        .append(basis, other.basis)
+        .isEquals();
   }
   
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().appendSuper(super.hashCode()).append(index).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode())
+        .append(index)
+        .append(basis)
+        .hashCode();
   }
 }
