@@ -91,7 +91,9 @@ public class WebTestingExplorer {
           initialActionSequence,
           config.getOracleConfig(),
           config.getWaitConditionConfig(),
-          null));
+          null,
+          config.getActionableWebElementSelector(),
+          config.getStatefulWebElementSelector()));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(initialActionSequence);
@@ -106,7 +108,7 @@ public class WebTestingExplorer {
   private List<Action> getAllPossibleActionsInCurrentState() {
     LOGGER.info("Getting actions from " + runner.getDriver().getDriver().getCurrentUrl());
     
-    List<Action> actions = new ArrayList<Action>();
+    List<Action> actions = Lists.newArrayList();
 
     // Look for browser actions.
     if (config.isUseBackButtonAction()) {
@@ -126,7 +128,7 @@ public class WebTestingExplorer {
       markedEquivalentSets.put(equivalentSet, false);
     }
     
-    List<WebElementWithIdentifier> allElements = runner.getDriver().getAllElements();
+    List<WebElementWithIdentifier> allElements = runner.getDriver().getActionableElements();
     for (WebElementWithIdentifier elementWithId : allElements) {
       boolean shouldAddActions = checkEquivalentElementSets(markedEquivalentSets,
           elementWithId);
@@ -206,7 +208,9 @@ public class WebTestingExplorer {
                     stateChange.setBeforeState(createStateSnapshot(runner.getDriver()));
                   }
                 }
-               }));
+               },
+            config.getActionableWebElementSelector(),
+            config.getStatefulWebElementSelector()));
         if (result.hasErrors()) {
           ++failedCaseCount;
         }

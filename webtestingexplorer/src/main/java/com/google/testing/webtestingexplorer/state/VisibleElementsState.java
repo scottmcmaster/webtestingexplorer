@@ -15,13 +15,13 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.state;
 
+import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import org.openqa.selenium.WebElement;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,28 +34,18 @@ import java.util.Map;
 public class VisibleElementsState extends ElementsState {
   
   public VisibleElementsState(WebDriverWrapper driver) {
-    List<WebElementWithIdentifier> elements = driver.getVisibleElements();
+    List<WebElementWithIdentifier> statefulElements = driver.getStatefulElements();
   	elementType = ElementType.VISIBLE;
+  	
+  	List<WebElementWithIdentifier> visibleElements = Lists.newArrayList();
+    for (WebElementWithIdentifier e: statefulElements) {
+      if (e.getElement().isDisplayed()) {
+        visibleElements.add(e);
+      }
+    }
 	  
-  	if (areElementsValid(elements)) {
-  	  elementProperties = collectProperties(driver, elements);
-  	} else {
-  	  elementProperties = null;
-  	}
+  	elementProperties = collectProperties(driver, visibleElements);
   }
-  
-  /**
-   * Check whether elements are visible.
-   */
-  @Override
-  protected boolean areElementsValid(Collection<WebElementWithIdentifier> elements) {
-	  for (WebElementWithIdentifier e: elements) {
-	    if (!e.getElement().isDisplayed()) {
-	    	return false;
-	    }
-	  }
-	  return true;
-	}
   
   /**
    * Get information of a WebElement.

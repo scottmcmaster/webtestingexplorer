@@ -21,10 +21,13 @@ import com.google.testing.webtestingexplorer.actions.Action;
 import com.google.testing.webtestingexplorer.actions.ActionGenerator;
 import com.google.testing.webtestingexplorer.actions.SetTextAction;
 import com.google.testing.webtestingexplorer.config.ActionSequenceFilter;
+import com.google.testing.webtestingexplorer.config.ActionableWebElementSelectorFactory;
 import com.google.testing.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
 import com.google.testing.webtestingexplorer.config.MultiCriterionActionGeneratorConfig;
 import com.google.testing.webtestingexplorer.config.OrderInsensitiveActionSequenceFilter;
+import com.google.testing.webtestingexplorer.config.TagWebElementSelector;
+import com.google.testing.webtestingexplorer.config.WebElementSelector;
 import com.google.testing.webtestingexplorer.config.WebTestingConfig;
 import com.google.testing.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import com.google.testing.webtestingexplorer.explorer.WebTestingExplorer;
@@ -81,6 +84,12 @@ public class WebTestingExplorerMain {
             actions.add(new SetTextAction(elementWithId.getIdentifier(), "bob@example.com"));
             actions.add(new SetTextAction(elementWithId.getIdentifier(), "invalid_email"));
             return actions;
+          }
+        })
+        .setActionableWebElementSelectorFactory(new ActionableWebElementSelectorFactory() {
+          @Override
+          public WebElementSelector createActionableWebElementSelector() {
+            return new TagWebElementSelector("input", "textarea", "a", "button", "select");
           }
         })
         .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());

@@ -16,7 +16,6 @@
 package com.google.testing.webtestingexplorer.state;
 
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.XpathWebElementIdentifier;
 
 import org.w3c.dom.CharacterData;
@@ -31,7 +30,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,16 +54,6 @@ public class CustomizedPropertiesElementsState extends ElementsState {
       customizedProperties = new ArrayList<String>();
     }
     elementProperties = parseXML(xmlString);
-  }
-
-  /**
-   * Check whether elements are visible.
-   */
-  @Override
-  protected boolean areElementsValid(Collection<WebElementWithIdentifier> elements) {
-    // Always return true, because at this time, we collect all elements'
-    // properties.
-    return true;
   }
 
   private Map<WebElementIdentifier, Map<String, String>> parseXML(String xmlString) {

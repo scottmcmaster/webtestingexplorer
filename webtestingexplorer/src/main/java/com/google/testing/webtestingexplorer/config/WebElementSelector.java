@@ -13,22 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package com.google.testing.webtestingexplorer.state;
+package com.google.testing.webtestingexplorer.config;
 
-import com.google.testing.webtestingexplorer.driver.WebDriverWrapper;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 /**
- * Checks the state by simply calculating the number of elements we find
- * on the page.
+ * Extracts {@link WebElement}s from the driver.
  * 
- * @author smcmaster@google.com (Scott McMaster)
+ * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class CountOfElementsStateChecker implements StateChecker {
-
-  @Override
-  public State createState(WebDriverWrapper driver) {
-    int numElements = driver.getStatefulElements().size();
-    return new CountOfElementsState(numElements);
-  }
-
+public interface WebElementSelector {
+  List<WebElement> select(WebDriver driver);
 }

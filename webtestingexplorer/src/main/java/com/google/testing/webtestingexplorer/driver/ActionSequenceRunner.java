@@ -111,7 +111,8 @@ public class ActionSequenceRunner {
     // straightforward because we need to provide the driver to callers while
     // it is still open so that they can do things like examine state.
     // Probably need to add more callbacks.
-    driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis,
+    driver = new WebDriverWrapper(driverFactory, proxy, config.getActionableWebElementSelctor(),
+        config.getStatefulWebElementSelector(), waitIntervalMillis, waitTimeoutMillis,
         false);
 
     loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());

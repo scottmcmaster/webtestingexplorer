@@ -33,20 +33,35 @@ import java.util.List;
  */
 public class IndexWebElementIdentifier extends WebElementIdentifier {
 
-  private int index;
-
-  public IndexWebElementIdentifier(int index) {
-    this(index, null);
+  /**
+   * Whether this index is relative to the actionable or stateful elements.
+   */
+  public enum IndexBasis {
+    ACTIONABLE,
+    STATEFUL
   }
   
-  public IndexWebElementIdentifier(int index, String frameIdentifier) {
+  private int index;
+  private IndexBasis basis;
+
+  public IndexWebElementIdentifier(int index) {
+    this(index, null, IndexBasis.STATEFUL);
+  }
+  
+  public IndexWebElementIdentifier(int index, String frameIdentifier, IndexBasis basis) {
     super(frameIdentifier);
     this.index = index;
+    this.basis = basis;
   }
 
   @Override
   public WebElementWrapper findElement(WebDriverWrapper driver) {
-    List<WebElementWithIdentifier> allElements = driver.getAllElementsForFrame(frameIdentifier);
+    List<WebElementWithIdentifier> allElements;
+    if (basis == IndexBasis.ACTIONABLE) {
+      allElements = driver.getActionableElementsForFrame(frameIdentifier);
+    } else {
+      allElements = driver.getStatefulElementsForFrame(frameIdentifier);
+    }
     assert index < allElements.size();
     WebElementWithIdentifier elementWithId = allElements.get(index);
     return new WebElementWrapper(elementWithId.getElement());

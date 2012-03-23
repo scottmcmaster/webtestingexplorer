@@ -17,10 +17,8 @@ package com.google.testing.webtestingexplorer.state;
 
 import com.google.common.collect.Lists;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
-import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +51,6 @@ public abstract class ElementsState implements State {
   Map<WebElementIdentifier, Map<String, String>> elementProperties;
 
   ElementType elementType;
-
-  abstract boolean areElementsValid(Collection<WebElementWithIdentifier> elements);
 
   /**
    * Compare whether two states are equal.

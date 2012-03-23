@@ -18,11 +18,13 @@ package com.google.testing.webtestingexplorer.driver;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.testing.webtestingexplorer.config.WebElementSelector;
 import com.google.testing.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementIdentifier;
 import com.google.testing.webtestingexplorer.identifiers.WebElementWithIdentifier;
+import com.google.testing.webtestingexplorer.identifiers.IndexWebElementIdentifier.IndexBasis;
 import com.google.testing.webtestingexplorer.javascript.JavaScriptUtil;
 import com.google.testing.webtestingexplorer.wait.WaitCondition;
 
@@ -69,10 +71,36 @@ public class WebDriverWrapper {
    */
   private String lastFrameIdentifier;
   
+  /**
+   * Optional selector that retrieves just the elements that the explorer
+   * should take action on.
+   */
+  private WebElementSelector actionableWebElementSelector;
+  
+  /**
+   * Optional selector that retrieves just the elements that plan to evaluate
+   * state on.
+   */
+  private WebElementSelector statefulWebElementSelector;
+
   public WebDriverWrapper(WebDriverFactory driverFactory, WebDriverProxy proxy,
+      WebElementSelector actionableWebElementSelctor, WebElementSelector statefulWebElementSelector,
       long waitIntervalMillis, long waitTimeoutMillis, boolean useElementsCache)
           throws Exception {
     driver = driverFactory.createWebDriver(proxy);
+    
+    if (actionableWebElementSelctor == null) {
+      this.actionableWebElementSelector = new DefaultWebElementSelector();
+    } else {
+      this.actionableWebElementSelector = actionableWebElementSelctor;
+    }
+    
+    if (statefulWebElementSelector == null) {
+      this.statefulWebElementSelector = new DefaultWebElementSelector();
+    } else {
+      this.statefulWebElementSelector = statefulWebElementSelector;
+    }
+    
     this.waitIntervalMillis = waitIntervalMillis;
     this.waitTimeoutMillis = waitTimeoutMillis;
     this.proxy = proxy;
@@ -169,9 +197,24 @@ public class WebDriverWrapper {
   }
   
   /**
-   * Gets all elements in the current browser, for a single frame.
+   * Gets actionable elements in the current browser, for a single frame.
    */
-  public List<WebElementWithIdentifier> getAllElementsForFrame(String frameIdentifier) {
+  public List<WebElementWithIdentifier> getActionableElementsForFrame(String frameIdentifier) {
+    return getFrameElementsForSelector(frameIdentifier, actionableWebElementSelector);
+  }
+
+  /**
+   * Gets stateful elements in the current browser, for a single frame.
+   */
+  public List<WebElementWithIdentifier> getStatefulElementsForFrame(String frameIdentifier) {
+    return getFrameElementsForSelector(frameIdentifier, statefulWebElementSelector);
+  }
+
+  /**
+   * Gets the elements for the given frame matching the given selector.
+   */
+  private List<WebElementWithIdentifier> getFrameElementsForSelector(String frameIdentifier,
+      WebElementSelector selector) {
     if (Objects.equal(frameIdentifier, lastFrameIdentifier) && validateElementsCache()) {
       LOGGER.log(Level.FINE, "Using cached elements for frame " + frameIdentifier);
       return elementsCache;
@@ -179,18 +222,32 @@ public class WebDriverWrapper {
     LOGGER.log(Level.FINE, "Getting all elements for frame " + frameIdentifier);
 
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
-    getAllElementsForFrameHelper(frameIdentifier, allElements);
+    getAllElementsForFrameHelper(frameIdentifier, allElements, selector);
     lastFrameIdentifier = frameIdentifier;
     if (useElementsCache) {
       elementsCache = allElements;
     }
     return allElements;
   }
-  
+
   /**
-   * Gets all elements in the current browser, across frames.
+   * Gets all actionable elements in the current browser, across frames.
    */
-  public List<WebElementWithIdentifier> getAllElements() {
+  public List<WebElementWithIdentifier> getActionableElements() {
+    return getElementsForSelector(actionableWebElementSelector);
+  }
+
+  /**
+   * Gets all stateful elements in the current browser, across frames.
+   */
+  public List<WebElementWithIdentifier> getStatefulElements() {
+    return getElementsForSelector(statefulWebElementSelector);
+  }
+
+  /**
+   * Gets all the elements based on the given {@link WebElementSelector}
+   */
+  private List<WebElementWithIdentifier> getElementsForSelector(WebElementSelector selector) {
     if (lastFrameIdentifier == null && validateElementsCache()) {
       LOGGER.log(Level.FINE, "Using cached elements");
       return elementsCache;
@@ -198,7 +255,7 @@ public class WebDriverWrapper {
     LOGGER.log(Level.FINE, "Getting all elements");
     
     List<WebElementWithIdentifier> allElements = Lists.newArrayList();
-    getAllElementsForFrameHelper(null, allElements);
+    getAllElementsForFrameHelper(null, allElements, selector);
     lastFrameIdentifier = null;
     if (useElementsCache) {
       elementsCache = allElements;
@@ -224,12 +281,13 @@ public class WebDriverWrapper {
    * given list of elements.
    */
   private void getAllElementsForFrameHelper(String frameIdentifier,
-      List<WebElementWithIdentifier> allElements) {
+      List<WebElementWithIdentifier> allElements,
+      WebElementSelector selector) {
     
     switchToFrame(frameIdentifier);
     
     int startElementIndex = 0;
-    List<WebElement> frameElements = driver.findElements(By.xpath("//*"));
+    List<WebElement> frameElements = selector.select(driver);
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
     List<WebElement> childFrames = Lists.newArrayList();
     
@@ -237,8 +295,8 @@ public class WebDriverWrapper {
       try {
         WebElementWrapper elementWrapper = new WebElementWrapper(element);
         
-        // Filter out some elements we don't take actions on.
-        if (!isActionable(elementWrapper)) {
+        // Filter out some elements we never consider for actions or state.
+        if (!isInteresting(elementWrapper)) {
           continue;
         }
         
@@ -249,7 +307,8 @@ public class WebDriverWrapper {
         }
         
         frameElementsWithIds.add(new WebElementWithIdentifier(elementWrapper,
-            generateIdentifier(startElementIndex++, element, frameIdentifier)));
+            generateIdentifier(startElementIndex++, element, frameIdentifier,
+                selector)));
       } catch (Exception e) {
         LOGGER.log(Level.SEVERE, "Exception evaluating element", e);
         throw new RuntimeException(e);
@@ -269,7 +328,7 @@ public class WebDriverWrapper {
     
     // Now do all the child frames.
     for (String childFrameIdentifier : childFrameIdentifiers) {
-      getAllElementsForFrameHelper(childFrameIdentifier, allElements);
+      getAllElementsForFrameHelper(childFrameIdentifier, allElements, selector);
       // Switch back so that the next frame id is resolved relative to the correct location.
       switchToFrame(frameIdentifier);
     }
@@ -288,9 +347,10 @@ public class WebDriverWrapper {
   }
   
   /**
-   * @return whether or not any action might make sense on this element.
+   * @return whether or not any action or state change might be interesting
+   *    for this element.
    */
-  private boolean isActionable(WebElementWrapper element) {
+  private boolean isInteresting(WebElementWrapper element) {
     String tagName = element.getTagName().toLowerCase();
     if ("meta".equals(tagName) ||
         "script".equals(tagName) ||
@@ -320,26 +380,10 @@ public class WebDriverWrapper {
   }
   
   /**
-   * Returns a list of all of the elements that we know how to generate
-   * actions for.
-   * Currently this is not used, and it's not clear to me whether we would
-   * want this to work on the current frame or across the whole document. 
-  public List<WebElement> getActionElements() {
-    List<WebElement> elements = new ArrayList<WebElement>();
-    elements.addAll(driver.findElements(By.xpath("//input")));
-    elements.addAll(driver.findElements(By.xpath("//textarea")));
-    elements.addAll(driver.findElements(By.xpath("//a")));
-    elements.addAll(driver.findElements(By.xpath("//button")));
-    elements.addAll(driver.findElements(By.xpath("//select")));
-    return elements;
-  }
-  */
-  
-  /**
    * Generate identifier for a WebElement.
    */
   private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element,
-      String frameIdentifier) {
+      String frameIdentifier, WebElementSelector selector) {
     String id = element.getAttribute("id");
     
     if (id != null && id.length() > 0) {
@@ -349,27 +393,15 @@ public class WebDriverWrapper {
       if (name != null && name.length() > 0) {
         return new NameWebElementIdentifier(name, frameIdentifier);
       } else {
-        return new IndexWebElementIdentifier(elementIndex, frameIdentifier);
+        if (selector == actionableWebElementSelector) {
+          return new IndexWebElementIdentifier(elementIndex, frameIdentifier, IndexBasis.ACTIONABLE);          
+        } else {
+          return new IndexWebElementIdentifier(elementIndex, frameIdentifier, IndexBasis.STATEFUL);
+        }
       }
     }
   }
 
-  /**
-   * Returns a list of all visible elements.
-   */
-  public List<WebElementWithIdentifier> getVisibleElements() {
-	  List<WebElementWithIdentifier> allElements = getAllElements();
-	  List<WebElementWithIdentifier> visibleElements = Lists.newArrayList();
-	  
-	  for (WebElementWithIdentifier elementWithId : allElements) {
-		WebElement element = elementWithId.getElement();
-	    if (element.isDisplayed()) {
-		   visibleElements.add(elementWithId);
-	    }
-	  }
-	  return visibleElements;
-  }
-  
   /**
    * Get given properties of all elements in DOM.
    */
