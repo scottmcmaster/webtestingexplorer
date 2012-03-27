@@ -18,7 +18,7 @@ package com.google.testing.webtestingexplorer.config;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Extracts {@link WebElement}s from the driver.
@@ -26,5 +26,5 @@ import java.util.List;
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public interface WebElementSelector {
-  List<WebElement> select(WebDriver driver);
+  Set<WebElement> select(WebDriver driver);
 }

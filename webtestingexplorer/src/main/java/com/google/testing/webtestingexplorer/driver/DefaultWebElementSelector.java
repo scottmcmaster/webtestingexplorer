@@ -15,13 +15,14 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.driver;
 
+import com.google.common.collect.Sets;
 import com.google.testing.webtestingexplorer.config.WebElementSelector;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Selects all web elements on the page.
@@ -31,7 +32,7 @@ import java.util.List;
 public class DefaultWebElementSelector implements WebElementSelector {
 
   @Override
-  public List<WebElement> select(WebDriver driver) {
-    return driver.findElements(By.xpath("//*"));
+  public Set<WebElement> select(WebDriver driver) {
+    return Sets.newHashSet(driver.findElements(By.xpath("//*")));
   }
 }

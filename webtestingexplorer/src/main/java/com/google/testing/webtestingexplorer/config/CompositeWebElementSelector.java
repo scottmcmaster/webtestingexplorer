@@ -15,12 +15,12 @@ limitations under the License.
 */
 package com.google.testing.webtestingexplorer.config;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Rolls together a couple of different WebElementSelectors.
@@ -29,19 +29,21 @@ import java.util.List;
  */
 public class CompositeWebElementSelector implements WebElementSelector {
 
-  private final WebElementSelector first;
-  private final WebElementSelector second;
+  private final Set<WebElementSelector> selectorSet;
 
-  public CompositeWebElementSelector(WebElementSelector first, WebElementSelector second) {
-    this.first = first;
-    this.second = second;
+  public CompositeWebElementSelector(WebElementSelector... selectors) {
+    selectorSet = Sets.newHashSet();
+    for (WebElementSelector selector : selectors) {
+      selectorSet.add(selector);
+    }
   }
   
   @Override
-  public List<WebElement> select(WebDriver driver) {
-    List<WebElement> result = Lists.newArrayList();
-    result.addAll(first.select(driver));
-    result.addAll(second.select(driver));
+  public Set<WebElement> select(WebDriver driver) {
+    Set<WebElement> result = Sets.newHashSet();
+    for (WebElementSelector selector : selectorSet) {
+      result.addAll(selector.select(driver));
+    }
     return result;
   }
 

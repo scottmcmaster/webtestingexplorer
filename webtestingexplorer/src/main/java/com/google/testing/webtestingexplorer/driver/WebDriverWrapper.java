@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -287,7 +288,7 @@ public class WebDriverWrapper {
     switchToFrame(frameIdentifier);
     
     int startElementIndex = 0;
-    List<WebElement> frameElements = selector.select(driver);
+    Set<WebElement> frameElements = selector.select(driver);
     List<WebElementWithIdentifier> frameElementsWithIds = Lists.newArrayList();
     List<WebElement> childFrames = Lists.newArrayList();
     
