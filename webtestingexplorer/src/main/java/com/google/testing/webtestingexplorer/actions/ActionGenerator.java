@@ -115,7 +115,7 @@ public class ActionGenerator {
   public static List<Action> createDefaultSelectWidgetActions(
       WebElementIdentifier identifier, int numActions) {
     List<Action> actions = Lists.newArrayList();
-    for (int i = 1; i <= numActions; ++i) {
+    for (int i = 0; i < numActions; ++i) {
       actions.add(new SelectAction(identifier, i));
     }
     return actions;
