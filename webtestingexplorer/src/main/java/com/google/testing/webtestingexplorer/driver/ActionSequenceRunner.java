@@ -95,50 +95,63 @@ public class ActionSequenceRunner {
   public ActionSequenceResult runActionSequence(ActionSequenceRunnerConfig config)
       throws Exception {
     
-    LOGGER.info("At url: " + config.getUrl() + " Run action sequence: "
-        + config.getActionSequence().toString());
-    long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
-    long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
-    if (config.getWaitConditionConfig() != null) {
-      waitIntervalMillis = config.getWaitConditionConfig().getWaitIntervalMillis();
-      waitTimeoutMillis = config.getWaitConditionConfig().getWaitTimeoutMillis();
-    }
-    updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
+    int tryNumber = 1;
+    while (tryNumber <= config.getNumRetries()) {
+      try {
+        LOGGER.info("Try #" + tryNumber + ", at url: " + config.getUrl() + " Run action sequence: "
+            + config.getActionSequence().toString());
+        long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
+        long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
+        if (config.getWaitConditionConfig() != null) {
+          waitIntervalMillis = config.getWaitConditionConfig().getWaitIntervalMillis();
+          waitTimeoutMillis = config.getWaitConditionConfig().getWaitTimeoutMillis();
+        }
+        updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
+        
+        // TODO(smcmaster): We ought to manage the lifetime of the driver
+        // in here instead of leaving it around to be cleaned up later.
+        // But that is not entirely
+        // straightforward because we need to provide the driver to callers while
+        // it is still open so that they can do things like examine state.
+        // Probably need to add more callbacks.
+        driver = new WebDriverWrapper(driverFactory, proxy, config.getActionableWebElementSelctor(),
+            config.getStatefulWebElementSelector(), waitIntervalMillis, waitTimeoutMillis,
+            false);
     
-    // TODO(smcmaster): We ought to manage the lifetime of the driver
-    // in here instead of leaving it around to be cleaned up later.
-    // But that is not entirely
-    // straightforward because we need to provide the driver to callers while
-    // it is still open so that they can do things like examine state.
-    // Probably need to add more callbacks.
-    driver = new WebDriverWrapper(driverFactory, proxy, config.getActionableWebElementSelctor(),
-        config.getStatefulWebElementSelector(), waitIntervalMillis, waitTimeoutMillis,
-        false);
-
-    loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
-    
-    for (int i = 0; i < config.getActionSequence().getActions().size(); ++i) {
-      Action action = config.getActionSequence().getActions().get(i);
-      if (config.getBeforeActionCallback() != null) {
-        config.getBeforeActionCallback().onBeforeAction(action);
+        loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
+        
+        for (int i = 0; i < config.getActionSequence().getActions().size(); ++i) {
+          Action action = config.getActionSequence().getActions().get(i);
+          if (config.getBeforeActionCallback() != null) {
+            config.getBeforeActionCallback().onBeforeAction(action);
+          }
+          performAction(driver, action, config.getWaitConditionConfig());
+          
+          if (config.getOracleConfig() != null) {
+            // Check for failures.
+            checkForFailures(config.getOracleConfig().getAfterActionOracles(), driver,
+                config.getActionSequence(), action);
+          }
+        }
+        
+        List<FailureReason> failures = null;
+        if (config.getOracleConfig() != null) {
+          // Check for failures.
+          failures = checkForFailures(config.getOracleConfig().getFinalOracles(), driver,
+              config.getActionSequence(), config.getActionSequence().getLastAction());
+        }
+        
+        return new ActionSequenceResult(failures);
+      } catch (Exception e) {
+        String source = driver.getDriver().getPageSource();
+        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + toString() +
+            ", page source:\n" + source,
+            e);
+        try { driver.close(); } catch (Exception e2) {}
+        ++tryNumber;
       }
-      performAction(driver, action, config.getWaitConditionConfig());
-      
-      if (config.getOracleConfig() != null) {
-        // Check for failures.
-        checkForFailures(config.getOracleConfig().getAfterActionOracles(), driver,
-            config.getActionSequence(), action);
-      }
     }
-    
-    List<FailureReason> failures = null;
-    if (config.getOracleConfig() != null) {
-      // Check for failures.
-      failures = checkForFailures(config.getOracleConfig().getFinalOracles(), driver,
-          config.getActionSequence(), config.getActionSequence().getLastAction());
-    }
-    
-    return new ActionSequenceResult(failures);
+    throw new RuntimeException("Out of retries");
   }
 
   /**

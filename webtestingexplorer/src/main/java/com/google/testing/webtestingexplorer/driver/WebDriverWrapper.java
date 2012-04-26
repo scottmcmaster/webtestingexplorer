@@ -32,6 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -138,6 +139,13 @@ public class WebDriverWrapper {
   }
 
   /**
+   * Find an element in the default frame.
+   */
+  public WebElement findElement(By by) {
+    return findElementInFrame(by, null);
+  }
+  
+  /**
    * Finds an element in the given frame and leaves the frame as such
    * so that we can work with the element without stale-element exceptions.
    */
@@ -156,7 +164,12 @@ public class WebDriverWrapper {
   public List<WebElement> findElementsInFrame(By by, String frameIdentifier) {
     LOGGER.log(Level.FINE, "Looking for elements " + by + " in frame " + frameIdentifier);
     switchToFrame(frameIdentifier);
-    return driver.findElements(by);
+    try {
+      return driver.findElements(by);
+    } catch (NoSuchElementException nsee) {
+      LOGGER.log(Level.FINE, "Element not found");
+      return null;
+    }
   }
 
   /**

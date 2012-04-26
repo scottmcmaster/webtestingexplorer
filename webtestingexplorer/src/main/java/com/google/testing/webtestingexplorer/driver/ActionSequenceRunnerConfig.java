@@ -66,12 +66,18 @@ public class ActionSequenceRunnerConfig {
   private WebElementSelector statefulWebElementSelector;
 
   /**
+   * Number of times we try re-running a sequence on an unhandled exception.
+   * Defaults to 3.
+   */
+  private int numRetries = 3;
+
+  /**
    * Constructor.
    */
   public ActionSequenceRunnerConfig(String url, ActionSequence actionSequence,
       OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
       BeforeActionCallback beforeActionCallback, WebElementSelector actionableWebElementSelctor,
-      WebElementSelector statefulWebElementSelector) {
+      WebElementSelector statefulWebElementSelector, int numRetries) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.oracleConfig = oracleConfig;
@@ -79,6 +85,7 @@ public class ActionSequenceRunnerConfig {
     this.beforeActionCallback = beforeActionCallback;
     this.actionableWebElementSelctor = actionableWebElementSelctor;
     this.statefulWebElementSelector = statefulWebElementSelector;
+    this.numRetries = numRetries;
   }
 
   public WebElementSelector getActionableWebElementSelctor() {
@@ -107,5 +114,9 @@ public class ActionSequenceRunnerConfig {
 
   public BeforeActionCallback getBeforeActionCallback() {
     return beforeActionCallback;
+  }
+  
+  public int getNumRetries() {
+    return numRetries;
   }
 }

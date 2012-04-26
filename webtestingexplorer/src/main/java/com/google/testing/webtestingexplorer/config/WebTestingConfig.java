@@ -39,6 +39,7 @@ public class WebTestingConfig {
   private List<ActionSequenceFilter> actionSequenceFilters = Lists.newArrayList();
   private List<EquivalentWebElementsSet> equivalentWebElementSets = Lists.newArrayList();
   private WebDriverFactory driverFactory = new FirefoxWebDriverFactory();
+  private int numRetries = 3;
   
   /**
    * Factory for optional selector that retrieves just the elements that the explorer
@@ -251,6 +252,15 @@ public class WebTestingConfig {
   public WebTestingConfig setStatefulWebElementSelectorFactory(
       StatefulWebElementSelectorFactory statefulWebElementSelectorFactory) {
     this.statefulWebElementSelectorFactory = statefulWebElementSelectorFactory;
+    return this;
+  }
+  
+  public int getNumRetries() {
+    return numRetries;
+  }
+  
+  public WebTestingConfig setNumRetries(int numRetries) {
+    this.numRetries = numRetries;
     return this;
   }
 }

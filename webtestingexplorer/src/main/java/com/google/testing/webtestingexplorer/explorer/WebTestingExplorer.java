@@ -93,7 +93,8 @@ public class WebTestingExplorer {
           config.getWaitConditionConfig(),
           null,
           config.getActionableWebElementSelector(),
-          config.getStatefulWebElementSelector()));
+          config.getStatefulWebElementSelector(),
+          config.getNumRetries()));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         ActionSequence sequence = new ActionSequence(initialActionSequence);
@@ -210,7 +211,8 @@ public class WebTestingExplorer {
                 }
                },
             config.getActionableWebElementSelector(),
-            config.getStatefulWebElementSelector()));
+            config.getStatefulWebElementSelector(),
+            config.getNumRetries()));
         if (result.hasErrors()) {
           ++failedCaseCount;
         }
@@ -243,12 +245,8 @@ public class WebTestingExplorer {
           }
         }
         LOGGER.info("Current queue length: " + actionSequences.size());
-        runner.getDriver().close();
       } catch (Exception e) {
-        String source = runner.getDriver().getDriver().getPageSource();
-        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + actionSequence.toString() +
-            ", page source:\n" + source,
-            e);
+        LOGGER.log(Level.SEVERE, "Error running action sequence, out of retries");
         ++errorCaseCount;
       } finally {
         try { runner.getDriver().close(); } catch (Exception e) {}
