@@ -50,6 +50,8 @@ import java.util.logging.Logger;
 
 /**
  * Implements the actual test exploration process.
+ * The default behavior when exploring is to run the longest discovered
+ * action sequences first.
  * 
  * @author smcmaster@google.com (Scott McMaster)
  */
@@ -225,11 +227,6 @@ public class WebTestingExplorer {
           }
         }
         
-        // I wonder if there is a better way to identify test cases than to check just
-        // initial vs. final state. As it is, we generate lots of redundant test cases
-        // (for example, on the feedback form, each additional repeated click of the submit
-        // button results in a new test case)...
-        
         // Options for checking state:
         //    Need to ignore the element we just took an action on.
         //    Look for new or removed elements.
@@ -243,6 +240,10 @@ public class WebTestingExplorer {
             extendedSequence.addAction(action);
             checkPushActionSequence(actionSequences, extendedSequence);
           }
+        }
+        
+        if (config.getActionSequencePrioritizer() != null) {
+          actionSequences = config.getActionSequencePrioritizer().prioritize(actionSequences);
         }
         LOGGER.info("Current queue length: " + actionSequences.size());
       } catch (Exception e) {
