@@ -261,7 +261,7 @@ public class WebDriverWrapper {
   /**
    * Gets all the elements based on the given {@link WebElementSelector}
    */
-  private List<WebElementWithIdentifier> getElementsForSelector(WebElementSelector selector) {
+  public List<WebElementWithIdentifier> getElementsForSelector(WebElementSelector selector) {
     if (lastFrameIdentifier == null && validateElementsCache()) {
       LOGGER.log(Level.FINE, "Using cached elements");
       return elementsCache;
