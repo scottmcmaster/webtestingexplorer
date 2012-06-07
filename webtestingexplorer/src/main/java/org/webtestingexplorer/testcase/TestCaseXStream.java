@@ -36,6 +36,7 @@ import org.webtestingexplorer.identifiers.XpathWebElementIdentifier;
 import org.webtestingexplorer.state.CountOfElementsState;
 import org.webtestingexplorer.state.CustomizedPropertiesElementsState;
 import org.webtestingexplorer.state.ElementsState;
+import org.webtestingexplorer.state.SelectedElementsState;
 import org.webtestingexplorer.state.VisibleElementsState;
 
 /**
@@ -69,6 +70,7 @@ public class TestCaseXStream {
     xstream.alias("VisibleElementsState", VisibleElementsState.class);
     xstream.alias("TestCase", TestCase.class);
     xstream.alias("AttributeValueWebElementIdentifier", AttributeValueWebElementIdentifier.class);
+    xstream.alias("SelectedElementsState", SelectedElementsState.class);
     return xstream;
   }
 }
