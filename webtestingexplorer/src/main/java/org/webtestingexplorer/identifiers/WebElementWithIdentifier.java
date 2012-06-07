@@ -67,4 +67,9 @@ public class WebElementWithIdentifier {
     }
     return element;
   }
+  
+  @Override
+  public String toString() {
+    return "WebElementWithIdentifier:" + identifier.toString();
+  }
 }

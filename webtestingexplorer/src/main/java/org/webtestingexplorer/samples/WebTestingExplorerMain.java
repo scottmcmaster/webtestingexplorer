@@ -29,6 +29,8 @@ import org.webtestingexplorer.config.JavascriptAnchorActionGeneratorConfig;
 import org.webtestingexplorer.config.MaxRepeatedActionSequenceFilter;
 import org.webtestingexplorer.config.MultiCriterionActionGeneratorConfig;
 import org.webtestingexplorer.config.OrderInsensitiveActionSequenceFilter;
+import org.webtestingexplorer.config.TagWebElementSelector;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.config.WebTestingConfig;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.explorer.WebTestingExplorer;
@@ -62,6 +64,9 @@ public class WebTestingExplorerMain {
     parser.parseArgument(args);
     String url = arguments.get(0);
     
+    WebElementSelectorRegistry.registerActionable(
+        new TagWebElementSelector("input", "textarea", "a", "button", "select"));
+    
     WebTestingConfig config = new WebTestingConfig()
         .setTestCaseWriter(new TestCaseWriter(outputDir))
         .setUrl(url)
@@ -83,7 +88,6 @@ public class WebTestingExplorerMain {
             return actions;
           }
         })
-        .setActionableWebElementSelectorFactory(new SampleActionableWebElementSelectorFactory())
         .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());
     new WebTestingExplorer(config).run();    
   }

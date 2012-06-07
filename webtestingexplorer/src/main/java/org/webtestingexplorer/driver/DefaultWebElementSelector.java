@@ -33,6 +33,6 @@ public class DefaultWebElementSelector implements WebElementSelector {
 
   @Override
   public Set<WebElement> select(WebDriver driver) {
-    return Sets.newHashSet(driver.findElements(By.xpath("//*")));
+    return Sets.newLinkedHashSet(driver.findElements(By.xpath("//*")));
   }
 }

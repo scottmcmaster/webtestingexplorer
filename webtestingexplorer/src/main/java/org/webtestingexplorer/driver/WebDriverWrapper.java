@@ -28,6 +28,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.webtestingexplorer.config.WebElementSelector;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
@@ -86,21 +87,18 @@ public class WebDriverWrapper {
   private WebElementSelector statefulWebElementSelector;
 
   public WebDriverWrapper(WebDriverFactory driverFactory, WebDriverProxy proxy,
-      WebElementSelector actionableWebElementSelctor, WebElementSelector statefulWebElementSelector,
       long waitIntervalMillis, long waitTimeoutMillis, boolean useElementsCache)
           throws Exception {
     driver = driverFactory.createWebDriver(proxy);
     
-    if (actionableWebElementSelctor == null) {
+    actionableWebElementSelector = WebElementSelectorRegistry.getActionable();
+    if (actionableWebElementSelector == null) {
       this.actionableWebElementSelector = new DefaultWebElementSelector();
-    } else {
-      this.actionableWebElementSelector = actionableWebElementSelctor;
     }
     
+    statefulWebElementSelector = WebElementSelectorRegistry.getStateful();
     if (statefulWebElementSelector == null) {
       this.statefulWebElementSelector = new DefaultWebElementSelector();
-    } else {
-      this.statefulWebElementSelector = statefulWebElementSelector;
     }
     
     this.waitIntervalMillis = waitIntervalMillis;

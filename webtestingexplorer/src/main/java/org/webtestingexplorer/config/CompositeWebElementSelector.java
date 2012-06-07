@@ -32,7 +32,7 @@ public class CompositeWebElementSelector implements WebElementSelector {
   private final Set<WebElementSelector> selectorSet;
 
   public CompositeWebElementSelector(WebElementSelector... selectors) {
-    selectorSet = Sets.newHashSet();
+    selectorSet = Sets.newLinkedHashSet();
     for (WebElementSelector selector : selectors) {
       selectorSet.add(selector);
     }
@@ -40,7 +40,7 @@ public class CompositeWebElementSelector implements WebElementSelector {
   
   @Override
   public Set<WebElement> select(WebDriver driver) {
-    Set<WebElement> result = Sets.newHashSet();
+    Set<WebElement> result = Sets.newLinkedHashSet();
     for (WebElementSelector selector : selectorSet) {
       result.addAll(selector.select(driver));
     }

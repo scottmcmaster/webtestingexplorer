@@ -114,8 +114,7 @@ public class ActionSequenceRunner {
         // straightforward because we need to provide the driver to callers while
         // it is still open so that they can do things like examine state.
         // Probably need to add more callbacks.
-        driver = new WebDriverWrapper(driverFactory, proxy, config.getActionableWebElementSelctor(),
-            config.getStatefulWebElementSelector(), waitIntervalMillis, waitTimeoutMillis,
+        driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis,
             false);
     
         loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
@@ -144,7 +143,7 @@ public class ActionSequenceRunner {
         return new ActionSequenceResult(failures);
       } catch (Exception e) {
         String source = driver.getDriver().getPageSource();
-        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + toString() +
+        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + config.getActionSequence() +
             ", page source:\n" + source,
             e);
         try { driver.close(); } catch (Exception e2) {}
@@ -212,6 +211,7 @@ public class ActionSequenceRunner {
       proxy.resetForRequest();
     }
     
+    LOGGER.info("Performing action: " + action.toString());
     action.perform(driver);
     driver.invalidateElementsCache();
     if (waitConditionConfig != null) {

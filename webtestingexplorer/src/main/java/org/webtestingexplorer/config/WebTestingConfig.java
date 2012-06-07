@@ -44,18 +44,6 @@ public class WebTestingConfig {
   private int numRetries = 3;
   
   /**
-   * Factory for optional selector that retrieves just the elements that the explorer
-   * should take action on.
-   */
-  private ActionableWebElementSelectorFactory actionableWebElementSelectorFactory;
-  
-  /**
-   * Factory for optional selector that retrieves just the elements that plan to evaluate
-   * state on.
-   */
-  private StatefulWebElementSelectorFactory statefulWebElementSelectorFactory;
-  
-  /**
    * The wait condition configuration factory.
    */
   private WaitConditionConfigFactory waitConditionConfigFactory;
@@ -220,40 +208,6 @@ public class WebTestingConfig {
   
   public WebTestingConfig setWebDriverFactory(WebDriverFactory driverFactory) {
     this.driverFactory = driverFactory;
-    return this;
-  }
-  
-  public ActionableWebElementSelectorFactory getActionableWebElementSelectorFactory() {
-    return actionableWebElementSelectorFactory;
-  }
-
-  public WebElementSelector getActionableWebElementSelector() {
-    if (actionableWebElementSelectorFactory != null) {
-      return actionableWebElementSelectorFactory.createActionableWebElementSelector();
-    }
-    return null;
-  }
-
-  public WebTestingConfig setActionableWebElementSelectorFactory(
-      ActionableWebElementSelectorFactory actionableWebElementSelectorFactory) {
-    this.actionableWebElementSelectorFactory = actionableWebElementSelectorFactory;
-    return this;
-  }
-
-  public WebElementSelector getStatefulWebElementSelector() {
-    if (statefulWebElementSelectorFactory != null) {
-      return statefulWebElementSelectorFactory.createStatefulWebElementSelector();
-    }
-    return null;
-  }
-
-  public StatefulWebElementSelectorFactory getStatefulWebElementSelectorFactory() {
-    return statefulWebElementSelectorFactory;
-  }
-
-  public WebTestingConfig setStatefulWebElementSelectorFactory(
-      StatefulWebElementSelectorFactory statefulWebElementSelectorFactory) {
-    this.statefulWebElementSelectorFactory = statefulWebElementSelectorFactory;
     return this;
   }
   

@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.webtestingexplorer.config.WebElementSelector;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
@@ -33,11 +34,11 @@ import java.util.Set;
 public class SelectedElementsState implements State {
 
   private final Set<WebElementIdentifier> identifiers;
-  private final String selectorClassName;
+  private final String selectorKey;
   
   public SelectedElementsState(List<WebElementWithIdentifier> elements,
-      String selectorClassName) {
-    this.selectorClassName = selectorClassName;
+      String selectorKey) {
+    this.selectorKey = selectorKey;
     identifiers = Sets.newHashSet();
     for (WebElementWithIdentifier element : elements) {
       identifiers.add(element.getIdentifier());
@@ -57,17 +58,11 @@ public class SelectedElementsState implements State {
 
   @Override
   public StateChecker createStateChecker() {
-    WebElementSelector selector;
-    try {
-      selector = (WebElementSelector) Class.forName(selectorClassName).newInstance();
-    } catch (InstantiationException e) {
-      throw new RuntimeException("Selector class could not be created: " + selectorClassName);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException("Selector class could not be accessed: " + selectorClassName);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException("Selector class could not be found: " + selectorClassName);
+    WebElementSelector selector = WebElementSelectorRegistry.get(selectorKey);
+    if (selector == null) {
+      throw new IllegalStateException("Selector is not registered: " + selectorKey);
     }
-    return new SelectedElementsStateChecker(selector );
+    return new SelectedElementsStateChecker(selector);
   }
 
   @Override

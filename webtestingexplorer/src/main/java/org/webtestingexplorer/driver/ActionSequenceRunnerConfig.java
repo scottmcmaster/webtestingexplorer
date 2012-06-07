@@ -18,7 +18,6 @@ package org.webtestingexplorer.driver;
 import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.config.OracleConfig;
 import org.webtestingexplorer.config.WaitConditionConfig;
-import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 
 /**
@@ -54,18 +53,6 @@ public class ActionSequenceRunnerConfig {
   private BeforeActionCallback beforeActionCallback;
 
   /**
-   * Optional selector that retrieves just the elements that the explorer
-   * should take action on.
-   */
-  private WebElementSelector actionableWebElementSelctor;
-  
-  /**
-   * Optional selector that retrieves just the elements that plan to evaluate
-   * state on.
-   */
-  private WebElementSelector statefulWebElementSelector;
-
-  /**
    * Number of times we try re-running a sequence on an unhandled exception.
    * Defaults to 3.
    */
@@ -76,24 +63,13 @@ public class ActionSequenceRunnerConfig {
    */
   public ActionSequenceRunnerConfig(String url, ActionSequence actionSequence,
       OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
-      BeforeActionCallback beforeActionCallback, WebElementSelector actionableWebElementSelctor,
-      WebElementSelector statefulWebElementSelector, int numRetries) {
+      BeforeActionCallback beforeActionCallback, int numRetries) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.oracleConfig = oracleConfig;
     this.waitConditionConfig = waitConditionConfig;
     this.beforeActionCallback = beforeActionCallback;
-    this.actionableWebElementSelctor = actionableWebElementSelctor;
-    this.statefulWebElementSelector = statefulWebElementSelector;
     this.numRetries = numRetries;
-  }
-
-  public WebElementSelector getActionableWebElementSelctor() {
-    return actionableWebElementSelctor;
-  }
-
-  public WebElementSelector getStatefulWebElementSelector() {
-    return statefulWebElementSelector;
   }
 
   public String getUrl() {

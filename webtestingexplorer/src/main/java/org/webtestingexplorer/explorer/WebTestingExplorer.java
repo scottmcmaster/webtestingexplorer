@@ -94,8 +94,6 @@ public class WebTestingExplorer {
           config.getOracleConfig(),
           config.getWaitConditionConfig(),
           null,
-          config.getActionableWebElementSelector(),
-          config.getStatefulWebElementSelector(),
           config.getNumRetries()));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
@@ -212,8 +210,6 @@ public class WebTestingExplorer {
                   }
                 }
                },
-            config.getActionableWebElementSelector(),
-            config.getStatefulWebElementSelector(),
             config.getNumRetries()));
         if (result.hasErrors()) {
           ++failedCaseCount;
@@ -274,21 +270,8 @@ public class WebTestingExplorer {
           config.getWaitConditionConfigFactory().getClass().getName();
     }
     
-    String actionableWebElementSelectorFactoryClassName = null;
-    if (config.getActionableWebElementSelectorFactory() != null) {
-      actionableWebElementSelectorFactoryClassName =
-          config.getActionableWebElementSelectorFactory().getClass().getName();
-    }
-    
-    String statefulWebElementSelectorFactoryClassName = null;
-    if (config.getStatefulWebElementSelectorFactory() != null) {
-      statefulWebElementSelectorFactoryClassName =
-          config.getStatefulWebElementSelectorFactory().getClass().getName();
-    }
-    
     TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
-        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName,
-        actionableWebElementSelectorFactoryClassName, statefulWebElementSelectorFactoryClassName);
+        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName);
     config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
   }
 

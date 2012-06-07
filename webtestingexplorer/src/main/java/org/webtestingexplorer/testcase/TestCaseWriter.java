@@ -17,6 +17,7 @@ package org.webtestingexplorer.testcase;
 
 import com.thoughtworks.xstream.XStream;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -41,6 +42,7 @@ public class TestCaseWriter {
    */
   public TestCaseWriter(String outputDirectory) {
     xstream = TestCaseXStream.createXStream();
+    new File(outputDirectory).mkdirs();
     this.outputDirectory = outputDirectory;
   }
 

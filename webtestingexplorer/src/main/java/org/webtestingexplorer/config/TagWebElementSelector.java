@@ -45,7 +45,7 @@ public class TagWebElementSelector implements WebElementSelector {
   
   @Override
   public Set<WebElement> select(WebDriver driver) {
-    Set<WebElement> elements = Sets.newHashSet();
+    Set<WebElement> elements = Sets.newLinkedHashSet();
     elements.addAll(driver.findElements(By.xpath(xpath)));
     return elements;
   }

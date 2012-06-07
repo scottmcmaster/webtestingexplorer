@@ -15,13 +15,10 @@ limitations under the License.
 */
 package org.webtestingexplorer.replayer;
 
-import org.webtestingexplorer.config.ActionableWebElementSelectorFactory;
 import org.webtestingexplorer.config.OracleConfig;
 import org.webtestingexplorer.config.OracleConfigFactory;
-import org.webtestingexplorer.config.StatefulWebElementSelectorFactory;
 import org.webtestingexplorer.config.WaitConditionConfig;
 import org.webtestingexplorer.config.WaitConditionConfigFactory;
-import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.ActionSequenceRunnerConfig;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
@@ -34,6 +31,7 @@ import java.util.logging.Logger;
 
 /**
  * Replays previously-generated test cases.
+ * TODO(scott): Figure out how to enable easy restoration of actionable/selectable element selectors.
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
@@ -51,49 +49,16 @@ public class WebTestingReplayer {
   
   public void runTestCase(TestCase testCase) throws Exception {
     OracleConfig oracleConfig = createOracleConfig(testCase);
-    WaitConditionConfig waitConditionConfig = extractWaitConditionConfig(testCase);
-    WebElementSelector actionableWebElementSelector = extractActionableWebElementSelector(testCase);
-    WebElementSelector statefulWebElementSelector = extractStatefulWebElementSelector(testCase);
-    
+    WaitConditionConfig waitConditionConfig = extractWaitConditionConfig(testCase);    
     runner.runActionSequence(new ActionSequenceRunnerConfig(
         testCase.getUrl(),
         testCase.getActionSequence(),
         oracleConfig,
         waitConditionConfig,
         null,
-        actionableWebElementSelector,
-        statefulWebElementSelector,
         NUM_RETRIES));
     
     runner.getDriver().close();
-  }
-
-  @SuppressWarnings("unchecked")
-  private WebElementSelector extractActionableWebElementSelector(TestCase testCase)
-      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    WebElementSelector actionableWebElementSelector = null;
-    if (testCase.getActionableWebElementSelectorFactoryClassName() != null) {
-      Class<? extends ActionableWebElementSelectorFactory> factoryClass =
-          (Class<? extends ActionableWebElementSelectorFactory>) Class.forName(
-              testCase.getActionableWebElementSelectorFactoryClassName());
-      ActionableWebElementSelectorFactory factory = factoryClass.newInstance();
-      actionableWebElementSelector = factory.createActionableWebElementSelector();
-    }
-    return actionableWebElementSelector;
-  }
-
-  @SuppressWarnings("unchecked")
-  private WebElementSelector extractStatefulWebElementSelector(TestCase testCase)
-    throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    WebElementSelector statefulWebElementSelector = null;
-    if (testCase.getStatefulWebElementSelectorFactoryClassName() != null) {
-      Class<? extends StatefulWebElementSelectorFactory> factoryClass =
-          (Class<? extends StatefulWebElementSelectorFactory>) Class.forName(
-              testCase.getStatefulWebElementSelectorFactoryClassName());
-      StatefulWebElementSelectorFactory factory = factoryClass.newInstance();
-      statefulWebElementSelector = factory.createStatefulWebElementSelector();
-    }
-    return statefulWebElementSelector;
   }
 
   @SuppressWarnings("unchecked")
