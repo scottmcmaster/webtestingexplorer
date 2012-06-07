@@ -15,11 +15,13 @@ limitations under the License.
 */
 package org.webtestingexplorer.config;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,13 +40,16 @@ public class CompositeWebElementSelector implements WebElementSelector {
     }
   }
   
+  /**
+   * This method uses a set internally to guard against duplicate elements
+   * pulled in by the multiple selectors.
+   */
   @Override
-  public Set<WebElement> select(WebDriver driver) {
+  public List<WebElement> select(WebDriver driver) {
     Set<WebElement> result = Sets.newLinkedHashSet();
     for (WebElementSelector selector : selectorSet) {
       result.addAll(selector.select(driver));
     }
-    return result;
+    return Lists.newArrayList(result);
   }
-
 }

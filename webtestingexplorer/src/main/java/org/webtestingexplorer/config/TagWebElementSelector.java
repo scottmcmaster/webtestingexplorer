@@ -15,13 +15,11 @@ limitations under the License.
 */
 package org.webtestingexplorer.config;
 
-import com.google.common.collect.Sets;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Selects {@link WebElement}s matching any of a given list of tags.
@@ -44,9 +42,7 @@ public class TagWebElementSelector implements WebElementSelector {
   }
   
   @Override
-  public Set<WebElement> select(WebDriver driver) {
-    Set<WebElement> elements = Sets.newLinkedHashSet();
-    elements.addAll(driver.findElements(By.xpath(xpath)));
-    return elements;
+  public List<WebElement> select(WebDriver driver) {
+    return driver.findElements(By.xpath(xpath));
   }
 }
