@@ -124,7 +124,11 @@ public class ActionSequenceRunner {
           if (config.getBeforeActionCallback() != null) {
             config.getBeforeActionCallback().onBeforeAction(action);
           }
-          performAction(driver, action, config.getWaitConditionConfig());
+          try {
+            performAction(driver, action, config.getWaitConditionConfig());
+          } catch (Exception e) {
+            throw new RuntimeException("Exception running action: " + action);
+          }
           
           if (config.getOracleConfig() != null) {
             // Check for failures.
@@ -143,9 +147,7 @@ public class ActionSequenceRunner {
         return new ActionSequenceResult(failures);
       } catch (Exception e) {
         String source = driver.getDriver().getPageSource();
-        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + config.getActionSequence() +
-            ", page source:\n" + source,
-            e);
+        LOGGER.log(Level.SEVERE, "Exception running action sequence: " + config.getActionSequence(), e);
         try { driver.close(); } catch (Exception e2) {}
         ++tryNumber;
       }

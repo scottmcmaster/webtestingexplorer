@@ -28,20 +28,30 @@ import java.util.Map;
  */
 public class StateCheckerRegistry {
 
-  private static final Map<String, StateChecker> stateCheckersByKey = Maps.newHashMap();
+  private static StateCheckerRegistry INSTANCE = new StateCheckerRegistry();
+  
+  public static StateCheckerRegistry getInstance() {
+    return INSTANCE;
+  }
+  
+  public static void setInstance(StateCheckerRegistry instance) {
+    INSTANCE = instance;
+  }
+
+  private final Map<String, StateChecker> stateCheckersByKey = Maps.newHashMap();
   
   /**
    * Registers a state checker. If there is already one there with the same key, it is
    * replaced.
    */
-  public static void register(String key, StateChecker selector) {
+  public void register(String key, StateChecker selector) {
     stateCheckersByKey.put(key, selector);
   }
   
   /**
    * Gets a state checker with the given key. Returns null if there isn't one.
    */
-  public static StateChecker get(String key) {
+  public StateChecker get(String key) {
     return stateCheckersByKey.get(key);
   }
 }

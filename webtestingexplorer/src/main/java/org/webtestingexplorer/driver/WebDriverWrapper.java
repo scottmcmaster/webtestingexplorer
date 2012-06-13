@@ -90,12 +90,12 @@ public class WebDriverWrapper {
           throws Exception {
     driver = driverFactory.createWebDriver(proxy);
     
-    actionableWebElementSelector = WebElementSelectorRegistry.getActionable();
+    actionableWebElementSelector = WebElementSelectorRegistry.getInstance().getActionable();
     if (actionableWebElementSelector == null) {
       this.actionableWebElementSelector = new DefaultWebElementSelector();
     }
     
-    statefulWebElementSelector = WebElementSelectorRegistry.getStateful();
+    statefulWebElementSelector = WebElementSelectorRegistry.getInstance().getStateful();
     if (statefulWebElementSelector == null) {
       this.statefulWebElementSelector = new DefaultWebElementSelector();
     }

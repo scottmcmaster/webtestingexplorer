@@ -27,6 +27,16 @@ import java.util.Map;
  */
 public class WebElementSelectorRegistry {
 
+  private static WebElementSelectorRegistry INSTANCE = new WebElementSelectorRegistry();
+  
+  public static WebElementSelectorRegistry getInstance() {
+    return INSTANCE;
+  }
+  
+  public static void setInstance(WebElementSelectorRegistry instance) {
+    INSTANCE = instance;
+  }
+  
   /**
    * The registry key for the stateful {@link WebElementSelector}.
    */
@@ -37,48 +47,48 @@ public class WebElementSelectorRegistry {
    */
   public static final String ACTIONABLE_ELEMENT_SELECTOR_KEY = "ACTIONABLE";
   
-  private static final Map<String, WebElementSelector> selectorsByKey = Maps.newHashMap();
+  private final Map<String, WebElementSelector> selectorsByKey = Maps.newHashMap();
   
   /**
    * Registers a selector. If there is already one there with the same key, it is
    * replaced.
    */
-  public static void register(String key, WebElementSelector selector) {
+  public void register(String key, WebElementSelector selector) {
     selectorsByKey.put(key, selector);
   }
   
   /**
    * Gets a selector with the given key. Returns null if there isn't one.
    */
-  public static WebElementSelector get(String key) {
+  public WebElementSelector get(String key) {
     return selectorsByKey.get(key);
   }
   
   /**
    * Gets the stateful web element selector. Could be null.
    */
-  public static WebElementSelector getStateful() {
+  public WebElementSelector getStateful() {
     return selectorsByKey.get(STATEFUL_ELEMENT_SELECTOR_KEY);
   }
   
   /**
    * Gets the actionable web element selector. Could be null.
    */
-  public static WebElementSelector getActionable() {
+  public WebElementSelector getActionable() {
     return selectorsByKey.get(ACTIONABLE_ELEMENT_SELECTOR_KEY);
   }
 
   /**
    * Registers the stateful {@link WebElementSelector}.
    */
-  public static void registerStateful(WebElementSelector selector) {
+  public void registerStateful(WebElementSelector selector) {
     register(STATEFUL_ELEMENT_SELECTOR_KEY, selector);
   }
 
   /**
    * Registers the actionable {@link WebElementSelector}.
    */
-  public static void registerActionable(WebElementSelector selector) {
+  public void registerActionable(WebElementSelector selector) {
     register(ACTIONABLE_ELEMENT_SELECTOR_KEY, selector);
   }
 }

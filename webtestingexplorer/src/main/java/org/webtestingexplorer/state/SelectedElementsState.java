@@ -58,7 +58,7 @@ public class SelectedElementsState implements State {
 
   @Override
   public StateChecker createStateChecker() {
-    WebElementSelector selector = WebElementSelectorRegistry.get(selectorKey);
+    WebElementSelector selector = WebElementSelectorRegistry.getInstance().get(selectorKey);
     if (selector == null) {
       throw new IllegalStateException("Selector is not registered: " + selectorKey);
     }

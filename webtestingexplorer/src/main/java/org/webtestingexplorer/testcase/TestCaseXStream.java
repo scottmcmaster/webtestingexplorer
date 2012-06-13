@@ -27,6 +27,8 @@ import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.RefreshAction;
 import org.webtestingexplorer.actions.SelectAction;
 import org.webtestingexplorer.actions.SetTextAction;
+import org.webtestingexplorer.config.TagWebElementSelector;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.identifiers.AttributeValueWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
@@ -71,6 +73,12 @@ public class TestCaseXStream {
     xstream.alias("TestCase", TestCase.class);
     xstream.alias("AttributeValueWebElementIdentifier", AttributeValueWebElementIdentifier.class);
     xstream.alias("SelectedElementsState", SelectedElementsState.class);
+    xstream.alias("TestCaseConfig", TestCaseConfig.class);
+    xstream.alias("WebElementSelectorRegistry", WebElementSelectorRegistry.class);
+    xstream.alias("TagWebElementSelector", TagWebElementSelector.class);
+    
+    // TODO(smcmaster): I think we need to expose some API here so that users can
+    // register their custom classes to be serialized nicely in the test case format.
     return xstream;
   }
 }

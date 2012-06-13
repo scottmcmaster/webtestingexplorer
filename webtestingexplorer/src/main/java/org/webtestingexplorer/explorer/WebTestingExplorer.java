@@ -27,6 +27,7 @@ import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.RefreshAction;
 import org.webtestingexplorer.config.ActionSequenceFilter;
 import org.webtestingexplorer.config.EquivalentWebElementsSet;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.config.WebTestingConfig;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.ActionSequenceRunnerConfig;
@@ -38,6 +39,7 @@ import org.webtestingexplorer.state.State;
 import org.webtestingexplorer.state.StateChange;
 import org.webtestingexplorer.state.StateChecker;
 import org.webtestingexplorer.testcase.TestCase;
+import org.webtestingexplorer.testcase.TestCaseConfig;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -271,8 +273,17 @@ public class WebTestingExplorer {
     }
     
     TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
-        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName);
+        oracleConfigFactoryClassName, waitConditionConfigFactoryClassName,
+        buildTestCaseConfig());
     config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
+  }
+
+  /**
+   * @return a {@link TestCaseConfig} based on the current state of the explorer.
+   */
+  private TestCaseConfig buildTestCaseConfig() {
+    TestCaseConfig result = new TestCaseConfig(WebElementSelectorRegistry.getInstance());
+    return result;
   }
 
   /**

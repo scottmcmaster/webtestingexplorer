@@ -32,15 +32,17 @@ public class TestCase {
   private String oracleConfigFactoryClassName;
   private String waitConditionConfigFactoryClassName;
   private List<State> finalState;
+  private TestCaseConfig config;
   
   public TestCase(String url, ActionSequence actionSequence,
       List<State> finalState, String oracleConfigFactoryClassName,
-      String waitConditionConfigFactoryClassName) {
+      String waitConditionConfigFactoryClassName, TestCaseConfig config) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.finalState = finalState;
     this.oracleConfigFactoryClassName = oracleConfigFactoryClassName;
     this.waitConditionConfigFactoryClassName = waitConditionConfigFactoryClassName;
+    this.config = config;
   }
 
   public String getUrl() {
@@ -61,5 +63,9 @@ public class TestCase {
   
   public List<State> getFinalState() {
     return finalState;
+  }
+  
+  public TestCaseConfig getTestCaseConfig() {
+    return config;
   }
 }

@@ -19,6 +19,7 @@ import org.webtestingexplorer.config.OracleConfig;
 import org.webtestingexplorer.config.OracleConfigFactory;
 import org.webtestingexplorer.config.WaitConditionConfig;
 import org.webtestingexplorer.config.WaitConditionConfigFactory;
+import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.ActionSequenceRunnerConfig;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
@@ -48,6 +49,7 @@ public class WebTestingReplayer {
   }
   
   public void runTestCase(TestCase testCase) throws Exception {
+    WebElementSelectorRegistry.setInstance(testCase.getTestCaseConfig().getSelectorRegistry());
     OracleConfig oracleConfig = createOracleConfig(testCase);
     WaitConditionConfig waitConditionConfig = extractWaitConditionConfig(testCase);    
     runner.runActionSequence(new ActionSequenceRunnerConfig(

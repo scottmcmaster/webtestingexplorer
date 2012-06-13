@@ -64,7 +64,7 @@ public class WebTestingExplorerMain {
     parser.parseArgument(args);
     String url = arguments.get(0);
     
-    WebElementSelectorRegistry.registerActionable(
+    WebElementSelectorRegistry.getInstance().registerActionable(
         new TagWebElementSelector("input", "textarea", "a", "button", "select"));
     
     WebTestingConfig config = new WebTestingConfig()
