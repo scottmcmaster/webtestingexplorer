@@ -25,18 +25,36 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Rolls together a couple of different WebElementSelectors.
+ * Rolls together a couple of different WebElementSelectors and returns either
+ * the union or intersection of what they select.
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public class CompositeWebElementSelector implements WebElementSelector {
 
-  private final Set<WebElementSelector> selectorSet;
-
+  private final List<WebElementSelector> selectorList;
+  private final boolean intersect;
+  
+  /**
+   * Creates a selector that returns the union of elements selected by the
+   * given list of selectors.
+   */
   public CompositeWebElementSelector(WebElementSelector... selectors) {
-    selectorSet = Sets.newLinkedHashSet();
+    this(false, selectors);
+  }
+
+  /**
+   * Creates a selector that returns either a union or intersection (depending
+   * on the boolean parameter) of the elements returned by the given selectors.
+   * 
+   * @param intersect true to intersect, false to union.
+   * @param selectors the selectors to evaluate.
+   */
+  public CompositeWebElementSelector(boolean intersect, WebElementSelector... selectors) {
+    this.intersect = intersect;
+    selectorList = Lists.newArrayList();
     for (WebElementSelector selector : selectors) {
-      selectorSet.add(selector);
+      selectorList.add(selector);
     }
   }
   
@@ -47,8 +65,15 @@ public class CompositeWebElementSelector implements WebElementSelector {
   @Override
   public List<WebElement> select(WebDriver driver) {
     Set<WebElement> result = Sets.newLinkedHashSet();
-    for (WebElementSelector selector : selectorSet) {
-      result.addAll(selector.select(driver));
+    if (intersect && !selectorList.isEmpty()) {
+      result.addAll(selectorList.get(0).select(driver));
+      for (WebElementSelector selector : selectorList) {
+        result.retainAll(selector.select(driver));
+      }
+    } else {
+      for (WebElementSelector selector : selectorList) {
+        result.addAll(selector.select(driver));
+      }
     }
     return Lists.newArrayList(result);
   }
