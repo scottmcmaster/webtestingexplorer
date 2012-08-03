@@ -68,6 +68,18 @@ public class ActionSequenceRunner {
     public boolean hasErrors() {
       return failures != null && !failures.isEmpty();
     }
+    
+    /**
+     * @return all the failure messages tacked together.
+     */
+    public String appendFailures() {
+      StringBuilder builder = new StringBuilder();
+      for (FailureReason reason : failures) {
+        builder.append(reason.getMessage());
+        builder.append('\n');
+      }
+      return builder.toString();
+    }
   }
   
   private WebDriverProxy proxy;

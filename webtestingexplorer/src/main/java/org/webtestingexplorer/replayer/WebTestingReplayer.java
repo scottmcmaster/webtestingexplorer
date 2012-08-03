@@ -15,20 +15,12 @@ limitations under the License.
 */
 package org.webtestingexplorer.replayer;
 
-import org.webtestingexplorer.config.OracleConfig;
-import org.webtestingexplorer.config.OracleConfigFactory;
-import org.webtestingexplorer.config.WaitConditionConfig;
-import org.webtestingexplorer.config.WaitConditionConfigFactory;
-import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
-import org.webtestingexplorer.driver.ActionSequenceRunnerConfig;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
-import org.webtestingexplorer.oracles.FinalStateCheckOracle;
 import org.webtestingexplorer.testcase.TestCase;
 import org.webtestingexplorer.testcase.TestCaseReader;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * Replays previously-generated test cases.
@@ -38,73 +30,12 @@ import java.util.logging.Logger;
  */
 public class WebTestingReplayer {
 
-  private final static Logger LOGGER = Logger.getLogger(WebTestingReplayer.class.getName());
-
-  private static final int NUM_RETRIES = 3;
-
-  private ActionSequenceRunner runner;
-
-  public WebTestingReplayer() throws Exception {
-    this.runner = new ActionSequenceRunner(new FirefoxWebDriverFactory());
-  }
-  
-  public void runTestCase(TestCase testCase) throws Exception {
-    WebElementSelectorRegistry.setInstance(testCase.getTestCaseConfig().getSelectorRegistry());
-    OracleConfig oracleConfig = createOracleConfig(testCase);
-    WaitConditionConfig waitConditionConfig = extractWaitConditionConfig(testCase);    
-    runner.runActionSequence(new ActionSequenceRunnerConfig(
-        testCase.getUrl(),
-        testCase.getActionSequence(),
-        oracleConfig,
-        waitConditionConfig,
-        null,
-        NUM_RETRIES));
-    
-    runner.getDriver().close();
-  }
-
-  @SuppressWarnings("unchecked")
-  private WaitConditionConfig extractWaitConditionConfig(TestCase testCase)
-      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-    WaitConditionConfig waitConditionConfig = null;
-    if (testCase.getWaitConditionConfigFactoryClassName() != null) {
-      Class<? extends WaitConditionConfigFactory> waitConditionConfigFactoryClass =
-          (Class<? extends WaitConditionConfigFactory>) Class.forName(testCase.getWaitConditionConfigFactoryClassName());
-      WaitConditionConfigFactory waitConditionConfigFactory = waitConditionConfigFactoryClass.newInstance();
-      waitConditionConfig = waitConditionConfigFactory.createWaitConditionConfig();
-    }
-    return waitConditionConfig;
-  }
-
-  /**
-   * Creates the oracle configuration for replaying the given testcase.
-   */
-  @SuppressWarnings("unchecked")
-  private OracleConfig createOracleConfig(TestCase testCase) throws Exception {
-    OracleConfig oracleConfig;
-    if (testCase.getOracleConfigFactoryClassName() != null) {
-      Class<? extends OracleConfigFactory> oracleConfigFactoryClass =
-          (Class<? extends OracleConfigFactory>) Class.forName(testCase.getOracleConfigFactoryClassName());
-      OracleConfigFactory oracleConfigFactory = oracleConfigFactoryClass.newInstance();
-      oracleConfig = oracleConfigFactory.createOracleConfig();
-    } else {
-      oracleConfig = new OracleConfig();
-    }
-    // Add a final-state checker.
-    oracleConfig.addFinalOracle(new FinalStateCheckOracle(testCase.getFinalState()));
-    return oracleConfig;
-  }
-  
-  private void shutdown() {
-    runner.shutdown();
-  }
-
   public static void main(String[] args) throws Exception {
     String input = args[0];
 
     File inputFile = new File(input);
     TestCaseReader reader = new TestCaseReader();
-    WebTestingReplayer replayer = new WebTestingReplayer();
+    ActionSequenceRunner actionSequenceRunner = new ActionSequenceRunner(new FirefoxWebDriverFactory());
     if (inputFile.isDirectory()) {
       // Run all the test cases in the directory.
       for (File file : inputFile.listFiles()) {
@@ -112,13 +43,15 @@ public class WebTestingReplayer {
           continue;
         }
         TestCase testCase = reader.readTestCase(file.getAbsolutePath());
-        replayer.runTestCase(testCase);
+        WebTestingReplayerRunner runner = new WebTestingReplayerRunner(actionSequenceRunner);
+        runner.runTestCase(testCase);
       }
     } else {
       // Run just the specified test case.
       TestCase testCase = reader.readTestCase(inputFile.getAbsolutePath());
-      replayer.runTestCase(testCase);
+      WebTestingReplayerRunner runner = new WebTestingReplayerRunner(actionSequenceRunner);
+      runner.runTestCase(testCase);
     }
-    replayer.shutdown();
+    actionSequenceRunner.shutdown();
   }
 }
