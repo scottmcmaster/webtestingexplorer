@@ -18,6 +18,8 @@ package org.webtestingexplorer.config;
 import com.google.common.collect.Lists;
 
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfigFactory;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.driver.WebDriverFactory;
 import org.webtestingexplorer.state.StateChecker;

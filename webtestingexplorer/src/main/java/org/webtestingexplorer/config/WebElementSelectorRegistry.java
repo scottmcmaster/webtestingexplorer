@@ -19,6 +19,8 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
+import org.webtestingexplorer.config.selector.WebElementSelector;
+
 /**
  * Global registry of {@link WebElementSelector}s, including special
  * ones for stateful and actionable elements.

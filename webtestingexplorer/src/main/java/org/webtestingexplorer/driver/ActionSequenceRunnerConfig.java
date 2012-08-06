@@ -17,7 +17,7 @@ package org.webtestingexplorer.driver;
 
 import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.config.OracleConfig;
-import org.webtestingexplorer.config.WaitConditionConfig;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
 import org.webtestingexplorer.driver.ActionSequenceRunner.BeforeActionCallback;
 
 /**

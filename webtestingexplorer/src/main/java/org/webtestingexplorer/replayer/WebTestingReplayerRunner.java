@@ -17,9 +17,9 @@ package org.webtestingexplorer.replayer;
 
 import org.webtestingexplorer.config.OracleConfig;
 import org.webtestingexplorer.config.OracleConfigFactory;
-import org.webtestingexplorer.config.WaitConditionConfig;
-import org.webtestingexplorer.config.WaitConditionConfigFactory;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfigFactory;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.ActionSequenceRunner.ActionSequenceResult;
 import org.webtestingexplorer.driver.ActionSequenceRunnerConfig;

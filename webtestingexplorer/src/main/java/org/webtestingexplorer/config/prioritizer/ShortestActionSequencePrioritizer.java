@@ -1,5 +1,5 @@
 /*
-Copyright 2012 Google Inc. All Rights Reserved.
+Copyright 2011 Google Inc. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,28 +14,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.webtestingexplorer.config;
+package org.webtestingexplorer.config.prioritizer;
 
 import com.google.common.collect.Lists;
 
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.config.ActionSequencePrioritizer;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 
 /**
- * {@link ActionSequencePrioritizer} that chooses the next action sequence at random.
+ * {@link ActionSequencePrioritizer} that runs the shortest action sequences
+ * first.
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class RandomActionSequencePrioritizer implements ActionSequencePrioritizer {
+public class ShortestActionSequencePrioritizer implements ActionSequencePrioritizer {
 
   @Override
   public Deque<ActionSequence> prioritize(Deque<ActionSequence> actionSequences) {
     List<ActionSequence> allSequences = Lists.newArrayList(actionSequences);
-    Collections.shuffle(allSequences);
+    Collections.sort(allSequences, new Comparator<ActionSequence>() {
+      @Override
+      public int compare(ActionSequence first, ActionSequence second) {
+        return first.getLength() - second.getLength();
+      }});
     return new ArrayDeque<ActionSequence>(allSequences);
   }
 }

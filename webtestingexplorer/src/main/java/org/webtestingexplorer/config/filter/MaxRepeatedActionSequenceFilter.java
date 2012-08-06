@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.webtestingexplorer.config;
+package org.webtestingexplorer.config.filter;
 
 import com.google.common.collect.Maps;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.config.ActionSequenceFilter;
 
 import java.util.Deque;
 import java.util.Map;

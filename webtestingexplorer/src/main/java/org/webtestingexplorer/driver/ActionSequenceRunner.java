@@ -17,7 +17,7 @@ package org.webtestingexplorer.driver;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
-import org.webtestingexplorer.config.WaitConditionConfig;
+import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
 import org.webtestingexplorer.oracles.Failure;
 import org.webtestingexplorer.oracles.FailureReason;
 import org.webtestingexplorer.oracles.Oracle;

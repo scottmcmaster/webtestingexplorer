@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.webtestingexplorer.config;
+package org.webtestingexplorer.config.filter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.config.ActionSequenceFilter;
 import org.webtestingexplorer.driver.WebDriverWrapper;
 
 import java.util.ArrayList;

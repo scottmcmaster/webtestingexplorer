@@ -13,18 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.webtestingexplorer.config;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-
-import java.util.List;
+package org.webtestingexplorer.config.waitcondition;
 
 /**
- * Extracts {@link WebElement}s from the driver.
+ * Creates and returns a {@link WaitConditionConfig} for use by the explorer
+ * and/or replayer.
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public interface WebElementSelector {
-  List<WebElement> select(WebDriver driver);
+public interface WaitConditionConfigFactory {
+  WaitConditionConfig createWaitConditionConfig();
 }

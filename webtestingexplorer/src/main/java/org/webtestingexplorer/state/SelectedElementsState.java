@@ -18,8 +18,8 @@ package org.webtestingexplorer.state;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
+import org.webtestingexplorer.config.selector.WebElementSelector;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
