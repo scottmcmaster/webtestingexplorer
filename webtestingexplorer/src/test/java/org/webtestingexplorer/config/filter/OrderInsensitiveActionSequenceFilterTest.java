@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.webtestingexplorer.config;
+package org.webtestingexplorer.config.filter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,7 @@ import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.SetTextAction;
-import org.webtestingexplorer.config.OrderInsensitiveActionSequenceFilter;
+import org.webtestingexplorer.config.filter.OrderInsensitiveActionSequenceFilter;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 
 import java.util.ArrayDeque;

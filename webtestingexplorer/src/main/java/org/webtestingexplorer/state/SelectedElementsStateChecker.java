@@ -15,7 +15,7 @@ limitations under the License.
 */
 package org.webtestingexplorer.state;
 
-import org.webtestingexplorer.config.selector.WebElementSelector;
+import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.driver.WebDriverWrapper;
 
 /**

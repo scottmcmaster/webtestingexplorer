@@ -18,7 +18,7 @@ package org.webtestingexplorer.driver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.webtestingexplorer.config.selector.WebElementSelector;
+import org.webtestingexplorer.config.WebElementSelector;
 
 import java.util.List;
 

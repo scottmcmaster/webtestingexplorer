@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.webtestingexplorer.config.WebElementSelector;
 
 import java.util.List;
 import java.util.Set;
