@@ -47,7 +47,10 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     ProfilesIni allProfiles = new ProfilesIni();
     System.setProperty("webdriver.firefox.profile","webtestingexplorer");
     String browserProfile = System.getProperty("webdriver.firefox.profile");
-    profile = allProfiles.getProfile(browserProfile); 
+    profile = allProfiles.getProfile(browserProfile);
+    if (profile == null) {
+      throw new RuntimeException("It doesn't look like you have a webdriver.firefox.profile. Please look at http://code.google.com/p/webtestingexplorer/wiki/Building");
+    }
     profile.setAcceptUntrustedCertificates(true);
     profile.setAssumeUntrustedCertificateIssuer(false);
 
