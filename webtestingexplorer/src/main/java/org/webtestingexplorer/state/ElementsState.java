@@ -102,9 +102,9 @@ public abstract class ElementsState implements State {
       // Check existence of an element
       if (otherProperties == null) {
         if (leftToRight) {
-          stateDiff.add(new MissingWebElementStateDifference(identifier, theseProperties, null));        
+          stateDiff.add(new MissingPropertyStateDifference(identifier.toString(), theseProperties, null));        
         } else {
-          stateDiff.add(new MissingWebElementStateDifference(identifier, null, theseProperties));
+          stateDiff.add(new MissingPropertyStateDifference(identifier.toString(), null, theseProperties));
         }
         diffKeys.add(diffKey);
       } else {  

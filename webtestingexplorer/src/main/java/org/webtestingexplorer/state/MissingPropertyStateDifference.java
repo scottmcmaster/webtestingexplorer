@@ -15,28 +15,25 @@ limitations under the License.
 */
 package org.webtestingexplorer.state;
 
-import org.webtestingexplorer.identifiers.WebElementIdentifier;
-
 /**
  * A difference in a property which has two different values.
  * 
  * @author xyuan@google.com (Xun Yuan)
  */
-public class MissingWebElementStateDifference implements StateDifference {
+public class MissingPropertyStateDifference implements StateDifference {
 
-  private final WebElementIdentifier identifier;
+  private final String property;
   private final Object firstStateValue;
   private final Object secondStateValue;
   
-  public MissingWebElementStateDifference(WebElementIdentifier identifier, Object firstStateValue, Object secondStateValue) {
-    super();
-    this.identifier = identifier;
+  public MissingPropertyStateDifference(String property, Object firstStateValue, Object secondStateValue) {
+    this.property = property;
     this.firstStateValue = firstStateValue;
     this.secondStateValue = secondStateValue;
   }
 
-  public WebElementIdentifier getElementIdentifier() {
-    return identifier;
+  public String getProperty() {
+    return property;
   }
   
   @Override
@@ -56,7 +53,7 @@ public class MissingWebElementStateDifference implements StateDifference {
 
   @Override
   public String formatDifference() {
-    return "DiffKey:element-" + identifier.toString() + 
+    return "DiffKey:prop-" + property + 
         " V1:" + formatFirstValue() + " V2:" + formatSecondValue();
   }
 }

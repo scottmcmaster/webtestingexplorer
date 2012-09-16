@@ -22,43 +22,43 @@ import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.XpathWebElementIdentifier;
-import org.webtestingexplorer.state.MissingWebElementStateDifference;
+import org.webtestingexplorer.state.MissingPropertyStateDifference;
 
 
 /**
- * Tests for the {@link MissingWebElementStateDifference} class.
+ * Tests for the {@link MissingPropertyStateDifference} class.
  *  
  * @author xyuan@google.com (Xun Yuan)
  */
-public class MissingWebElementStateDifferenceTest {
+public class MissingPropertyStateDifferenceTest {
 
   @Test
   public void formatFirstValue() {
     WebElementIdentifier identifier = new IdWebElementIdentifier("testID");
-    MissingWebElementStateDifference diff = 
-        new MissingWebElementStateDifference(identifier, "first", null);
+    MissingPropertyStateDifference diff = 
+        new MissingPropertyStateDifference(identifier.toString(), "first", null);
     assertEquals("first", diff.formatFirstValue());
-    assertEquals(identifier.toString(), diff.getElementIdentifier().toString());
+    assertEquals(identifier.toString(), diff.getProperty());
     
-    diff = new MissingWebElementStateDifference(identifier, null, null);
+    diff = new MissingPropertyStateDifference(identifier.toString(), null, null);
     assertEquals("null", diff.formatFirstValue());
   }
 
   @Test
   public void formatSecondValue() {
     WebElementIdentifier identifier = new IndexWebElementIdentifier(12);
-    MissingWebElementStateDifference diff = new MissingWebElementStateDifference(identifier, null, "second");
+    MissingPropertyStateDifference diff = new MissingPropertyStateDifference(identifier.toString(), null, "second");
     assertEquals("second", diff.formatSecondValue());
-    assertEquals(identifier.toString(), diff.getElementIdentifier().toString());
+    assertEquals(identifier.toString(), diff.getProperty());
     
-    diff = new MissingWebElementStateDifference(identifier, null, null);
+    diff = new MissingPropertyStateDifference(identifier.toString(), null, null);
     assertEquals("null", diff.formatSecondValue());
   }
 
   @Test
   public void formatDifference() {
     WebElementIdentifier identifier = new XpathWebElementIdentifier("//div/a[1]");
-    MissingWebElementStateDifference diff = new MissingWebElementStateDifference(identifier, "first", "second");
-    assertEquals("DiffKey:element-xpath=//div/a[1] V1:first V2:second", diff.formatDifference());
+    MissingPropertyStateDifference diff = new MissingPropertyStateDifference(identifier.toString(), "first", "second");
+    assertEquals("DiffKey:prop-xpath=//div/a[1] V1:first V2:second", diff.formatDifference());
   }
 }

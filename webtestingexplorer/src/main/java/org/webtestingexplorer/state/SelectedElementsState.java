@@ -74,12 +74,12 @@ public class SelectedElementsState implements State {
     SelectedElementsState other = (SelectedElementsState) otherState;
     for (WebElementIdentifier identifier : identifiers) {
       if (!other.identifiers.contains(identifier)) {
-        stateDiff.add(new MissingWebElementStateDifference(identifier, identifier, null));        
+        stateDiff.add(new MissingPropertyStateDifference(identifier.toString(), identifier, null));        
       }
     }
     for (WebElementIdentifier identifier : other.identifiers) {
       if (!identifiers.contains(identifier)) {
-        stateDiff.add(new MissingWebElementStateDifference(identifier, null, identifier));        
+        stateDiff.add(new MissingPropertyStateDifference(identifier.toString(), null, identifier));        
       }
     }
     return stateDiff;

@@ -83,18 +83,18 @@ public class SelectedElementsStateTest {
     diff = first.diff(third);
     assertEquals(3, diff.size());
     
-    MissingWebElementStateDifference difference = (MissingWebElementStateDifference) diff.get(0);
-    assertEquals(id2, difference.getElementIdentifier());
+    MissingPropertyStateDifference difference = (MissingPropertyStateDifference) diff.get(0);
+    assertEquals(id2.toString(), difference.getProperty());
     assertEquals(id2.toString(), difference.formatFirstValue());
     assertEquals("null", difference.formatSecondValue());
     
-    difference = (MissingWebElementStateDifference) diff.get(1);
-    assertEquals(id1, difference.getElementIdentifier());
+    difference = (MissingPropertyStateDifference) diff.get(1);
+    assertEquals(id1.toString(), difference.getProperty());
     assertEquals(id1.toString(), difference.formatFirstValue());
     assertEquals("null", difference.formatSecondValue());
     
-    difference = (MissingWebElementStateDifference) diff.get(2);
-    assertEquals(id3, difference.getElementIdentifier());
+    difference = (MissingPropertyStateDifference) diff.get(2);
+    assertEquals(id3.toString(), difference.getProperty());
     assertEquals(id3.toString(), difference.formatSecondValue());
     assertEquals("null", difference.formatFirstValue());
   }  
