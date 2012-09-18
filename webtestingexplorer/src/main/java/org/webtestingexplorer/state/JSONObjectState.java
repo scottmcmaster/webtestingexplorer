@@ -20,6 +20,52 @@ public abstract class JSONObjectState implements State {
 
   private final JSONObject json;
 
+  /**
+   * Looks for differences deeply between two JSONObjects and appends state differences
+   * to the given list.
+   */
+  private static void appendJSONObjectDifferences(JSONObject first, JSONObject second,
+      List<StateDifference> differences) {
+    for (String name : JSONObject.getNames(first)) {
+      Object value = null;
+      try {
+        value = first.get(name);
+      } catch (JSONException e) {
+        // This one can't happen.
+      }
+      
+      Object otherValue = null;
+      try {
+        otherValue = second.get(name);
+      } catch (JSONException e) {
+        differences.add(new MissingPropertyStateDifference(name, value, null));
+        continue;
+      }
+      
+      if (value instanceof JSONObject && otherValue instanceof JSONObject) {
+        appendJSONObjectDifferences((JSONObject) value, (JSONObject) otherValue, differences);
+      } else if (!Objects.equal(value, otherValue)) {
+        differences.add(new PropertyValueStateDifference(null, name, value, otherValue));
+      }
+    }
+    
+    for (String name : JSONObject.getNames(second)) {
+      Object otherValue = null;
+      try {
+        otherValue = second.get(name);
+      } catch (JSONException e) {
+        // This one can't happen.
+      }
+
+      try {
+        first.get(name);
+      } catch (JSONException e) {
+        differences.add(new MissingPropertyStateDifference(name, null, otherValue));
+        continue;
+      }
+    }
+  }
+  
   public JSONObjectState(JSONObject json) {
     this.json = json;
   }
@@ -33,42 +79,7 @@ public abstract class JSONObjectState implements State {
     List<StateDifference> result = Lists.newArrayList();
     JSONObjectState other = (JSONObjectState) otherState;
     JSONObject otherJson = other.json;
-    for (String name : JSONObject.getNames(json)) {
-      Object value = null;
-      try {
-        value = json.get(name);
-      } catch (JSONException e) {
-        // This one can't happen.
-      }
-      
-      Object otherValue = null;
-      try {
-        otherValue = otherJson.get(name);
-      } catch (JSONException e) {
-        result.add(new MissingPropertyStateDifference(name, value, null));
-        continue;
-      }
-      
-      if (!Objects.equal(value, otherValue)) {
-        result.add(new PropertyValueStateDifference(null, name, value, otherValue));
-      }
-    }
-    
-    for (String name : JSONObject.getNames(otherJson)) {
-      Object otherValue = null;
-      try {
-        otherValue = otherJson.get(name);
-      } catch (JSONException e) {
-        // This one can't happen.
-      }
-
-      try {
-        json.get(name);
-      } catch (JSONException e) {
-        result.add(new MissingPropertyStateDifference(name, null, otherValue));
-        continue;
-      }
-    }
+    appendJSONObjectDifferences(json, otherJson, result);
     return result;
   }
 }

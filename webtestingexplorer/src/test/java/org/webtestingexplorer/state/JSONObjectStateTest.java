@@ -18,11 +18,13 @@ public class JSONObjectStateTest {
     JSONObject firstJson = new JSONObject();
     firstJson.put("a", "1");
     firstJson.put("b", "2");
+    firstJson.put("c", new JSONObject().put("d", "5"));
     JSONObjectState first = new TestJSONObjectState(firstJson);
     
     JSONObject secondJson = new JSONObject();
     secondJson.put("b", "2");
     secondJson.put("a", "1");
+    secondJson.put("c", new JSONObject().put("d", "5"));
     JSONObjectState second = new TestJSONObjectState(secondJson);
     
     assertTrue(first.diff(second).isEmpty());
