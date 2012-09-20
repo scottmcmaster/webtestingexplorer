@@ -53,7 +53,7 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     }
     profile.setAcceptUntrustedCertificates(true);
     profile.setAssumeUntrustedCertificateIssuer(false);
-
+    
     // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
     JavaScriptError.addExtension(profile);
     

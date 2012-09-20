@@ -139,7 +139,7 @@ public class ActionSequenceRunner {
           try {
             performAction(driver, action, config.getWaitConditionConfig());
           } catch (Exception e) {
-            throw new RuntimeException("Exception running action: " + action);
+            throw new RuntimeException("Exception running action: " + action, e);
           }
           
           if (config.getOracleConfig() != null) {

@@ -19,6 +19,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.internal.Coordinates;
+import org.openqa.selenium.internal.Locatable;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ import java.util.List;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class WebElementWrapper implements WebElement {
+public class WebElementWrapper implements WebElement, Locatable {
 
   private WebElement element;
   private String tagName;
@@ -128,5 +130,21 @@ public class WebElementWrapper implements WebElement {
   @Override
   public String getCssValue(String propertyName) {
     return element.getCssValue(propertyName);
+  }
+
+  @Override
+  public Coordinates getCoordinates() {
+    if (element instanceof Locatable) {
+      return ((Locatable) element).getCoordinates();
+    }
+    throw new IllegalStateException("Trying to locate a non-Locatable");
+  }
+
+  @Override
+  public Point getLocationOnScreenOnceScrolledIntoView() {
+    if (element instanceof Locatable) {
+      return ((Locatable) element).getLocationOnScreenOnceScrolledIntoView();
+    }
+    throw new IllegalStateException("Trying to locate a non-Locatable");
   }
 }
