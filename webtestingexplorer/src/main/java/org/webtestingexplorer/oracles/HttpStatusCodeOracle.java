@@ -66,6 +66,11 @@ public class HttpStatusCodeOracle implements Oracle {
   }
   
   @Override
+  public void reset() {
+  	// Nothing to do.
+  }
+
+  @Override
   public List<FailureReason> check(WebDriverWrapper driver) {
     List<FailureReason> result = new ArrayList<FailureReason>();
     if (!driver.isUsingProxy()) {

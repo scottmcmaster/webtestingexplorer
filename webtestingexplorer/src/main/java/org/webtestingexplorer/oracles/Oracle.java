@@ -26,6 +26,14 @@ import java.util.List;
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public interface Oracle {
+	
+	/**
+	 * Tells the oracle to reset any internal state it keeps. This will be called
+	 * before each step for an after-action oracle, and before the beginning of
+	 * a test case for a final oracle.
+	 */
+	void reset();
+	
   /**
    * Checks for failure conditions in the web application.
    * 

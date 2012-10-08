@@ -107,18 +107,25 @@ public class ActionSequenceRunner {
   public ActionSequenceResult runActionSequence(ActionSequenceRunnerConfig config)
       throws Exception {
     
+  	// Set up the proxy per the config.
+    long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
+    long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
+    if (config.getWaitConditionConfig() != null) {
+      waitIntervalMillis = config.getWaitConditionConfig().getWaitIntervalMillis();
+      waitTimeoutMillis = config.getWaitConditionConfig().getWaitTimeoutMillis();
+    }
+    updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
+
     int tryNumber = 1;
     while (tryNumber <= config.getNumRetries()) {
       try {
         LOGGER.info("Try #" + tryNumber + ", at url: " + config.getUrl() + " Run action sequence: "
             + config.getActionSequence().toString());
-        long waitIntervalMillis = WaitConditionConfig.DEFAULT_WAIT_INTERVAL_MILLIS;
-        long waitTimeoutMillis = WaitConditionConfig.DEFAULT_WAIT_TIMEOUT_MILLIS;
-        if (config.getWaitConditionConfig() != null) {
-          waitIntervalMillis = config.getWaitConditionConfig().getWaitIntervalMillis();
-          waitTimeoutMillis = config.getWaitConditionConfig().getWaitTimeoutMillis();
+        
+        if (config.getOracleConfig() != null) {
+        	resetOracles(config.getOracleConfig().getAfterActionOracles());
+        	resetOracles(config.getOracleConfig().getFinalOracles());
         }
-        updateProxyResponseWaitTimes(waitIntervalMillis, waitTimeoutMillis);
         
         // TODO(smcmaster): We ought to manage the lifetime of the driver
         // in here instead of leaving it around to be cleaned up later.
@@ -132,6 +139,10 @@ public class ActionSequenceRunner {
         loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
         
         for (int i = 0; i < config.getActionSequence().getActions().size(); ++i) {
+          if (config.getOracleConfig() != null) {
+          	resetOracles(config.getOracleConfig().getAfterActionOracles());
+          }
+
           Action action = config.getActionSequence().getActions().get(i);
           if (config.getBeforeActionCallback() != null) {
             config.getBeforeActionCallback().onBeforeAction(action);
@@ -158,7 +169,8 @@ public class ActionSequenceRunner {
         
         return new ActionSequenceResult(failures);
       } catch (Exception e) {
-        String source = driver.getDriver().getPageSource();
+      	// Page source is sometimes useful for debugging.
+        //String source = driver.getDriver().getPageSource();
         LOGGER.log(Level.SEVERE, "Exception running action sequence: " + config.getActionSequence(), e);
         try { driver.close(); } catch (Exception e2) {}
         ++tryNumber;
@@ -168,6 +180,16 @@ public class ActionSequenceRunner {
   }
 
   /**
+   * Sends the reset message to all of the given oracles.
+   * @param afterActionOracles
+   */
+  private void resetOracles(List<Oracle> oracles) {
+  	for (Oracle oracle : oracles) {
+  		oracle.reset();
+  	}
+	}
+
+	/**
    * Cleans up nicely.
    */
   public void shutdown() {

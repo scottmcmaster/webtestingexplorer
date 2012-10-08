@@ -38,6 +38,11 @@ public class JSErrorCollectorOracle implements Oracle {
   private final static Logger LOGGER = Logger.getLogger(JSErrorCollectorOracle.class.getName());
 
   @Override
+  public void reset() {
+  	// Nothing to do.
+  }
+
+  @Override
   public List<FailureReason> check(WebDriverWrapper driver) {
     if (!(driver.getDriver() instanceof FirefoxDriver)) {
       LOGGER.warning("JSErrorCollectorOracle requires FirefoxDriver, skipping checks");
