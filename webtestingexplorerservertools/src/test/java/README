@@ -1,0 +1,1 @@
+Currently there are no unit tests in servertools, but the source folder needs to exist for referencing projects to properly launch inside Eclipse.
