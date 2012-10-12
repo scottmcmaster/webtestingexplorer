@@ -42,6 +42,7 @@ public class WebTestingExplorerGwtTestApp implements EntryPoint {
     final Button sendButton = new Button("Send");
     final TextBox nameField = new TextBox();
     nameField.setText("GWT User");
+    nameField.ensureDebugId("name"); // SDM
     final Label errorLabel = new Label();
 
     // We can add style names to widgets

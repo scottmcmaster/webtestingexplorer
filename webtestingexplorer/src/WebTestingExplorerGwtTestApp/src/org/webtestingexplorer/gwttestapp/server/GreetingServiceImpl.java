@@ -1,9 +1,14 @@
 package org.webtestingexplorer.gwttestapp.server;
 
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import org.webtestingexplorer.gwttestapp.client.GreetingService;
 import org.webtestingexplorer.gwttestapp.shared.FieldVerifier;
+import org.webtestingexplorer.server.oraclesupport.CollectingLoggingHandler;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -13,6 +18,14 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class GreetingServiceImpl extends RemoteServiceServlet implements
     GreetingService {
 
+	private static final Logger logger = Logger.getLogger("org.webtestingexplorer.gwttestapp.server.GreetingServiceImpl");
+	
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		logger.addHandler(CollectingLoggingHandler.getInstance());
+	}
+	
   public String greetServer(String input) throws IllegalArgumentException {
     // Verify that the input is valid. 
     if (!FieldVerifier.isValidName(input)) {
@@ -32,6 +45,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
     // Escape data from the client to avoid cross-site script vulnerabilities.
     input = escapeHtml(input);
     userAgent = escapeHtml(userAgent);
+    
+  	logger.info("All done");
 
     return "Hello, " + input + "!<br><br>I am running " + serverInfo
         + ".<br><br>It looks like you are using:<br>" + userAgent;
