@@ -47,7 +47,7 @@ import java.util.Set;
  * 
  * @author smcmaster@google.com (Scott McMaster)
  */
-public class WebTestingExplorerMain {
+public class FeedbackFormMain {
 
   @Option(name="-useElementsCache", usage="Whether or not to try your luck with our "+
       "WebDriver Elements cache")
@@ -108,6 +108,6 @@ public class WebTestingExplorerMain {
   }
 
   public static void main(String[] args) throws Exception {
-    new WebTestingExplorerMain().run(args);
+    new FeedbackFormMain().run(args);
   }
 }
