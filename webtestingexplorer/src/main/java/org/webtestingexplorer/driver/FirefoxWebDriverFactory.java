@@ -21,6 +21,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Creates {@link FirefoxDriver}s.
@@ -68,10 +70,12 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
 
   @Override
   public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
-    if (proxy != null) {
-      profile.setProxyPreferences(proxy.getSeleniumProxy());
+    DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+    capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+    if (shouldUseProxy) {
+      capabilities.setCapability(CapabilityType.PROXY, proxy);
     }
-    return new FirefoxDriver(profile);
+    return new FirefoxDriver(capabilities);
   }
 
   @Override
