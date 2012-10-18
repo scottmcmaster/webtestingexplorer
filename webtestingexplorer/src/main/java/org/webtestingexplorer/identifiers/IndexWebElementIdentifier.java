@@ -41,7 +41,7 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
     STATEFUL
   }
   
-  private int index;
+  protected int index;
   private IndexBasis basis;
 
   public IndexWebElementIdentifier(int index) {
@@ -54,18 +54,27 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
     this.basis = basis;
   }
 
-  @Override
-  public WebElementWrapper findElement(WebDriverWrapper driver) {
-    List<WebElementWithIdentifier> allElements;
+  /**
+   * Finds all the web elements with the current basis using the
+   * appropriate selector.
+   */
+	protected List<WebElementWithIdentifier> getAllElementsWithBasis(
+			WebDriverWrapper driver) {
+		List<WebElementWithIdentifier> allElements;
     if (basis == IndexBasis.ACTIONABLE) {
       allElements = driver.getActionableElementsForFrame(frameIdentifier);
     } else {
       allElements = driver.getStatefulElementsForFrame(frameIdentifier);
     }
     assert index < allElements.size();
-    WebElementWithIdentifier elementWithId = allElements.get(index);
-    return new WebElementWrapper(elementWithId.getElement());
-  }
+		return allElements;
+	}
+
+	@Override
+	public WebElementWrapper findElement(WebDriverWrapper driver) {
+		return new WebElementWrapper(
+				getAllElementsWithBasis(driver).get(index).getElement());
+	}
 
   @Override
   public List<WebElementWrapper> findElements(WebDriverWrapper driver) {

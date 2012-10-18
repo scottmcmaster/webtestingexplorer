@@ -15,9 +15,14 @@ limitations under the License.
 */
 package org.webtestingexplorer.driver;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -29,23 +34,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
-import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
-import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
-import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
+import org.webtestingexplorer.identifiers.IndexWebElementIdentifier.IndexBasis;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
-import org.webtestingexplorer.identifiers.IndexWebElementIdentifier.IndexBasis;
 import org.webtestingexplorer.javascript.JavaScriptUtil;
 import org.webtestingexplorer.wait.WaitCondition;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Custom wrapper for WebDriver that adds functionality that we find
@@ -62,6 +59,7 @@ public class WebDriverWrapper {
   private long waitIntervalMillis;
   private long waitTimeoutMillis;  
   private boolean useElementsCache;
+  private WebElementIdGenerator idGenerator;
   
   /**
    * A cache of the results of getAllElements(ForFrame).
@@ -89,6 +87,7 @@ public class WebDriverWrapper {
       long waitIntervalMillis, long waitTimeoutMillis, boolean useElementsCache)
           throws Exception {
     driver = driverFactory.createWebDriver(proxy);
+    idGenerator = new WebElementIdGenerator();
     
     actionableWebElementSelector = WebElementSelectorRegistry.getInstance().getActionable();
     if (actionableWebElementSelector == null) {
@@ -317,9 +316,15 @@ public class WebDriverWrapper {
           continue;
         }
         
+        IndexBasis elementIndexBasis;
+        if (selector == actionableWebElementSelector) {
+        	elementIndexBasis = IndexBasis.ACTIONABLE;
+        } else {
+        	elementIndexBasis = IndexBasis.STATEFUL;
+        }
         frameElementsWithIds.add(new WebElementWithIdentifier(elementWrapper,
-            generateIdentifier(startElementIndex++, element, frameIdentifier,
-                selector)));
+            idGenerator.generateIdentifier(startElementIndex++, element, frameIdentifier,
+            		elementIndexBasis)));
       } catch (Exception e) {
         LOGGER.log(Level.SEVERE, "Exception evaluating element", e);
         throw new RuntimeException(e);
@@ -390,29 +395,6 @@ public class WebDriverWrapper {
     return nameOrId;
   }
   
-  /**
-   * Generate identifier for a WebElement.
-   */
-  private WebElementIdentifier generateIdentifier(int elementIndex, WebElement element,
-      String frameIdentifier, WebElementSelector selector) {
-    String id = element.getAttribute("id");
-    
-    if (id != null && id.length() > 0) {
-      return new IdWebElementIdentifier(id, frameIdentifier);
-    } else {
-      String name = element.getAttribute("name");
-      if (name != null && name.length() > 0) {
-        return new NameWebElementIdentifier(name, frameIdentifier);
-      } else {
-        if (selector == actionableWebElementSelector) {
-          return new IndexWebElementIdentifier(elementIndex, frameIdentifier, IndexBasis.ACTIONABLE);          
-        } else {
-          return new IndexWebElementIdentifier(elementIndex, frameIdentifier, IndexBasis.STATEFUL);
-        }
-      }
-    }
-  }
-
   /**
    * Get given properties of all elements in DOM.
    */
