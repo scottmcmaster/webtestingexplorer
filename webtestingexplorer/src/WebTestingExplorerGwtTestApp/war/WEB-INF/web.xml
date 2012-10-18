@@ -18,12 +18,23 @@
   
   <!-- webtestingexplorer example state servlet -->
   <servlet>
- 	<servlet-name>StateServlet</servlet-name>
- 		<servlet-class>org.webtestingexplorer.gwttestapp.server.StateServlet</servlet-class>
+ 	<servlet-name>JSONSessionStateServlet</servlet-name>
+ 		<servlet-class>org.webtestingexplorer.server.servlets.JSONSessionStateServlet</servlet-class>
 	</servlet>
   <servlet-mapping>
- 	<servlet-name>StateServlet</servlet-name>
-	<url-pattern>/state</url-pattern>
+ 	<servlet-name>JSONSessionStateServlet</servlet-name>
+	<url-pattern>/sessionstate</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- webtestingexplorer example log message collecting servlet -->
+  <servlet>
+ 	<servlet-name>CollectingLoggingServlet</servlet-name>
+ 		<servlet-class>org.webtestingexplorer.server.servlets.CollectingLoggingServlet</servlet-class>
+	</servlet>
+  <servlet-mapping>
+ 	<servlet-name>CollectingLoggingServlet</servlet-name>
+	<url-pattern>/logmessages</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
