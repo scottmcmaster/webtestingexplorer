@@ -40,6 +40,7 @@ import org.webtestingexplorer.state.StateChange;
 import org.webtestingexplorer.state.StateChecker;
 import org.webtestingexplorer.testcase.TestCase;
 import org.webtestingexplorer.testcase.TestCaseConfig;
+import org.webtestingexplorer.testcase.TestCaseWriter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -213,16 +214,14 @@ public class WebTestingExplorer {
                 }
                },
             config.getNumRetries()));
-        if (result.hasErrors()) {
+        if (result.hasFailures()) {
           ++failedCaseCount;
         }
         
         // Check the state and add a new test case if it has changed.
         stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
         if (stateChange.isStateChanged()) {
-          if (config.getTestCaseWriter() != null) {
-            writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState());
-          }
+          writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState(), result);
         }
         
         // Options for checking state:
@@ -260,7 +259,7 @@ public class WebTestingExplorer {
    * Creates and writes out a test case from the given action sequence.
    */
   private void writeTestCase(int testCaseCount, final ActionSequence actionSequence,
-      List<State> finalState) {
+      List<State> finalState, ActionSequenceResult result) {
     String oracleConfigFactoryClassName = null;
     if (config.getOracleConfigFactory() != null) {
       oracleConfigFactoryClassName = config.getOracleConfigFactory().getClass().getName();
@@ -275,7 +274,9 @@ public class WebTestingExplorer {
     TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
         oracleConfigFactoryClassName, waitConditionConfigFactoryClassName,
         buildTestCaseConfig());
-    config.getTestCaseWriter().writeTestCase(testCase, "test-" + testCaseCount + ".xml");
+    for (TestCaseWriter testCaseWriter : config.getTestCaseWriters()) {
+      testCaseWriter.writeTestCase(testCase, testCaseCount, result);
+    }
   }
 
   /**

@@ -29,7 +29,7 @@ import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.ActionSequenceRunner.ActionSequenceResult;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.testcase.TestCase;
-import org.webtestingexplorer.testcase.TestCaseReader;
+import org.webtestingexplorer.testcase.ReplayableTestCaseReader;
 
 import java.io.File;
 import java.util.Collection;
@@ -80,11 +80,11 @@ public class WebTestingExplorerJUnitTestCase {
   
   @Test
   public void runTest() throws Throwable {
-    TestCaseReader reader = new TestCaseReader();
+    ReplayableTestCaseReader reader = new ReplayableTestCaseReader();
     TestCase testCase = reader.readTestCase(inputFile.getAbsolutePath());
     WebTestingReplayerRunner runner = new WebTestingReplayerRunner(actionSequenceRunner);
     ActionSequenceResult result = runner.runTestCase(testCase);
-    if (result.hasErrors()) {
+    if (result.hasFailures()) {
       fail(result.appendFailures());
     }
   }

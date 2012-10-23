@@ -18,7 +18,7 @@ package org.webtestingexplorer.replayer;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.testcase.TestCase;
-import org.webtestingexplorer.testcase.TestCaseReader;
+import org.webtestingexplorer.testcase.ReplayableTestCaseReader;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ public class WebTestingReplayer {
     String input = args[0];
 
     File inputFile = new File(input);
-    TestCaseReader reader = new TestCaseReader();
+    ReplayableTestCaseReader reader = new ReplayableTestCaseReader();
     ActionSequenceRunner actionSequenceRunner = new ActionSequenceRunner(new FirefoxWebDriverFactory());
     if (inputFile.isDirectory()) {
       // Run all the test cases in the directory.

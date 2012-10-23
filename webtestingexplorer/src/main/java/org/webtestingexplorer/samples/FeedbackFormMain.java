@@ -37,7 +37,7 @@ import org.webtestingexplorer.explorer.WebTestingExplorer;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import org.webtestingexplorer.state.CountOfElementsStateChecker;
-import org.webtestingexplorer.testcase.TestCaseWriter;
+import org.webtestingexplorer.testcase.ReplayableTestCaseWriter;
 
 import java.util.List;
 import java.util.Set;
@@ -68,7 +68,7 @@ public class FeedbackFormMain {
         new TagWebElementSelector("input", "textarea", "a", "button", "select"));
     
     WebTestingConfig config = new WebTestingConfig()
-        .setTestCaseWriter(new TestCaseWriter(outputDir))
+        .addTestCaseWriter(new ReplayableTestCaseWriter(outputDir))
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())

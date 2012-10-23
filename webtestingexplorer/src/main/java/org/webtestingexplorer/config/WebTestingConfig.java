@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class WebTestingConfig {
   private String url;
-  private TestCaseWriter testCaseWriter;
+  private List<TestCaseWriter> testCaseWriters = Lists.newArrayList();
   private int maxLength;
   private List<StateChecker> stateCheckers = Lists.newArrayList();
   private List<ActionGeneratorConfig> actionGeneratorConfigs = Lists.newArrayList();
@@ -168,13 +168,13 @@ public class WebTestingConfig {
     return this;
   }
   
-  public TestCaseWriter getTestCaseWriter() {
-    return testCaseWriter;
+  public WebTestingConfig addTestCaseWriter(TestCaseWriter testCaseWriter) {
+    testCaseWriters.add(testCaseWriter);
+    return this;
   }
   
-  public WebTestingConfig setTestCaseWriter(TestCaseWriter testCaseWriter) {
-    this.testCaseWriter = testCaseWriter;
-    return this;
+  public List<TestCaseWriter> getTestCaseWriters() {
+    return testCaseWriters;
   }
   
   public boolean isUseBackButtonAction() {

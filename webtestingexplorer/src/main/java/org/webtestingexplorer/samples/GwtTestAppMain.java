@@ -16,7 +16,7 @@ import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.explorer.WebTestingExplorer;
 import org.webtestingexplorer.oracles.ServerCollectingLoggingOracle;
 import org.webtestingexplorer.state.CountOfElementsStateChecker;
-import org.webtestingexplorer.testcase.TestCaseWriter;
+import org.webtestingexplorer.testcase.ReplayableTestCaseWriter;
 
 import com.google.common.collect.Lists;
 
@@ -43,7 +43,7 @@ public class GwtTestAppMain {
         new TagWebElementSelector("input", "textarea", "a", "button", "select"));
     
     WebTestingConfig config = new WebTestingConfig()
-        .setTestCaseWriter(new TestCaseWriter(outputDir))
+        .addTestCaseWriter(new ReplayableTestCaseWriter(outputDir))
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())

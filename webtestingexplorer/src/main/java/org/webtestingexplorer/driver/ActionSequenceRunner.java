@@ -63,9 +63,9 @@ public class ActionSequenceRunner {
     }
 
     /**
-     * @return whether or not we have errors.
+     * @return whether or not we have failures.
      */
-    public boolean hasErrors() {
+    public boolean hasFailures() {
       return failures != null && !failures.isEmpty();
     }
     
