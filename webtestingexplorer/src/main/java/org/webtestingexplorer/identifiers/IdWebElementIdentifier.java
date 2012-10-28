@@ -67,7 +67,7 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
     if (obj == this) {
       return true;
     }
-    if (!(obj instanceof NameWebElementIdentifier)) {
+    if (!(obj instanceof IdWebElementIdentifier)) {
       return false;
     }
     IdWebElementIdentifier other = (IdWebElementIdentifier) obj;
