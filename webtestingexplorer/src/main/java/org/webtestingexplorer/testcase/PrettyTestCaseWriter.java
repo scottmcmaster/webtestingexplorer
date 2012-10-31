@@ -128,6 +128,9 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
     }
     
     if (result != null) {
+    	if (identifier instanceof IndexWebElementIdentifier) {
+    		result += " at index " + ((IndexWebElementIdentifier) identifier).getIndex();
+    	}
       if (identifier.getFrameIdentifier() != null) {
         result += " in frame " + identifier.getFrameIdentifier();
       }
