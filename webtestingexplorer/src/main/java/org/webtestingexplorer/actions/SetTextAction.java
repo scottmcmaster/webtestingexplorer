@@ -48,6 +48,10 @@ public class SetTextAction extends Action {
     return identifier.toString() + ": SetText(" + keysToSend + ")";
   }
 
+  public String getKeysToSend() {
+    return keysToSend;
+  }
+  
   @Override
   public boolean equals(Object obj) {
     if (obj == this) {

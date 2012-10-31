@@ -23,6 +23,10 @@ public class ClassIndexWebElementIdentifier extends IndexWebElementIdentifier {
 		this.className = className;
 	}
 
+	public String getClassName() {
+	  return className;
+	}
+	
 	@Override
 	public WebElementWrapper findElement(WebDriverWrapper driver) {
 		List<WebElementWithIdentifier> allElements = getAllElementsWithBasis(driver);

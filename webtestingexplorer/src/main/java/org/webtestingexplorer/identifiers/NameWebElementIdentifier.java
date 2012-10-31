@@ -79,4 +79,8 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
   public int hashCode() {
     return new HashCodeBuilder().appendSuper(super.hashCode()).append(name).hashCode();
   }
+
+  public String getName() {
+    return name;
+  }
 }

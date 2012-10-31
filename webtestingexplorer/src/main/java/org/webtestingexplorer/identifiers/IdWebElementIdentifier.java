@@ -42,6 +42,10 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
     this.id = id;
   }
 
+  public String getId() {
+    return id;
+  }
+  
   @Override
   public WebElementWrapper findElement(WebDriverWrapper driver) {
     return new WebElementWrapper(driver.findElementInFrame(By.id(id), frameIdentifier));

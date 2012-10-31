@@ -23,6 +23,10 @@ public class TagIndexWebElementIdentifier extends IndexWebElementIdentifier {
 		this.tagName = tagName;
 	}
 
+	public String getTagName() {
+	  return tagName;
+	}
+	
 	@Override
 	public WebElementWrapper findElement(WebDriverWrapper driver) {
 		List<WebElementWithIdentifier> allElements = getAllElementsWithBasis(driver);

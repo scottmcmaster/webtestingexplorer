@@ -47,6 +47,10 @@ public class SelectAction extends Action {
     element.selectByIndex(optionIndex);
   }
   
+  public int getOptionIndex() {
+    return optionIndex;
+  }
+  
   @Override
   public String toString() {
     return identifier.toString() + ": Select(" + optionIndex + ")";

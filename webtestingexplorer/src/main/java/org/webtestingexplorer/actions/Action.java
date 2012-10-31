@@ -51,7 +51,7 @@ public abstract class Action {
   
   abstract public void perform(WebDriverWrapper driver);
   
-  WebElementIdentifier getIdentifier() {
+  public WebElementIdentifier getIdentifier() {
     return identifier;
   }
   

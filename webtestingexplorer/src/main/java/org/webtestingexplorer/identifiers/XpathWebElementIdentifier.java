@@ -92,4 +92,8 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   public int hashCode() {
     return new HashCodeBuilder().appendSuper(super.hashCode()).append(xpath).hashCode();
   }
+
+  public String getXpath() {
+    return xpath;
+  }
 }
