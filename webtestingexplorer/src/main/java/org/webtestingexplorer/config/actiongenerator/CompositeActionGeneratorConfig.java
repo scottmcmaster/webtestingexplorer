@@ -29,7 +29,7 @@ import java.util.Set;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public class CompositeActionGeneratorConfig implements ActionGeneratorConfig {
+public class CompositeActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private final ActionGeneratorConfig first;
   private final ActionGeneratorConfig second;

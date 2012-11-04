@@ -25,6 +25,7 @@ import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.config.actiongenerator.CompositeActionGeneratorConfig;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -64,6 +65,11 @@ public class CompositeActionGeneratorConfigTest {
           public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
             return Sets.<Action>newHashSet(new BackAction());
           }
+          
+          @Override
+          public boolean isActive(WebDriverWrapper driver) {
+            return true;
+          }
         },
         new ActionGeneratorConfig() {
           
@@ -75,6 +81,11 @@ public class CompositeActionGeneratorConfigTest {
           @Override
           public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
             return Sets.<Action>newHashSet(new ForwardAction());
+          }
+          
+          @Override
+          public boolean isActive(WebDriverWrapper driver) {
+            return true;
           }
         });
     return config;

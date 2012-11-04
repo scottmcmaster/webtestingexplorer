@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
-import org.webtestingexplorer.config.WebTestingConfig;
 import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
@@ -40,16 +39,11 @@ public class ActionGenerator {
 
   private final static Logger LOGGER = Logger.getLogger(ActionGenerator.class.getName());
 
-  private WebTestingConfig config;
-
-  public ActionGenerator(WebTestingConfig config) {
-    this.config = config;
-  }
-  
   /**
    * Builds the list of actions to take on a given element.
    */
   public Set<Action> generateActionsForElement(WebDriverWrapper driver,
+      List<ActionGeneratorConfig> actionGeneratorConfigs,
       WebElementWithIdentifier elementWithId) {
     
     WebElement element = elementWithId.safeGetElement(driver);
@@ -66,7 +60,7 @@ public class ActionGenerator {
     Set<Action> actions = Sets.newHashSet();
     
     // Look for a specific action configuration.
-    for (ActionGeneratorConfig actionConfig : config.getActionGeneratorConfigs()) {
+    for (ActionGeneratorConfig actionConfig : actionGeneratorConfigs) {
       if (actionConfig.matches(elementWithId)) {
         return actionConfig.generateActions(elementWithId);
       }

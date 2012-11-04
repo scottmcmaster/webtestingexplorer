@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.webtestingexplorer.config.actiongenerator;
 
-import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
@@ -25,7 +24,7 @@ import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public abstract class IdentifierActionGeneratorConfig implements ActionGeneratorConfig {
+public abstract class IdentifierActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private WebElementIdentifier identifier;
   

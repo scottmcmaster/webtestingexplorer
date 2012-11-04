@@ -25,6 +25,7 @@ import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.RefreshAction;
+import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.config.ActionSequenceFilter;
 import org.webtestingexplorer.config.EquivalentWebElementsSet;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
@@ -69,7 +70,7 @@ public class WebTestingExplorer {
   
   public WebTestingExplorer(WebTestingConfig config) throws Exception {
     this.config = config;
-    this.actionGenerator = new ActionGenerator(config);
+    this.actionGenerator = new ActionGenerator();
     this.runner = new ActionSequenceRunner(config.getWebDriverFactory());
   }
 
@@ -138,8 +139,14 @@ public class WebTestingExplorer {
           elementWithId);
       
       if (shouldAddActions) {
+        List<ActionGeneratorConfig> actionGeneratorConfigs = Lists.newArrayList();
+        for (ActionGeneratorConfig actionGeneratorConfig : config.getActionGeneratorConfigs()) {
+          if (actionGeneratorConfig.isActive(runner.getDriver())) {
+            actionGeneratorConfigs.add(actionGeneratorConfig);
+          }
+        }
         Set<Action> newActions = actionGenerator.generateActionsForElement(
-            runner.getDriver(), elementWithId);
+            runner.getDriver(), actionGeneratorConfigs, elementWithId);
         actions.addAll(newActions);
       }
     }

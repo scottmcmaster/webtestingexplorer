@@ -15,13 +15,12 @@ limitations under the License.
 */
 package org.webtestingexplorer.config.actiongenerator;
 
-import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
-public abstract class TagActionGeneratorConfig implements ActionGeneratorConfig {
+public abstract class TagActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private String tag;
   

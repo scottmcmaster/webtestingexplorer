@@ -19,7 +19,6 @@ package org.webtestingexplorer.config.actiongenerator;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public abstract class XpathActionGeneratorConfig implements ActionGeneratorConfig {
+public abstract class XpathActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private final String xpath;
   

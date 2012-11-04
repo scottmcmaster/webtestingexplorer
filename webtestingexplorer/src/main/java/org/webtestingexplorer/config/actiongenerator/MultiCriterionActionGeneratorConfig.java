@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.webtestingexplorer.config.actiongenerator;
 
-import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.regex.Pattern;
@@ -28,7 +27,7 @@ import java.util.regex.Pattern;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
-public abstract class MultiCriterionActionGeneratorConfig implements ActionGeneratorConfig {
+public abstract class MultiCriterionActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private final Pattern tagPattern;
   private final Pattern idPattern;

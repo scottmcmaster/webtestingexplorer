@@ -16,6 +16,7 @@ limitations under the License.
 package org.webtestingexplorer.config;
 
 import org.webtestingexplorer.actions.Action;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -26,6 +27,12 @@ import java.util.Set;
  * @author smcmaster@google.com (Scott McMaster)
  */
 public interface ActionGeneratorConfig {
+  /** Whether or not this action generator applies to the given element. */
   boolean matches(WebElementWithIdentifier elementWithId);
+  
+  /** Returns the set of actions to explore for the given element. */
   Set<Action> generateActions(WebElementWithIdentifier elementWithId);
+  
+  /** Returns whether or not this action generator should apply to the current state of the driver. */
+  boolean isActive(WebDriverWrapper driver);
 }

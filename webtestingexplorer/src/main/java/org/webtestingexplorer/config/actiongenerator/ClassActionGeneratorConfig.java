@@ -17,7 +17,6 @@ package org.webtestingexplorer.config.actiongenerator;
 
 import com.google.common.collect.Sets;
 
-import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -27,7 +26,7 @@ import java.util.Set;
  * 
  * @author smcmaster@google.com (Scott McMaster)
  */
-public abstract class ClassActionGeneratorConfig implements ActionGeneratorConfig {
+public abstract class ClassActionGeneratorConfig extends AbstractActionGeneratorConfig {
 
   private String classValue;
   
