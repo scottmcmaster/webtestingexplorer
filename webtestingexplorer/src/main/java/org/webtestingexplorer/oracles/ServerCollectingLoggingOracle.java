@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
  * 
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
+@SuppressWarnings("javadoc")
 public class ServerCollectingLoggingOracle implements Oracle {
 
   private final static Logger LOGGER = Logger.getLogger(ServerCollectingLoggingOracle.class.getName());

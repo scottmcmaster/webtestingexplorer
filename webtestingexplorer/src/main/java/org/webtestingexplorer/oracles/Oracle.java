@@ -27,19 +27,18 @@ import java.util.List;
  */
 public interface Oracle {
 	
-	/**
-	 * Tells the oracle to reset any internal state it keeps. This will be called
-	 * before each step for an after-action oracle, and before the beginning of
-	 * a test case for a final oracle.
-	 */
-	void reset();
-	
+  /**
+   * Tells the oracle to reset any internal state it keeps. This will be called before each step for
+   * an after-action oracle, and before the beginning of a test case for a final oracle.
+   */
+  void reset();
+
   /**
    * Checks for failure conditions in the web application.
    * 
    * @param driver the web driver from where we can get the state we
    *    need to do the checking.
-   * @return a list of failure reasons, which may be empty if no failures
+   * @return a list of failure reasons, which may be empty OR null if no failures
    *    are detected.
    */
   List<FailureReason> check(WebDriverWrapper driver);

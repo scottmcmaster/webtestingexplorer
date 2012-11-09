@@ -3,11 +3,13 @@ package org.webtestingexplorer.testcase;
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ClickAction;
+import org.webtestingexplorer.actions.CompositeAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.HoverAction;
 import org.webtestingexplorer.actions.RefreshAction;
 import org.webtestingexplorer.actions.SelectAction;
 import org.webtestingexplorer.actions.SetTextAction;
+import org.webtestingexplorer.actions.WaitAction;
 import org.webtestingexplorer.driver.ActionSequenceRunner.ActionSequenceResult;
 import org.webtestingexplorer.identifiers.ClassIndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
@@ -21,6 +23,7 @@ import org.webtestingexplorer.oracles.FailureReason;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,10 +61,17 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
       out = new BufferedWriter(new FileWriter(new File(fullPath)));
       int stepNum = 1;
       for (Action action : testCase.getActionSequence().getActions()) {
-        String line = "" + stepNum + ". " + formatAction(action);
-        out.write(line);
-        out.newLine();
-        ++stepNum;
+        
+        if (action instanceof CompositeAction) {
+          CompositeAction composite = (CompositeAction) action;
+          for (Action inner : composite.getActions()) {
+            writeAction(out, stepNum, inner);
+            ++stepNum;
+          }
+        } else {
+          writeAction(out, stepNum, action);
+          ++stepNum;
+        }
       }
       out.newLine();
       
@@ -84,6 +94,12 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
     }
   }
 
+  private void writeAction(BufferedWriter out, int stepNum, Action action) throws IOException {
+    String line = "" + stepNum + ". " + formatAction(action);
+    out.write(line);
+    out.newLine();
+  }
+
   /**
    * Formats the given action in the "pretty" format.
    */
@@ -96,6 +112,8 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
       return "Refresh the page";
     } else if (action instanceof ClickAction) {
       return "Click " + formatIdentifier(action.getIdentifier());
+    } else if (action instanceof WaitAction) {
+      return "Wait " + (((WaitAction) action).getMillis() / 1000) + " seconds";
     } else if (action instanceof HoverAction) {
       return "Hover over " + formatIdentifier(action.getIdentifier());
     } else if (action instanceof SetTextAction) {

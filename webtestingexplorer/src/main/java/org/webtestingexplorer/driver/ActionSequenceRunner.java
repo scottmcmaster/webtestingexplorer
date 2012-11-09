@@ -181,13 +181,12 @@ public class ActionSequenceRunner {
 
   /**
    * Sends the reset message to all of the given oracles.
-   * @param afterActionOracles
    */
   private void resetOracles(List<Oracle> oracles) {
-  	for (Oracle oracle : oracles) {
-  		oracle.reset();
-  	}
-	}
+    for (Oracle oracle : oracles) {
+      oracle.reset();
+    }
+  }
 
 	/**
    * Cleans up nicely.
@@ -227,7 +226,10 @@ public class ActionSequenceRunner {
     List<FailureReason> failureReasons = new ArrayList<FailureReason>();
     for (Oracle oracle : oracles) {
       LOGGER.info("Checking for failures using oracle " + oracle.getClass().getSimpleName());
-      failureReasons.addAll(oracle.check(driver));
+      List<FailureReason> oracleReasons = oracle.check(driver);
+      if (oracleReasons != null) {
+        failureReasons.addAll(oracleReasons);
+      }
     }
     if (!failureReasons.isEmpty()) {
       // Create a failure.

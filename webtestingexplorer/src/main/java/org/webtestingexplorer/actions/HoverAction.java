@@ -16,6 +16,8 @@ limitations under the License.
 package org.webtestingexplorer.actions;
 
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.webtestingexplorer.driver.WebDriverWrapper;
@@ -55,5 +57,23 @@ public class HoverAction extends Action {
   @Override
   public String toString() {
     return identifier.toString() + ": Hover()";
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof HoverAction)) {
+      return false;
+    }
+    HoverAction other = (HoverAction) obj;
+    return new EqualsBuilder().appendSuper(super.equals(obj))
+        .append(hoverDelayMillis, other.hoverDelayMillis).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(hoverDelayMillis).hashCode();
   }
 }
