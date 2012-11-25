@@ -21,10 +21,12 @@ import com.google.common.collect.Sets;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
+import org.webtestingexplorer.config.actiongenerator.TagActionGeneratorConfig;
 import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -33,72 +35,51 @@ import java.util.logging.Logger;
 /**
  * Generates possible {@link Action}s given an element and a configuration.
  * 
- * @author smcmaster@google.com (Scott McMaster)
+ * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public class ActionGenerator {
 
   private final static Logger LOGGER = Logger.getLogger(ActionGenerator.class.getName());
 
+  private List<ActionGeneratorConfig> defaultActionGeneratorConfigs;
+  
+  public ActionGenerator() {
+    defaultActionGeneratorConfigs = Lists.newArrayList();
+    defaultActionGeneratorConfigs.add(new DefaultButtonActionGeneratorConfig());
+    defaultActionGeneratorConfigs.add(new DefaultInputActionGeneratorConfig());
+    defaultActionGeneratorConfigs.add(new DefaultSelectActionGeneratorConfig());
+    defaultActionGeneratorConfigs.add(new DefaultTextAreaActionGeneratorConfig());
+  }
+  
   /**
    * Builds the list of actions to take on a given element.
    */
   public Set<Action> generateActionsForElement(WebDriverWrapper driver,
-      List<ActionGeneratorConfig> actionGeneratorConfigs,
+      List<ActionGeneratorConfig> customActionGeneratorConfigs,
       WebElementWithIdentifier elementWithId) {
     
-    WebElement element = elementWithId.safeGetElement(driver);
-    WebElementIdentifier identifier = elementWithId.getIdentifier();
-    String type = element.getAttribute("type");
-    String role = element.getAttribute("role");
-    String ariaDisabled = element.getAttribute("aria-disabled");
-    
     // WebDriver can only interact with visible elements.
+    WebElement element = elementWithId.safeGetElement(driver);
     if (!element.isDisplayed() || !element.isEnabled()) {
       return Sets.newHashSet();
     }
+        
+    // We set this up to first look for custom action generator configs
+    // in the reverse order that they were added. Then if we haven't
+    // matched any custom ones, we check the default ones.
+    List<ActionGeneratorConfig> allActionGeneratorConfigs = Lists.newArrayList();
+    allActionGeneratorConfigs.addAll(customActionGeneratorConfigs);
+    Collections.reverse(allActionGeneratorConfigs);
+    allActionGeneratorConfigs.addAll(defaultActionGeneratorConfigs);
     
-    Set<Action> actions = Sets.newHashSet();
-    
-    // Look for a specific action configuration.
-    for (ActionGeneratorConfig actionConfig : actionGeneratorConfigs) {
+    for (ActionGeneratorConfig actionConfig : allActionGeneratorConfigs) {
       if (actionConfig.matches(elementWithId)) {
+        LOGGER.log(Level.FINE, "Generated actions for element " + elementWithId.getIdentifier());
         return actionConfig.generateActions(elementWithId);
       }
     }
-    
-    // Otherwise generate the default actions.
-    if ("input".equals(element.getTagName())) {
-      if ("submit".equals(type)) {
-        actions.add(new ClickAction(identifier));
-      } else if ("text".equals(type) || "password".equals(type)) {
-        actions.addAll(createDefaultTextWidgetActions(identifier));
-      } else if ("checkbox".equals(type) || "radio".equals(type)) {
-        // TODO(smcmaster): I think ClickAction should be fine for these and they don't
-        // need their own specific action types. But I need to confirm on an example...
-        actions.add(new ClickAction(identifier));
-      }
-    } else if ("textarea".equals(element.getTagName())) {
-      actions.addAll(createDefaultTextWidgetActions(identifier));
-    } else if ("a".equals(element.getTagName())) {
-      actions.add(new ClickAction(identifier));
-    } else if ("button".equals(element.getTagName()) ||
-        ("button".equals(role) && (ariaDisabled == null || "false".equals(ariaDisabled)))) {
-      actions.add(new ClickAction(identifier));      
-    } else if ("select".equals(element.getTagName())) {
-      // Default to selecting each of the first two options.
-      // TODO(smcmaster): Enhance the API to allow customizing this behavior.
-      Select select = new Select(element);
-      int numActions = 0;
-      if (select.getOptions().size() >= 0) {
-        ++numActions;
-      }
-      if (select.getOptions().size() >= 1) {
-        ++numActions;
-      }
-      actions.addAll(createDefaultSelectWidgetActions(identifier, numActions));
-    }
-    LOGGER.log(Level.FINE, "Generated actions for element " + elementWithId.getIdentifier());
-    return actions;
+    LOGGER.log(Level.FINE, "No actions generated for element " + elementWithId.getIdentifier());
+    return Sets.newHashSet();
   }
 
   /**
@@ -118,5 +99,78 @@ public class ActionGenerator {
    */
   public static List<Action> createDefaultTextWidgetActions(WebElementIdentifier identifier) {
     return Lists.<Action>newArrayList(new SetTextAction(identifier, "TESTING"));
+  }
+  
+  private static class DefaultInputActionGeneratorConfig extends TagActionGeneratorConfig {
+    public DefaultInputActionGeneratorConfig() {
+      super("input");
+    }
+    
+    @Override
+    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+      Set<Action> actions = Sets.newHashSet();
+      String type = elementWithId.getElement().getAttribute("type");
+      if ("submit".equals(type)) {
+        actions.add(new ClickAction(elementWithId.getIdentifier()));
+      } else if ("text".equals(type) || "password".equals(type)) {
+        actions.addAll(createDefaultTextWidgetActions(elementWithId.getIdentifier()));
+      } else if ("checkbox".equals(type) || "radio".equals(type)) {
+        actions.add(new ClickAction(elementWithId.getIdentifier()));
+      }
+      return actions;
+    }
+  }
+  
+  private static class DefaultTextAreaActionGeneratorConfig extends TagActionGeneratorConfig {
+    public DefaultTextAreaActionGeneratorConfig() {
+      super("textarea");
+    }
+    
+    @Override
+    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+      Set<Action> actions = Sets.newHashSet();
+      actions.addAll(createDefaultTextWidgetActions(elementWithId.getIdentifier()));
+      return actions;
+    }
+  }
+  
+  private static class DefaultSelectActionGeneratorConfig extends TagActionGeneratorConfig {
+    public DefaultSelectActionGeneratorConfig() {
+      super("select");
+    }
+    
+    @Override
+    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+      Set<Action> actions = Sets.newHashSet();
+      // Default to selecting each of the first two options.
+      // TODO(smcmaster): Enhance the API to allow customizing this behavior.
+      Select select = new Select(elementWithId.getElement());
+      int numActions = 0;
+      if (select.getOptions().size() >= 0) {
+        ++numActions;
+      }
+      if (select.getOptions().size() >= 1) {
+        ++numActions;
+      }
+      actions.addAll(createDefaultSelectWidgetActions(elementWithId.getIdentifier(), numActions));
+      return actions;
+    }
+  }
+  
+  private static class DefaultButtonActionGeneratorConfig extends TagActionGeneratorConfig {
+    public DefaultButtonActionGeneratorConfig() {
+      super("button");
+    }
+    
+    @Override
+    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+      String role = elementWithId.getElement().getAttribute("role");
+      String ariaDisabled = elementWithId.getElement().getAttribute("aria-disabled");
+      Set<Action> actions = Sets.newHashSet();
+      if ("button".equals(role) && (ariaDisabled == null || "false".equals(ariaDisabled))) {
+        actions.add(new ClickAction(elementWithId.getIdentifier()));      
+      }
+      return actions;
+    }
   }
 }
