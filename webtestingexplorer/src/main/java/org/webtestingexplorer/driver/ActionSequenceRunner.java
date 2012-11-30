@@ -211,7 +211,7 @@ public class ActionSequenceRunner {
       WaitConditionConfig waitConditionConfig) {
     List<WaitCondition> initialWaitConditions = null;
     if (waitConditionConfig != null) {
-      waitConditionConfig.getInitialWaitConditions();
+    	initialWaitConditions = waitConditionConfig.getInitialWaitConditions();
     }
     driver.get(url, initialWaitConditions);
   }
