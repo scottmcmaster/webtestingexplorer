@@ -1,5 +1,5 @@
 /*
-Copyright 2011 Google Inc. All Rights Reserved.
+Copyright 2012 Google Inc. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,37 +32,54 @@ public class ClassWebElementSelector implements WebElementSelector {
   private final static Logger LOGGER =
 		      Logger.getLogger(ClassWebElementSelector.class.getName());
 
-  private String xpath;
+  private final String xpath;
+  private final int maxElementsSelected;
+  
+  /**
+   * @param isAccurate whether to do an exact match or contains() on the class names.
+   * @param maxElementsSelected the maximum number of elements to return (0 means 'all').
+   * @param classes a list of the classes to select from.
+   */
+  public ClassWebElementSelector(boolean isAccurate, int maxElementsSelected,
+      String... classes) {
+    this.maxElementsSelected = maxElementsSelected;
+    StringBuilder xpathBuilder = new StringBuilder();
+    for (String oneClass : classes) {
+      if (xpathBuilder.length() > 0) {
+        xpathBuilder.append(" | ");
+      }
+      
+      xpathBuilder.append("//*[");
+      
+      if (isAccurate) {
+        xpathBuilder.append("@class=\"");
+      } else {
+        xpathBuilder.append("contains(@class, \"");
+      }
+      
+      xpathBuilder.append(oneClass);
+      
+      if (isAccurate) {
+        xpathBuilder.append("\"");
+      } else {
+        xpathBuilder.append("\")");
+      }
+      xpathBuilder.append("]");
+    }
+    this.xpath = xpathBuilder.toString();
+    LOGGER.info("ClassWebElementSelector xpath=" + xpath);
+  }
   
   public ClassWebElementSelector(boolean isAccurate, String... classes) {
-    xpath = "";
-    for (String oneClass : classes) {
-      if (xpath.length() > 0) {
-        xpath += " | ";
-      }
-      
-      xpath += "//*[";
-      
-      if (isAccurate) {
-    	  xpath +="@class=\"";
-      } else {
-    	  xpath +="contains(@class, \"";
-      }
-      
-      xpath += oneClass;
-      
-      if (isAccurate) {
-    	  xpath += "\"";
-      } else {
-    	  xpath += "\")";
-      }
-      xpath += "]";
-    }
-    LOGGER.info("ClassWebElementSelector xpath=" + xpath); 
+    this(isAccurate, 0, classes);
   }
   
   @Override
   public List<WebElement> select(WebDriver driver) {
-    return driver.findElements(By.xpath(xpath));
+    List<WebElement> elements = driver.findElements(By.xpath(xpath));
+    if (maxElementsSelected > 0) {
+      return elements.subList(0, maxElementsSelected);
+    }
+    return elements;
   }
 }
