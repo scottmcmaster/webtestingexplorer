@@ -467,8 +467,9 @@ public class WebDriverWrapper {
       try {
         FileUtils.deleteDirectory(profileDir);
       } catch (IOException e) {
+        // The directory was probably cleaned up correctly by the library in this case.
         LOGGER.log(Level.WARNING,
-            "Failed to delete tmp profile directory: " + profileDir.getAbsolutePath(), e);
+            "Failed to delete tmp profile directory: " + profileDir.getAbsolutePath());
       }
     }
   }

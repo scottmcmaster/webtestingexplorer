@@ -36,11 +36,15 @@ import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.explorer.WebTestingExplorer;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
+import org.webtestingexplorer.javascript.JavaScriptUtil;
 import org.webtestingexplorer.state.CountOfElementsStateChecker;
 import org.webtestingexplorer.testcase.ReplayableTestCaseWriter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.LogManager;
 
 /**
  * Entry point for the application that tries things out.
@@ -107,7 +111,24 @@ public class FeedbackFormMain {
     return new OrderInsensitiveActionSequenceFilter(actions);
   }
 
+  private static void setupLogging() {
+    // Work around annoying browsermob issue
+    // https://github.com/webmetrics/browsermob-proxy/issues/77
+    new org.browsermob.proxy.util.Log();
+    
+    InputStream in = null;
+    try {
+        in = JavaScriptUtil.class.getResourceAsStream("/logging.properties");
+        LogManager.getLogManager().readConfiguration(in);
+    } catch (IOException ex) {
+        System.err.println("WARNING: Logging not configured (console output only)");
+    } finally {
+      try { in.close(); } catch (Exception e) {}
+    }
+  }
+  
   public static void main(String[] args) throws Exception {
+    setupLogging();
     new FeedbackFormMain().run(args);
   }
 }
