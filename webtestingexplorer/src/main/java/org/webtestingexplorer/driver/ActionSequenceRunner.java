@@ -188,13 +188,14 @@ public class ActionSequenceRunner {
     }
   }
 
-	/**
+  /**
    * Cleans up nicely.
    */
-  public void shutdown() {
+  public void shutdown() throws Exception {
     if (proxy != null) {
       proxy.stop();
     }
+    driverFactory.term();
   }
 
   /**

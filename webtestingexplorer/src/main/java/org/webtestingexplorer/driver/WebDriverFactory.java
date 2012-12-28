@@ -30,6 +30,11 @@ public interface WebDriverFactory {
   public void init() throws Exception;
   
   /**
+   * Called to allow the factory to shut down politely.
+   */
+  public void term() throws Exception;
+  
+  /**
    * Creates a {@link WebDriver} with a proxy.
    */
   WebDriver createWebDriver(WebDriverProxy proxy) throws Exception;

@@ -17,8 +17,12 @@ package org.webtestingexplorer.driver;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import java.io.File;
 
 /**
  * Creates {@link ChromeDriver}s.
@@ -27,13 +31,15 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  */
 public class ChromeWebDriverFactory implements WebDriverFactory {
 
+  private ChromeDriverService driverService;
+  
   @Override
   public WebDriver createWebDriver(WebDriverProxy proxy) throws Exception {
-    DesiredCapabilities driverCapabilities = new DesiredCapabilities();
+    DesiredCapabilities driverCapabilities = DesiredCapabilities.chrome();
     if (proxy != null) {
       driverCapabilities.setCapability(CapabilityType.PROXY, proxy.getSeleniumProxy());
     }
-    return new ChromeDriver(driverCapabilities);
+    return new RemoteWebDriver(driverService.getUrl(), driverCapabilities);
   }
 
   @Override
@@ -43,6 +49,15 @@ public class ChromeWebDriverFactory implements WebDriverFactory {
 
   @Override
   public void init() throws Exception {
-    // Nothing to do.
+    driverService = new ChromeDriverService.Builder()
+      .usingDriverExecutable(new File(System.getProperty("webdriver.chrome.driver")))
+      .usingAnyFreePort()
+      .build();
+    driverService.start();
+  }
+
+  @Override
+  public void term() throws Exception {
+    driverService.stop();
   }
 }

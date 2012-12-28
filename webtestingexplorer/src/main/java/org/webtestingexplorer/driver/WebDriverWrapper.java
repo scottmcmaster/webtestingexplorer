@@ -452,7 +452,7 @@ public class WebDriverWrapper {
   public void close() {
     for (String windowHandle : driver.getWindowHandles()) {
       driver.switchTo().window(windowHandle);
-      driver.close();
+      driver.quit();
     }
     
     // Work around crazy WebDriver bug described here:

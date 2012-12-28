@@ -82,4 +82,9 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
   public boolean shouldUseProxy() {
     return shouldUseProxy;
   }
+
+  @Override
+  public void term() throws Exception {
+    // Nothing to do.
+  }
 }

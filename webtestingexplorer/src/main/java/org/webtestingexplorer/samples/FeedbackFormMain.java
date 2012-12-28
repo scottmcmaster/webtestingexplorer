@@ -32,6 +32,7 @@ import org.webtestingexplorer.config.actiongenerator.MultiCriterionActionGenerat
 import org.webtestingexplorer.config.filter.MaxRepeatedActionSequenceFilter;
 import org.webtestingexplorer.config.filter.OrderInsensitiveActionSequenceFilter;
 import org.webtestingexplorer.config.selector.TagWebElementSelector;
+import org.webtestingexplorer.driver.ChromeWebDriverFactory;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
 import org.webtestingexplorer.explorer.WebTestingExplorer;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
@@ -78,6 +79,7 @@ public class FeedbackFormMain {
         .addStateChecker(new CountOfElementsStateChecker())
         .setOracleConfigFactory(new SampleOracleConfigFactory())
         .setWebDriverFactory(new FirefoxWebDriverFactory(true))
+        //.setWebDriverFactory(new ChromeWebDriverFactory())
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
         .addActionSequenceFilter(createNoTextboxOrderingActionSequenceFilter())
