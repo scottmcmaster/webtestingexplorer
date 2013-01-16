@@ -25,11 +25,14 @@ import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.driver.WebElementWrapper;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class NameWebElementIdentifier extends WebElementIdentifier {
+
+  private final static Logger LOGGER = Logger.getLogger(NameWebElementIdentifier.class.getName());
 
   private String name;
 
@@ -44,7 +47,12 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
 
   @Override
   public WebElementWrapper findElement(WebDriverWrapper driver) {
-    return new WebElementWrapper(driver.findElementInFrame(By.name(name), frameIdentifier));
+    WebElement element = driver.findElementInFrame(By.name(name), frameIdentifier);
+    if (element != null) {
+      return new WebElementWrapper(element);
+    }
+    LOGGER.warning("Failed to find " + toString());
+    return null;
   }
 
   @Override

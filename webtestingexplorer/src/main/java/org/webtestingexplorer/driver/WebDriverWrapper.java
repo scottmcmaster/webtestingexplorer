@@ -150,7 +150,10 @@ public class WebDriverWrapper {
     if (elements.size() > 1) {
       LOGGER.warning("Found multiple elements for " + by + ", returning the first one");
     }
-    return elements.get(0);
+    if (!elements.isEmpty()) {
+      return elements.get(0);
+    }
+    return null;
   }
 
   /**

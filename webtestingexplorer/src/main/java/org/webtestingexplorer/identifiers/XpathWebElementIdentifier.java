@@ -28,11 +28,14 @@ import org.webtestingexplorer.driver.WebElementWrapper;
 import org.webtestingexplorer.javascript.JavaScriptUtil;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author xyuan@google.com (Xun Yuan)
  */
 public class XpathWebElementIdentifier extends WebElementIdentifier {
+
+  private final static Logger LOGGER = Logger.getLogger(XpathWebElementIdentifier.class.getName());
 
   private String xpath;
 
@@ -57,7 +60,12 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
   
   @Override
   public WebElementWrapper findElement(WebDriverWrapper driver) {
-    return new WebElementWrapper(driver.findElementInFrame(By.xpath(xpath), frameIdentifier));
+    WebElement element = driver.findElementInFrame(By.xpath(xpath), frameIdentifier);
+    if (element !=  null) {
+      return new WebElementWrapper(element);
+    }
+    LOGGER.warning("Failed to find " + toString());
+    return null;
   }
 
   @Override
