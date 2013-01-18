@@ -28,10 +28,10 @@ import java.util.Set;
  */
 public interface ActionGeneratorConfig {
   /** Whether or not this action generator applies to the given element. */
-  boolean matches(WebElementWithIdentifier elementWithId);
+  boolean matches(WebDriverWrapper driver, WebElementWithIdentifier elementWithId);
   
   /** Returns the set of actions to explore for the given element. */
-  Set<Action> generateActions(WebElementWithIdentifier elementWithId);
+  Set<Action> generateActions(WebDriverWrapper driver, WebElementWithIdentifier elementWithId);
   
   /** Returns whether or not this action generator should apply to the current state of the driver. */
   boolean isActive(WebDriverWrapper driver);

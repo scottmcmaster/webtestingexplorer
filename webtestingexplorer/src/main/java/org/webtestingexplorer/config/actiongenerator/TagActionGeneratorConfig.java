@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.webtestingexplorer.config.actiongenerator;
 
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 /**
@@ -29,7 +30,8 @@ public abstract class TagActionGeneratorConfig extends AbstractActionGeneratorCo
   }
   
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     String elementTag = elementWithId.getElement().getTagName();
     return tag.equals(elementTag);
   }

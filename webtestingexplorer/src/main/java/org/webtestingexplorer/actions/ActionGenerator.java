@@ -73,9 +73,9 @@ public class ActionGenerator {
     allActionGeneratorConfigs.addAll(defaultActionGeneratorConfigs);
     
     for (ActionGeneratorConfig actionConfig : allActionGeneratorConfigs) {
-      if (actionConfig.matches(elementWithId)) {
+      if (actionConfig.matches(driver, elementWithId)) {
         LOGGER.log(Level.FINE, "Generated actions for element " + elementWithId.getIdentifier());
-        return actionConfig.generateActions(elementWithId);
+        return actionConfig.generateActions(driver, elementWithId);
       }
     }
     LOGGER.log(Level.FINE, "No actions generated for element " + elementWithId.getIdentifier());
@@ -107,7 +107,8 @@ public class ActionGenerator {
     }
     
     @Override
-    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+    public Set<Action> generateActions(WebDriverWrapper driver,
+        WebElementWithIdentifier elementWithId) {
       Set<Action> actions = Sets.newHashSet();
       String type = elementWithId.getElement().getAttribute("type");
       if ("submit".equals(type)) {
@@ -127,7 +128,8 @@ public class ActionGenerator {
     }
     
     @Override
-    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+    public Set<Action> generateActions(WebDriverWrapper driver,
+        WebElementWithIdentifier elementWithId) {
       Set<Action> actions = Sets.newHashSet();
       actions.addAll(createDefaultTextWidgetActions(elementWithId.getIdentifier()));
       return actions;
@@ -140,7 +142,8 @@ public class ActionGenerator {
     }
     
     @Override
-    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+    public Set<Action> generateActions(WebDriverWrapper driver,
+        WebElementWithIdentifier elementWithId) {
       Set<Action> actions = Sets.newHashSet();
       // Default to selecting each of the first two options.
       // TODO(smcmaster): Enhance the API to allow customizing this behavior.
@@ -163,7 +166,8 @@ public class ActionGenerator {
     }
     
     @Override
-    public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+    public Set<Action> generateActions(WebDriverWrapper driver,
+        WebElementWithIdentifier elementWithId) {
       String role = elementWithId.getElement().getAttribute("role");
       String ariaDisabled = elementWithId.getElement().getAttribute("aria-disabled");
       Set<Action> actions = Sets.newHashSet();

@@ -34,6 +34,7 @@ import org.webtestingexplorer.config.filter.OrderInsensitiveActionSequenceFilter
 import org.webtestingexplorer.config.selector.TagWebElementSelector;
 import org.webtestingexplorer.driver.ChromeWebDriverFactory;
 import org.webtestingexplorer.driver.FirefoxWebDriverFactory;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.explorer.WebTestingExplorer;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
@@ -90,7 +91,8 @@ public class FeedbackFormMain {
         .addActionGeneratorConfig(new MultiCriterionActionGeneratorConfig(
             null, null, ".*email.*", null, null) {          
           @Override
-          public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+          public Set<Action> generateActions(WebDriverWrapper driver,
+              WebElementWithIdentifier elementWithId) {
             // Try valid and invalid email addresses.
             Set<Action> actions = Sets.newHashSet();
             actions.add(new SetTextAction(elementWithId.getIdentifier(), "bob@example.com"));

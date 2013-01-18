@@ -19,6 +19,7 @@ import com.google.common.collect.Sets;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -40,14 +41,16 @@ public class CompositeActionGeneratorConfig extends AbstractActionGeneratorConfi
   }
   
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
-    return first.matches(elementWithId) && second.matches(elementWithId);
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
+    return first.matches(driver, elementWithId) && second.matches(driver, elementWithId);
   }
 
   @Override
-  public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
-    Set<Action> firstActions = first.generateActions(elementWithId);
-    Set<Action> secondActions = second.generateActions(elementWithId);
+  public Set<Action> generateActions(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
+    Set<Action> firstActions = first.generateActions(driver, elementWithId);
+    Set<Action> secondActions = second.generateActions(driver, elementWithId);
     return Sets.union(firstActions, secondActions);
   }
 }

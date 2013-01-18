@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ClickAction;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -37,7 +38,8 @@ public final class JavascriptAnchorActionGeneratorConfig extends TagActionGenera
   }
 
   @Override
-  public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+  public Set<Action> generateActions(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     // Only click on "javascript:" anchors.
     Set<Action> actions = Sets.newHashSet();
     String href = elementWithId.getElement().getAttribute("href");

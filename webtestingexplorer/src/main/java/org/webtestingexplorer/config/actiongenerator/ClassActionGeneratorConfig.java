@@ -17,6 +17,7 @@ package org.webtestingexplorer.config.actiongenerator;
 
 import com.google.common.collect.Sets;
 
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.Set;
@@ -35,7 +36,8 @@ public abstract class ClassActionGeneratorConfig extends AbstractActionGenerator
   }
   
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     String classAttributeValue = elementWithId.getElement().getAttribute("class");
     Set<String> classes = Sets.newHashSet(classAttributeValue.split("\\w"));
     return classes.contains(classValue);

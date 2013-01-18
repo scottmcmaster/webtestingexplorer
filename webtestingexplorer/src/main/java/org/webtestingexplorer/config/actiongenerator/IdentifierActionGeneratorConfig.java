@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.webtestingexplorer.config.actiongenerator;
 
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
@@ -33,7 +34,8 @@ public abstract class IdentifierActionGeneratorConfig extends AbstractActionGene
   }
   
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     return identifier.equals(elementWithId.getIdentifier());
   }
 }

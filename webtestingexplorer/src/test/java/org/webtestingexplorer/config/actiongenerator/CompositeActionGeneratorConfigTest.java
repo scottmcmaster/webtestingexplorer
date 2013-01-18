@@ -40,8 +40,8 @@ public class CompositeActionGeneratorConfigTest {
   @Test
   public void matches() {
     CompositeActionGeneratorConfig config = createCompositeConfig(true);
-    assertTrue(config.matches(null));
-    Set<Action> result = config.generateActions(null);
+    assertTrue(config.matches(null, null));
+    Set<Action> result = config.generateActions(null, null);
     assertTrue(result.contains(new BackAction()));
     assertTrue(result.contains(new ForwardAction()));
   }
@@ -49,7 +49,7 @@ public class CompositeActionGeneratorConfigTest {
   @Test
   public void noMatches() {
     CompositeActionGeneratorConfig config = createCompositeConfig(false);
-    assertFalse(config.matches(null));
+    assertFalse(config.matches(null, null));
   }
   
   private CompositeActionGeneratorConfig createCompositeConfig(final boolean shouldMatch) {
@@ -57,12 +57,14 @@ public class CompositeActionGeneratorConfigTest {
         new ActionGeneratorConfig() {
           
           @Override
-          public boolean matches(WebElementWithIdentifier elementWithId) {
+          public boolean matches(WebDriverWrapper driver,
+              WebElementWithIdentifier elementWithId) {
             return shouldMatch;
           }
           
           @Override
-          public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+          public Set<Action> generateActions(WebDriverWrapper driver,
+              WebElementWithIdentifier elementWithId) {
             return Sets.<Action>newHashSet(new BackAction());
           }
           
@@ -74,12 +76,14 @@ public class CompositeActionGeneratorConfigTest {
         new ActionGeneratorConfig() {
           
           @Override
-          public boolean matches(WebElementWithIdentifier elementWithId) {
+          public boolean matches(WebDriverWrapper driver,
+              WebElementWithIdentifier elementWithId) {
             return true;
           }
           
           @Override
-          public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+          public Set<Action> generateActions(WebDriverWrapper driver,
+              WebElementWithIdentifier elementWithId) {
             return Sets.<Action>newHashSet(new ForwardAction());
           }
           

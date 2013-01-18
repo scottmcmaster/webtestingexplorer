@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.webtestingexplorer.config.actiongenerator;
 
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.regex.Pattern;
@@ -69,7 +70,8 @@ public abstract class MultiCriterionActionGeneratorConfig extends AbstractAction
   }
 
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     
     boolean isMatch = true;
     if (tagPattern != null) {

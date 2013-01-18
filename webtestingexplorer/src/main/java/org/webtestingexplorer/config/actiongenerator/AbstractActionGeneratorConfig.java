@@ -17,7 +17,8 @@ import com.google.common.collect.Sets;
 public abstract class AbstractActionGeneratorConfig implements ActionGeneratorConfig {
 
   @Override
-  public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
+  public Set<Action> generateActions(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     return Sets.newHashSet();
   }
 

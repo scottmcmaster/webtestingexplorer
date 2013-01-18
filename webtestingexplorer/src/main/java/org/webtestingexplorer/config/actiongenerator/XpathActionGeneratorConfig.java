@@ -19,6 +19,7 @@ package org.webtestingexplorer.config.actiongenerator;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public abstract class XpathActionGeneratorConfig extends AbstractActionGenerator
    * the xpath expression and comparing them to the one given.
    */
   @Override
-  public boolean matches(WebElementWithIdentifier elementWithId) {
+  public boolean matches(WebDriverWrapper driver,
+      WebElementWithIdentifier elementWithId) {
     List<WebElement> matchingElements = elementWithId.getElement().findElements(By.xpath(xpath));
     for (WebElement matchingElement : matchingElements) {
       // This doesn't work -- it seems that a different object reference is returned
