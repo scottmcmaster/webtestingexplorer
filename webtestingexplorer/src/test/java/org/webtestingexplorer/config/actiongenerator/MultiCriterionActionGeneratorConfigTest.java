@@ -39,7 +39,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void matchesName() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, null, ".*email.*", null);
+        null, null, ".*email.*", null, null);
     
     assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -49,7 +49,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void noMatchesName() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, null, ".* notemail.*", null);
+        null, null, ".* notemail.*", null, null);
     
     assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -59,7 +59,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void matchesId() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, ".*email.*", null, null);
+        null, ".*email.*", null, null, null);
     
     assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -69,7 +69,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void noMatchesId() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, ".* notemail.*", null, null);
+        null, ".* notemail.*", null, null, null);
     
     assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -79,7 +79,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void matchesClassName() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, null, null, ".*email.*");
+        null, null, null, ".*email.*", null);
     
     assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -89,7 +89,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void noMatchesClassName() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        null, null, null, ".* notemail.*");
+        null, null, null, ".* notemail.*", null);
     
     assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -99,7 +99,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void matchesTag() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        "a", null, null, null);
+        "a", null, null, null, null);
     
     assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -109,7 +109,27 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void noMatchesTag() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        "p", null, null, null);
+        "p", null, null, null, null);
+    
+    assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
+    EasyMock.verify(element);
+  }
+
+  @Test
+  public void matchesText() {
+    WebElementWrapper element = createMockWebElement();
+    MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
+        null, null, null, null, ".*text.*");
+    
+    assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
+    EasyMock.verify(element);
+  }
+
+  @Test
+  public void noMatchesText() {
+    WebElementWrapper element = createMockWebElement();
+    MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
+        null, null, null, null, ".*nottext.*");
     
     assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -119,7 +139,7 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void matchesMultiple() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        "a", ".*email.*", null, null);
+        "a", ".*email.*", null, null, null);
     
     assertTrue(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
@@ -129,16 +149,16 @@ public class MultiCriterionActionGeneratorConfigTest {
   public void noMatchesMultiple() {
     WebElementWrapper element = createMockWebElement();
     MultiCriterionActionGeneratorConfig config = createActionGeneratorConfig(
-        "p", ".*email.*", null, null);
+        "p", ".*email.*", null, null, null);
     
     assertFalse(config.matches(new WebElementWithIdentifier(element, null)));
     EasyMock.verify(element);
   }
 
   private MultiCriterionActionGeneratorConfig createActionGeneratorConfig(String tag, String id,
-      String name, String className) {
+      String name, String className, String text) {
     MultiCriterionActionGeneratorConfig config = new MultiCriterionActionGeneratorConfig(
-        tag, id, name, className) {      
+        tag, id, name, className, text) {      
       @Override
       public Set<Action> generateActions(WebElementWithIdentifier elementWithId) {
         return null;
@@ -153,6 +173,7 @@ public class MultiCriterionActionGeneratorConfigTest {
     EasyMock.expect(element.getAttribute("id")).andReturn("feedback_email_id").anyTimes();
     EasyMock.expect(element.getAttribute("class")).andReturn("feedback_email_class").anyTimes();
     EasyMock.expect(element.getTagName()).andReturn("a").anyTimes();
+    EasyMock.expect(element.getText()).andReturn("feedback_email_text").anyTimes();
     EasyMock.replay(element);
     return element;
   }
