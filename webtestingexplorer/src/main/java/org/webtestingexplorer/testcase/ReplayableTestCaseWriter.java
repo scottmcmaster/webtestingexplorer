@@ -37,8 +37,8 @@ public class ReplayableTestCaseWriter extends AbstractTestCaseWriter {
    * Writes a test case based on the given action sequence.
    */
   @Override
-  public void writeTestCase(TestCase testCase, int testCaseNumber, ActionSequenceResult result) {
-    String fileName = "test-" + testCaseNumber + ".xml";
+  public void writeTestCase(TestCase testCase, String testCaseId, ActionSequenceResult result) {
+    String fileName = "test-" + testCaseId + ".xml";
     String xml = xstream.toXML(testCase);
     String fullPath = outputDirectory + "/" + fileName;
     LOGGER.log(Level.INFO, "Writing test case to " + fullPath);
@@ -47,7 +47,7 @@ public class ReplayableTestCaseWriter extends AbstractTestCaseWriter {
       out = new OutputStreamWriter(new FileOutputStream(fullPath));
       out.write(xml);
     } catch (Exception e) {
-      System.err.println("Failed to write " + fullPath);
+      LOGGER.log(Level.SEVERE, "Failed to write " + fullPath, e);
       e.printStackTrace();
     }
     finally {

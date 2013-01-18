@@ -44,6 +44,7 @@ public class WebTestingConfig {
   private WebDriverFactory driverFactory = new FirefoxWebDriverFactory();
   private ActionSequencePrioritizer actionSequencePrioritizer;
   private int numRetries = 3;
+  private String queueFilename;
   
   /**
    * The wait condition configuration factory.
@@ -230,5 +231,14 @@ public class WebTestingConfig {
       ActionSequencePrioritizer actionSequencePrioritizer) {
     this.actionSequencePrioritizer = actionSequencePrioritizer;
     return this;
+  }
+  
+  public WebTestingConfig setQueueFilename(String queueFileName) {
+    this.queueFilename = queueFileName;
+    return this;
+  }
+  
+  public String getQueueFilename() {
+    return queueFilename;
   }
 }

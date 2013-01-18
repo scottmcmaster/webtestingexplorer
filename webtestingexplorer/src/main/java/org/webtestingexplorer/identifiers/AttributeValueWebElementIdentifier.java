@@ -23,6 +23,11 @@ package org.webtestingexplorer.identifiers;
  */
 public class AttributeValueWebElementIdentifier extends XpathWebElementIdentifier {
 
+  protected AttributeValueWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
   public AttributeValueWebElementIdentifier(String name, String value) {
     this(name, value, null);
   }

@@ -18,7 +18,11 @@ import java.util.List;
  */
 public class CompositeAction extends Action {
 
-  private final List<Action> actions;
+  private List<Action> actions;
+  
+  protected CompositeAction() {
+    // For xstream.
+  }
   
   public CompositeAction(Action... actionsInOrder) {
     actions = Arrays.asList(actionsInOrder);

@@ -16,9 +16,7 @@ limitations under the License.
 
 package org.webtestingexplorer.config;
 
-import org.webtestingexplorer.actions.ActionSequence;
-
-import java.util.Deque;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 
 /**
  * Reorders the action sequence queue, presumably to explore the most interesting
@@ -39,5 +37,5 @@ public interface ActionSequencePrioritizer {
    * @param actionSequences the action sequences to examine.
    * @return the action sequences you want to run going forward.
    */
-  Deque<ActionSequence> prioritize(Deque<ActionSequence> actionSequences);
+  ActionSequenceQueue prioritize(ActionSequenceQueue actionSequences);
 }

@@ -34,6 +34,10 @@ public abstract class WebElementIdentifier {
   
   protected String frameIdentifier;
   
+  protected WebElementIdentifier() {
+    // For xstream.
+  }
+  
   public WebElementIdentifier(String frameIdentifier) {
     this.frameIdentifier = frameIdentifier;
   }

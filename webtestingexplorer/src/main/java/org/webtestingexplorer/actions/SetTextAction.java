@@ -31,6 +31,10 @@ public class SetTextAction extends Action {
 
   private String keysToSend;
 
+  protected SetTextAction() {
+    // For xstream.
+  }
+  
   public SetTextAction(WebElementIdentifier identifier, String keysToSend) {
     super(identifier);
     this.keysToSend = keysToSend;

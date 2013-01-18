@@ -24,14 +24,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.SetTextAction;
 import org.webtestingexplorer.config.filter.OrderInsensitiveActionSequenceFilter;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Set;
 
 /**
@@ -42,7 +41,7 @@ import java.util.Set;
 public class OrderInsensitiveActionSequenceFilterTest {
 
   private OrderInsensitiveActionSequenceFilter filter;
-  private Deque<ActionSequence> existingActionSequences;
+  private ActionSequenceQueue existingActionSequences;
   
   @Before
   public void setUp() {
@@ -51,13 +50,13 @@ public class OrderInsensitiveActionSequenceFilterTest {
     orderInsensitiveActions.add(createSetTextAction("bar", "baz"));
     
     filter = new OrderInsensitiveActionSequenceFilter(orderInsensitiveActions );
-    existingActionSequences = new ArrayDeque<ActionSequence>();
+    existingActionSequences = new ActionSequenceQueue();
     ActionSequence existing = new ActionSequence();
     existing.addAction(new BackAction());
     existing.addAction(createSetTextAction("bar", "baz"));
     existing.addAction(createSetTextAction("foo", "blah"));
     existing.addAction(new ForwardAction());
-    existingActionSequences.add(existing);    
+    existingActionSequences.push(existing);    
   }
   
   /**

@@ -22,6 +22,7 @@ import org.openqa.selenium.WebElement;
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionGenerator;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 import org.webtestingexplorer.actions.BackAction;
 import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.RefreshAction;
@@ -43,12 +44,11 @@ import org.webtestingexplorer.testcase.TestCase;
 import org.webtestingexplorer.testcase.TestCaseConfig;
 import org.webtestingexplorer.testcase.TestCaseWriter;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,7 +76,13 @@ public class WebTestingExplorer {
 
   public void run() throws Exception {
     // Rip.
-    Deque<ActionSequence> actionSequences = buildInitialActionSequences();
+    ActionSequenceQueue actionSequences = null;
+    if (config.getQueueFilename() != null && !config.getQueueFilename().isEmpty()) {
+      actionSequences = ActionSequenceQueue.readFromFile(config.getQueueFilename());
+    }
+    if (actionSequences == null || actionSequences.isEmpty()) {
+      actionSequences = buildInitialActionSequences();
+    }
     
     // Replay.
     replay(actionSequences, config.getMaxLength());
@@ -87,10 +93,10 @@ public class WebTestingExplorer {
     runner.shutdown();
   }
 
-  private Deque<ActionSequence> buildInitialActionSequences() throws Exception {
+  private ActionSequenceQueue buildInitialActionSequences() throws Exception {
     List<ActionSequence> initialActionSequences = Lists.newArrayList(config.getInitialActionSequences());
     
-    Deque<ActionSequence> actionSequences = new ArrayDeque<ActionSequence>();
+    ActionSequenceQueue actionSequences = new ActionSequenceQueue();
     for (ActionSequence initialActionSequence : initialActionSequences) {
       runner.runActionSequence(new ActionSequenceRunnerConfig(
           config.getUrl(),
@@ -196,7 +202,7 @@ public class WebTestingExplorer {
 
   // As long as the test case is longer than the previous one, you don't need to
   // restart the browser.
-  private void replay(Deque<ActionSequence> actionSequences, int maxSequenceLength) throws Exception {
+  private void replay(ActionSequenceQueue actionSequences, int maxSequenceLength) throws Exception {
     int testCaseCount = 0;
     int failedCaseCount = 0;
     int errorCaseCount = 0;
@@ -228,7 +234,7 @@ public class WebTestingExplorer {
         // Check the state and add a new test case if it has changed.
         stateChange.setAfterState(createStateSnapshot(runner.getDriver()));   
         if (stateChange.isStateChanged()) {
-          writeTestCase(testCaseCount, actionSequence, stateChange.getAfterState(), result);
+          writeTestCase(actionSequence, stateChange.getAfterState(), result);
         }
         
         // Options for checking state:
@@ -250,6 +256,9 @@ public class WebTestingExplorer {
           actionSequences = config.getActionSequencePrioritizer().prioritize(actionSequences);
         }
         LOGGER.info("Current queue length: " + actionSequences.size());
+        if (config.getQueueFilename() != null && !config.getQueueFilename().isEmpty()) {
+          ActionSequenceQueue.writeToFile(actionSequences, config.getQueueFilename());
+        }
       } catch (Exception e) {
         LOGGER.log(Level.SEVERE, "Error running action sequence, out of retries");
         ++errorCaseCount;
@@ -265,7 +274,7 @@ public class WebTestingExplorer {
   /**
    * Creates and writes out a test case from the given action sequence.
    */
-  private void writeTestCase(int testCaseCount, final ActionSequence actionSequence,
+  private void writeTestCase(final ActionSequence actionSequence,
       List<State> finalState, ActionSequenceResult result) {
     String oracleConfigFactoryClassName = null;
     if (config.getOracleConfigFactory() != null) {
@@ -281,8 +290,9 @@ public class WebTestingExplorer {
     TestCase testCase = new TestCase(config.getUrl(), actionSequence, finalState,
         oracleConfigFactoryClassName, waitConditionConfigFactoryClassName,
         buildTestCaseConfig());
+    String testCaseId = UUID.randomUUID().toString();
     for (TestCaseWriter testCaseWriter : config.getTestCaseWriters()) {
-      testCaseWriter.writeTestCase(testCase, testCaseCount, result);
+      testCaseWriter.writeTestCase(testCase, testCaseId, result);
     }
   }
 
@@ -298,7 +308,7 @@ public class WebTestingExplorer {
    * Adds the given action sequence to the queue to be run assuming it passes
    * all filtering.
    */
-  private void checkPushActionSequence(Deque<ActionSequence> actionSequences,
+  private void checkPushActionSequence(ActionSequenceQueue actionSequences,
       ActionSequence sequence) {
     for (ActionSequenceFilter filter : config.getActionSequenceFilters()) {
       if (filter.shouldExplore(sequence, actionSequences)) {

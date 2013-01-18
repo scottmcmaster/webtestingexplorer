@@ -21,11 +21,11 @@ import com.google.common.collect.Sets;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 import org.webtestingexplorer.config.ActionSequenceFilter;
 import org.webtestingexplorer.driver.WebDriverWrapper;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -45,7 +45,7 @@ public class OrderInsensitiveActionSequenceFilter implements ActionSequenceFilte
   
   @Override
   public boolean shouldExplore(ActionSequence actionSequence,
-      Deque<ActionSequence> existingActionSequences) {
+      ActionSequenceQueue existingActionSequences) {
     
     Iterator<ActionSequence> existingActionSequenceIter = existingActionSequences.iterator();
     while (existingActionSequenceIter.hasNext()) {

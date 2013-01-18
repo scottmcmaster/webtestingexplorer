@@ -36,6 +36,11 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
 
   private String id;
 
+  protected IdWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
   public IdWebElementIdentifier(String id) {
     this(id, null);
   }

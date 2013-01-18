@@ -29,6 +29,10 @@ public class SelectAction extends Action {
 
   private int optionIndex;
 
+  protected SelectAction() {
+    // For xstream.
+  }
+  
   /**
    * Sets up an action to select an option at the given index.
    */

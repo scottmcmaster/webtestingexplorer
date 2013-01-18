@@ -19,12 +19,11 @@ package org.webtestingexplorer.config.prioritizer;
 import com.google.common.collect.Lists;
 
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 import org.webtestingexplorer.config.ActionSequencePrioritizer;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -36,13 +35,13 @@ import java.util.List;
 public class ShortestActionSequencePrioritizer implements ActionSequencePrioritizer {
 
   @Override
-  public Deque<ActionSequence> prioritize(Deque<ActionSequence> actionSequences) {
+  public ActionSequenceQueue prioritize(ActionSequenceQueue actionSequences) {
     List<ActionSequence> allSequences = Lists.newArrayList(actionSequences);
     Collections.sort(allSequences, new Comparator<ActionSequence>() {
       @Override
       public int compare(ActionSequence first, ActionSequence second) {
         return first.getLength() - second.getLength();
       }});
-    return new ArrayDeque<ActionSequence>(allSequences);
+    return new ActionSequenceQueue(allSequences);
   }
 }

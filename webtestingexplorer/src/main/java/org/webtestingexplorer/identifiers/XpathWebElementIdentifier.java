@@ -39,6 +39,11 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
 
   private String xpath;
 
+  protected XpathWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
   public XpathWebElementIdentifier(String xpath) {
     this(xpath, null);
   }

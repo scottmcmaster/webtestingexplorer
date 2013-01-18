@@ -31,7 +31,11 @@ import org.webtestingexplorer.identifiers.WebElementIdentifier;
 public class HoverAction extends Action {
 
   /** How long we wait after a hover, defaults to zero */
-  private final long hoverDelayMillis;
+  private long hoverDelayMillis;
+  
+  protected HoverAction() {
+    // For xstream.
+  }
   
   public HoverAction(WebElementIdentifier identifier) {
     this(identifier, 0L);

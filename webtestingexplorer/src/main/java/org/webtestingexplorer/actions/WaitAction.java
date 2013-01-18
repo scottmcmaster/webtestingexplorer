@@ -11,8 +11,13 @@ import org.webtestingexplorer.driver.WebDriverWrapper;
  */
 public class WaitAction extends Action {
 
-  private final long millis;
+  private long millis;
 
+  @SuppressWarnings("unused")
+  private WaitAction() {
+    // For xstream.
+  }
+  
   /**
    * Creates a wait action that will wait for the specified number of milliseconds.
    */

@@ -20,9 +20,9 @@ import com.google.common.collect.Maps;
 
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 import org.webtestingexplorer.config.ActionSequenceFilter;
 
-import java.util.Deque;
 import java.util.Map;
 
 /**
@@ -40,7 +40,7 @@ public class MaxRepeatedActionSequenceFilter implements ActionSequenceFilter {
   
   @Override
   public boolean shouldExplore(ActionSequence actionSequence,
-      Deque<ActionSequence> existingActionSequences) {
+      ActionSequenceQueue existingActionSequences) {
     Map<Action, Integer> repeats = Maps.newHashMap();
     for (Action action : actionSequence.getActions()) {
       if (!repeats.containsKey(action)) {

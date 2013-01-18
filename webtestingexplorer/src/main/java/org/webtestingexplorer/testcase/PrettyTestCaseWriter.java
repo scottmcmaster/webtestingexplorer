@@ -52,8 +52,8 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
    * Writes a test case based on the given action sequence.
    */
   @Override
-  public void writeTestCase(TestCase testCase, int testCaseNumber, ActionSequenceResult result) {
-    String fileName = "test-" + testCaseNumber + ".txt";
+  public void writeTestCase(TestCase testCase, String testCaseId, ActionSequenceResult result) {
+    String fileName = "test-" + testCaseId + ".txt";
     String fullPath = outputDirectory + "/" + fileName;
     LOGGER.log(Level.INFO, "Writing test case to " + fullPath);
     BufferedWriter out = null;

@@ -9,10 +9,9 @@ import org.webtestingexplorer.driver.ActionSequenceRunner.ActionSequenceResult;
  */
 public interface TestCaseWriter {
   /**
-   * Writes out the test case with the given ordinal number which will be
-   * unique across an explorer run.
+   * Writes out the test case with the given unique id.
    */
-  void writeTestCase(TestCase testCase, int testCaseNumber, ActionSequenceResult result);
+  void writeTestCase(TestCase testCase, String testCaseId, ActionSequenceResult result);
   
   /**
    * Flags whether to only invoke this writer in the case where a failure has

@@ -36,6 +36,11 @@ public class NameWebElementIdentifier extends WebElementIdentifier {
 
   private String name;
 
+  protected NameWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
   public NameWebElementIdentifier(String name) {
     this(name, null);
   }

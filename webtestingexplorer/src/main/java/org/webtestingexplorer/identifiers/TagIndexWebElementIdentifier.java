@@ -9,64 +9,66 @@ import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.driver.WebElementWrapper;
 
 /**
- * Identifies an element by index among the set of elements with the
- * specific tag.
- * 
+ * Identifies an element by index among the set of elements with the specific tag.
+ *
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public class TagIndexWebElementIdentifier extends IndexWebElementIdentifier {
 
-    private final static Logger LOGGER = Logger.getLogger(TagIndexWebElementIdentifier.class.getName());
+  private final static Logger LOGGER =
+      Logger.getLogger(TagIndexWebElementIdentifier.class.getName());
 
-	private String tagName;
-	
-	public TagIndexWebElementIdentifier(String frameIdentifier,
-			String tagName, int index, IndexBasis basis) {
-		super(index, frameIdentifier, basis);
-		this.tagName = tagName;
-	}
+  private String tagName;
 
-	public String getTagName() {
-	  return tagName;
-	}
-	
-	@Override
-	public WebElementWrapper findElement(WebDriverWrapper driver) {
-		List<WebElementWithIdentifier> allElements = getAllElementsWithBasis(driver);
-		int currentIndex = 0;
-		for (WebElementWithIdentifier element : allElements) {
-			if (tagName.equals(element.getElement().getTagName()) &&
-					currentIndex == index) {
-				return new WebElementWrapper(element.getElement());
-			}
-			++currentIndex;
-		}
-		LOGGER.warning("Failed to find " + toString());
-		return null;
-	}
+  protected TagIndexWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
+  public TagIndexWebElementIdentifier(
+      String frameIdentifier, String tagName, int index, IndexBasis basis) {
+    super(index, frameIdentifier, basis);
+    this.tagName = tagName;
+  }
+
+  public String getTagName() {
+    return tagName;
+  }
+
+  @Override
+  public WebElementWrapper findElement(WebDriverWrapper driver) {
+    List<WebElementWithIdentifier> allElements = getAllElementsWithBasis(driver);
+    int currentIndex = 0;
+    for (WebElementWithIdentifier element : allElements) {
+      if (tagName.equals(element.getElement().getTagName()) && currentIndex == index) {
+        return new WebElementWrapper(element.getElement());
+      }
+      ++currentIndex;
+    }
+    LOGGER.warning("Failed to find " + toString());
+    return null;
+  }
 
   @Override
   public String toString() {
     return super.toString() + ",tag=" + tagName;
   }
-  
+
   @Override
   public boolean equals(Object obj) {
-  	if (obj == this) {
-  		return true;
-  	}
-  	if (!(obj instanceof TagIndexWebElementIdentifier)) {
-  		return false;
-  	}
-  	TagIndexWebElementIdentifier other = (TagIndexWebElementIdentifier) obj;
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof TagIndexWebElementIdentifier)) {
+      return false;
+    }
+    TagIndexWebElementIdentifier other = (TagIndexWebElementIdentifier) obj;
     return new EqualsBuilder().appendSuper(super.equals(obj))
-        .append(tagName, other.tagName)
-        .isEquals();
+        .append(tagName, other.tagName).isEquals();
   }
-  
+
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().appendSuper(super.hashCode())
-    		.append(tagName).hashCode();
+    return new HashCodeBuilder().appendSuper(super.hashCode()).append(tagName).hashCode();
   }
 }

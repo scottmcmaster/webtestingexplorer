@@ -61,6 +61,9 @@ public class FeedbackFormMain {
   @Option(name="-outputDir", usage="Directory to save test cases in")
   private String outputDir = "/tmp/webtestexplorer";
   
+  @Option(name="-queueFile", usage="Filename to read/write the persistent queue of action sequences (may be empty)")
+  private String queueFile = "";
+  
   @Argument
   private List<String> arguments = Lists.newArrayList();
   
@@ -74,6 +77,7 @@ public class FeedbackFormMain {
     
     WebTestingConfig config = new WebTestingConfig()
         .addTestCaseWriter(new ReplayableTestCaseWriter(outputDir))
+        .setQueueFilename(queueFile)
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())

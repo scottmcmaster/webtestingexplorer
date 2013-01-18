@@ -44,6 +44,11 @@ public class IndexWebElementIdentifier extends WebElementIdentifier {
   protected int index;
   private IndexBasis basis;
 
+  protected IndexWebElementIdentifier() {
+    // For xstream.
+    super();
+  }
+  
   public IndexWebElementIdentifier(int index) {
     this(index, null, IndexBasis.STATEFUL);
   }

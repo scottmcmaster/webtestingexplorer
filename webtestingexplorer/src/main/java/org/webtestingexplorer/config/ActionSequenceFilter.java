@@ -17,8 +17,7 @@ limitations under the License.
 package org.webtestingexplorer.config;
 
 import org.webtestingexplorer.actions.ActionSequence;
-
-import java.util.Deque;
+import org.webtestingexplorer.actions.ActionSequenceQueue;
 
 /**
  * Checks to see if a given {@link ActionSequence} should be explored or not.
@@ -33,5 +32,5 @@ public interface ActionSequenceFilter {
    * @return true if we want to explore this sequence and beyond, false if not.
    */
   boolean shouldExplore(ActionSequence actionSequence,
-      Deque<ActionSequence> existingActionSequences);
+      ActionSequenceQueue existingActionSequences);
 }

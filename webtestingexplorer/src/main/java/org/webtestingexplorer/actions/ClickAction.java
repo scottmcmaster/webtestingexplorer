@@ -25,6 +25,10 @@ import org.webtestingexplorer.identifiers.WebElementIdentifier;
  */
 public class ClickAction extends Action {
 
+  protected ClickAction() {
+    // For xstream.
+  }
+  
   public ClickAction(WebElementIdentifier identifier) {
     super(identifier);
   }
