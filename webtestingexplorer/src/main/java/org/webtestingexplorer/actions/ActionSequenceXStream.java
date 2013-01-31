@@ -21,6 +21,7 @@ import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.XpathWebElementIdentifier;
+import org.webtestingexplorer.identifiers.IndexWebElementIdentifier.IndexBasis;
 
 /**
  * XStream configuration for reading and writing action sequences.
@@ -63,5 +64,7 @@ public class ActionSequenceXStream {
     xstream.alias("IndexWebElementIdentifier", IndexWebElementIdentifier.class);
     xstream.alias("XpathWebElementIdentifier", XpathWebElementIdentifier.class);
     xstream.alias("AttributeValueWebElementIdentifier", AttributeValueWebElementIdentifier.class);
+    xstream.alias("IndexBasis", IndexBasis.class);
+    xstream.addImmutableType(IndexBasis.class);
   }
 }

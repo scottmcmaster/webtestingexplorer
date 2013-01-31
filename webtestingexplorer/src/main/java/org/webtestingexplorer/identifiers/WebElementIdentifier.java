@@ -23,6 +23,7 @@ import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.driver.WebElementWrapper;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * To be extended by classes that know how to pull {@link WebElement}s out
@@ -32,7 +33,12 @@ import java.util.List;
  */
 public abstract class WebElementIdentifier {
   
+  private final static Logger LOGGER = Logger.getLogger(WebElementIdentifier.class.getName());
+
   protected String frameIdentifier;
+  
+  // We keep the outerHtml from generation-time around for debugging purposes.
+  protected String outerHtml;
   
   protected WebElementIdentifier() {
     // For xstream.
@@ -50,6 +56,18 @@ public abstract class WebElementIdentifier {
     this.frameIdentifier = frameIdentifier;
   }
 
+  public String getOuterHtml() {
+    return outerHtml;
+  }
+
+  public void setOuterHtml(String outerHtml) {
+    this.outerHtml = outerHtml;
+  }
+
+  protected void logNotFoundMessage() {
+    LOGGER.warning("Failed to find " + toString() + ", outerHtml=" + outerHtml);  
+  }
+  
   @Override
   public String toString() {
     String frameIdentifierDesc = (frameIdentifier == null ? "none" : frameIdentifier);

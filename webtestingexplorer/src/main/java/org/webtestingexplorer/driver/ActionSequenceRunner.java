@@ -150,7 +150,10 @@ public class ActionSequenceRunner {
           try {
             performAction(driver, action, config.getWaitConditionConfig());
           } catch (Exception e) {
-            throw new RuntimeException("Exception running action: " + action, e);
+            String message = "Exception running action: " + action
+                + ", element outerHTML=" + action.getIdentifier().getOuterHtml();
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new RuntimeException(message, e);
           }
           
           if (config.getOracleConfig() != null) {

@@ -25,14 +25,11 @@ import org.webtestingexplorer.driver.WebDriverWrapper;
 import org.webtestingexplorer.driver.WebElementWrapper;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
  */
 public class IdWebElementIdentifier extends WebElementIdentifier {
-
-  private final static Logger LOGGER = Logger.getLogger(IdWebElementIdentifier.class.getName());
 
   private String id;
 
@@ -60,7 +57,7 @@ public class IdWebElementIdentifier extends WebElementIdentifier {
     if (element != null) {
       return new WebElementWrapper(element);
     }
-    LOGGER.warning("Failed to find " + toString());
+    logNotFoundMessage();
     return null;
   }
   

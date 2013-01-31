@@ -78,7 +78,12 @@ public class WebTestingExplorer {
     // Rip.
     ActionSequenceQueue actionSequences = null;
     if (config.getQueueFilename() != null && !config.getQueueFilename().isEmpty()) {
-      actionSequences = ActionSequenceQueue.readFromFile(config.getQueueFilename());
+      try {
+        actionSequences = ActionSequenceQueue.readFromFile(config.getQueueFilename());
+      } catch (Exception ex) {
+        LOGGER.log(Level.WARNING, "Failed to load " + config.getQueueFilename()
+            + ", starting over", ex);
+      }
     }
     if (actionSequences == null || actionSequences.isEmpty()) {
       actionSequences = buildInitialActionSequences();

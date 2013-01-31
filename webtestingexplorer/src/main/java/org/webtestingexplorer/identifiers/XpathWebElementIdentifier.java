@@ -28,14 +28,11 @@ import org.webtestingexplorer.driver.WebElementWrapper;
 import org.webtestingexplorer.javascript.JavaScriptUtil;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author xyuan@google.com (Xun Yuan)
  */
 public class XpathWebElementIdentifier extends WebElementIdentifier {
-
-  private final static Logger LOGGER = Logger.getLogger(XpathWebElementIdentifier.class.getName());
 
   private String xpath;
 
@@ -69,7 +66,7 @@ public class XpathWebElementIdentifier extends WebElementIdentifier {
     if (element !=  null) {
       return new WebElementWrapper(element);
     }
-    LOGGER.warning("Failed to find " + toString());
+    logNotFoundMessage();
     return null;
   }
 

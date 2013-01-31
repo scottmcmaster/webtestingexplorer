@@ -1,7 +1,6 @@
 package org.webtestingexplorer.identifiers;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -15,9 +14,6 @@ import org.webtestingexplorer.driver.WebElementWrapper;
  * @author scott.d.mcmaster@gmail.com (Scott McMaster)
  */
 public class ClassIndexWebElementIdentifier extends IndexWebElementIdentifier {
-
-  private final static Logger LOGGER =
-      Logger.getLogger(ClassIndexWebElementIdentifier.class.getName());
 
   private String className;
 
@@ -46,7 +42,7 @@ public class ClassIndexWebElementIdentifier extends IndexWebElementIdentifier {
       }
       ++currentIndex;
     }
-    LOGGER.warning("Failed to find " + toString());
+    logNotFoundMessage();
     return null;
   }
 
