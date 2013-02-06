@@ -29,12 +29,16 @@ public class ActionSequence {
   }
 
   public ActionSequence(ActionSequence actionSequence) {
-    actions.addAll(actionSequence.getActions());
+    addActionsFrom(actionSequence);
   }
 
   public ActionSequence() {
   }
 
+  public void addActionsFrom(ActionSequence actionSequence) {
+    actions.addAll(actionSequence.getActions());
+  }
+  
   public void addAction(Action action) {
     actions.add(action);
   }
@@ -64,8 +68,10 @@ public class ActionSequence {
       if (action.isInitial()) {
         continue;
       }
+      if (!result.isEmpty()) {
+        result += "\n";
+      }
       result += action.toString();
-      result += ",";
     }
     return result;
   }

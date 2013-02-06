@@ -43,7 +43,7 @@ public class TimedWaitCondition implements WaitCondition {
 
   @Override
   public String getDescription() {
-    return "Waiting for " + durationInMillis + " milliseconds";
+    return "Timed wait of " + durationInMillis + " milliseconds";
   }
 
 }

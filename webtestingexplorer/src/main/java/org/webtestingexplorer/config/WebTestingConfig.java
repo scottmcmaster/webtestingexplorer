@@ -64,6 +64,19 @@ public class WebTestingConfig {
    */
   private List<ActionSequence> initialActionSequences = Lists.newArrayList(new ActionSequence());
   
+  /**
+   * A list of action sequences to run at the end of every generated action sequence.
+   * This is useful if you are testing something like web search and you want to
+   * always click the "search" button last-thing. Another example is a dialog with
+   * OK and Cancel buttons, and you want to generate all sequences ending in
+   * one or the other. You can also include an empty action sequence if you want
+   * to generate action sequence permutations that DO NOT include explicit final actions.
+   */
+  private List<ActionSequence> finalActionSequences = Lists.newArrayList();
+  
+  /** Whether or not to use the default action generator configs, defaults to true. */
+  private boolean useDefaultActionGeneratorConfigs = true;
+  
   public WebTestingConfig() {
   }
   
@@ -169,6 +182,20 @@ public class WebTestingConfig {
     return this;
   }
   
+  public List<ActionSequence> getFinalActionSequences() {
+    return finalActionSequences;
+  }
+  
+  public WebTestingConfig clearFinalActionSequences() {
+    finalActionSequences.clear();
+    return this;
+  }
+  
+  public WebTestingConfig addFinalActionSequence(ActionSequence finalActionSequence) {
+    finalActionSequences.add(finalActionSequence);
+    return this;
+  }
+  
   public WebTestingConfig addTestCaseWriter(TestCaseWriter testCaseWriter) {
     testCaseWriters.add(testCaseWriter);
     return this;
@@ -240,5 +267,14 @@ public class WebTestingConfig {
   
   public String getQueueFilename() {
     return queueFilename;
+  }
+  
+  public boolean isUseDefaultActionGeneratorConfigs() {
+    return useDefaultActionGeneratorConfigs;
+  }
+  
+  public WebTestingConfig setUseDefaultActionGeneratorConfigs(boolean useDefaultActionGeneratorConfigs) {
+    this.useDefaultActionGeneratorConfigs = useDefaultActionGeneratorConfigs;
+    return this;
   }
 }

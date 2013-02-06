@@ -329,7 +329,7 @@ public class WebDriverWrapper {
             idGenerator.generateIdentifier(startElementIndex++, element, frameIdentifier,
             		elementIndexBasis)));
       } catch (Exception e) {
-        LOGGER.log(Level.SEVERE, "Exception evaluating element", e);
+        LOGGER.log(Level.SEVERE, "Exception evaluating element, selector=" + selector, e);
         throw new RuntimeException(e);
       }
     }

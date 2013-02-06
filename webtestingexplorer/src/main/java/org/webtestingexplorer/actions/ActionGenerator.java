@@ -43,12 +43,14 @@ public class ActionGenerator {
 
   private List<ActionGeneratorConfig> defaultActionGeneratorConfigs;
   
-  public ActionGenerator() {
+  public ActionGenerator(boolean useDefaultConfigs) {
     defaultActionGeneratorConfigs = Lists.newArrayList();
-    defaultActionGeneratorConfigs.add(new DefaultButtonActionGeneratorConfig());
-    defaultActionGeneratorConfigs.add(new DefaultInputActionGeneratorConfig());
-    defaultActionGeneratorConfigs.add(new DefaultSelectActionGeneratorConfig());
-    defaultActionGeneratorConfigs.add(new DefaultTextAreaActionGeneratorConfig());
+    if (useDefaultConfigs) {
+      defaultActionGeneratorConfigs.add(new DefaultButtonActionGeneratorConfig());
+      defaultActionGeneratorConfigs.add(new DefaultInputActionGeneratorConfig());
+      defaultActionGeneratorConfigs.add(new DefaultSelectActionGeneratorConfig());
+      defaultActionGeneratorConfigs.add(new DefaultTextAreaActionGeneratorConfig());
+    }
   }
   
   /**

@@ -70,7 +70,7 @@ public class WebTestingExplorer {
   
   public WebTestingExplorer(WebTestingConfig config) throws Exception {
     this.config = config;
-    this.actionGenerator = new ActionGenerator();
+    this.actionGenerator = new ActionGenerator(config.isUseDefaultActionGeneratorConfigs());
     this.runner = new ActionSequenceRunner(config.getWebDriverFactory());
   }
 
@@ -82,7 +82,7 @@ public class WebTestingExplorer {
         actionSequences = ActionSequenceQueue.readFromFile(config.getQueueFilename());
       } catch (Exception ex) {
         LOGGER.log(Level.WARNING, "Failed to load " + config.getQueueFilename()
-            + ", starting over", ex);
+            + ", starting over");
       }
     }
     if (actionSequences == null || actionSequences.isEmpty()) {
@@ -112,9 +112,7 @@ public class WebTestingExplorer {
           config.getNumRetries()));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
-        ActionSequence sequence = new ActionSequence(initialActionSequence);
-        sequence.addAction(action);
-        checkPushActionSequence(actionSequences, sequence);
+        extendAndPushActionSequence(actionSequences, initialActionSequence, action);
       }
       runner.getDriver().close();
     }
@@ -247,13 +245,12 @@ public class WebTestingExplorer {
         //    Look for new or removed elements.
         //    Look at some CSS properties (disabled, color, etc.) for some subset of elements.
         //        All elements? Elements with ids/names?
+        // TODO(smcmaster): I wonder if the initial/final action sequences should really count toward the max length check.
         if (actionSequence.getLength() < maxSequenceLength) {
           // Extend.
           List<Action> actions = getAllPossibleActionsInCurrentState();
           for (Action action : actions) {
-            ActionSequence extendedSequence = new ActionSequence(actionSequence);
-            extendedSequence.addAction(action);
-            checkPushActionSequence(actionSequences, extendedSequence);
+            extendAndPushActionSequence(actionSequences, actionSequence, action);
           }
         }
         
@@ -273,6 +270,26 @@ public class WebTestingExplorer {
       
       LOGGER.info(String.format("Run: %d, Failed: %d, Errors: %d",
           testCaseCount, failedCaseCount, errorCaseCount));
+    }
+  }
+
+  /**
+   * Extends the given action sequence with the given action, appending final
+   * action sequences as necessary.
+   */
+  private void extendAndPushActionSequence(
+      ActionSequenceQueue actionSequences, final ActionSequence actionSequence, Action action) {
+    ActionSequence extendedSequence = new ActionSequence(actionSequence);
+    extendedSequence.addAction(action);
+    if (!config.getFinalActionSequences().isEmpty()) {
+      for (ActionSequence finalActionSequence : config.getFinalActionSequences()) {
+        ActionSequence extendedSequenceWithFinal = new ActionSequence(extendedSequence);
+        extendedSequenceWithFinal.addActionsFrom(finalActionSequence);
+        checkPushActionSequence(actionSequences, extendedSequenceWithFinal);
+      }
+    } else {
+      // Push the action sequence as-is.
+      checkPushActionSequence(actionSequences, extendedSequence);
     }
   }
 
