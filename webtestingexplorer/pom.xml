@@ -87,11 +87,17 @@
 	  <artifactId>json</artifactId>
 	  <version>20090211</version>
     </dependency>
-	<dependency>
+	  <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.7.2</version>
     </dependency>
    </dependencies>
   <build>

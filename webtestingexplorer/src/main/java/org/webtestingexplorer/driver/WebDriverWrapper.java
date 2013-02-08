@@ -413,6 +413,15 @@ public class WebDriverWrapper {
   }
   
   /**
+   * Gets the current DOM HTML.
+   */
+  public String getDomHtml() {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    String domString = (String) js.executeScript("return document.documentElement.outerHTML;");
+    return domString;
+  }
+  
+  /**
    * Waits for the given list of conditions to be true before returning.
    */
   public void waitOnConditions(List<WaitCondition> waitConditions) {
