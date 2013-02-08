@@ -75,15 +75,18 @@ public class PrettyTestCaseWriter extends AbstractTestCaseWriter {
       }
       out.newLine();
       
-      if (!result.hasFailures()) {
-        out.write("PASSED");
-      } else {
-        out.write("FAILED");
-        for (FailureReason reason : result.getFailures()) {
-          out.write(reason.getMessage());
-          out.newLine();
+      if (result != null) {
+        if (!result.hasFailures()) {
+          out.write("PASSED");
+        } else {
+          out.write("FAILED");
+          for (FailureReason reason : result.getFailures()) {
+            out.write(reason.getMessage());
+            out.newLine();
+          }
         }
       }
+      
       out.newLine();
     } catch (Exception e) {
       System.err.println("Failed to write " + fullPath);

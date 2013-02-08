@@ -32,9 +32,13 @@ public class ClassWebElementSelector implements WebElementSelector {
   private final static Logger LOGGER =
 		      Logger.getLogger(ClassWebElementSelector.class.getName());
 
-  private final String xpath;
-  private final int maxElementsSelected;
+  private String xpath;
+  private int maxElementsSelected;
   
+  protected ClassWebElementSelector() {
+    // For xstream.
+  }
+
   /**
    * @param isAccurate whether to do an exact match or contains() on the class names.
    * @param maxElementsSelected the maximum number of elements to return (0 means 'all').

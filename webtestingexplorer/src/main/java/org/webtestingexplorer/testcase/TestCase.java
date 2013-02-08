@@ -34,6 +34,10 @@ public class TestCase {
   private List<State> finalState;
   private TestCaseConfig config;
   
+  protected TestCase() {
+    // For xstream.
+  }
+  
   public TestCase(String url, ActionSequence actionSequence,
       List<State> finalState, String oracleConfigFactoryClassName,
       String waitConditionConfigFactoryClassName, TestCaseConfig config) {

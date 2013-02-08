@@ -31,6 +31,10 @@ public class TagWebElementSelector implements WebElementSelector {
 
   private String xpath;
   
+  protected TagWebElementSelector() {
+    // For xstream.
+  }
+  
   public TagWebElementSelector(String... tags) {
     xpath = "";
     for (String tag : tags) {

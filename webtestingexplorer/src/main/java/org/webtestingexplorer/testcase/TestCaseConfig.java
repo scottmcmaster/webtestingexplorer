@@ -28,6 +28,10 @@ import org.webtestingexplorer.config.WebElementSelectorRegistry;
 public class TestCaseConfig {
 
   private WebElementSelectorRegistry selectorRegistry;
+
+  protected TestCaseConfig() {
+    // For xstream.
+  }
   
   public TestCaseConfig(WebElementSelectorRegistry selectorRegistry) {
     this.selectorRegistry = selectorRegistry;

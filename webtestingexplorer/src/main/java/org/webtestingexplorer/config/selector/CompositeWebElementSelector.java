@@ -33,9 +33,13 @@ import java.util.Set;
  */
 public class CompositeWebElementSelector implements WebElementSelector {
 
-  private final List<WebElementSelector> selectorList;
-  private final boolean intersect;
+  private List<WebElementSelector> selectorList;
+  private boolean intersect;
   
+  protected CompositeWebElementSelector() {
+    // For xstream.
+  }
+
   /**
    * Creates a selector that returns the union of elements selected by the
    * given list of selectors.

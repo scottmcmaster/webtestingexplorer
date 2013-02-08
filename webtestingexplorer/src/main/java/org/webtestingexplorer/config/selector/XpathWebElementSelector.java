@@ -16,6 +16,10 @@ public class XpathWebElementSelector implements WebElementSelector {
 
   private String xpath;
   
+  protected XpathWebElementSelector() {
+    // For xstream.
+  }
+
   public XpathWebElementSelector(String xpath) {
     this.xpath = xpath;
   }

@@ -14,8 +14,12 @@ import java.util.List;
  */
 public abstract class FilterWebElementSelector implements WebElementSelector {
 
-  private final WebElementSelector selector;
+  private WebElementSelector selector;
   
+  protected FilterWebElementSelector() {
+    // For xstream.
+  }
+
   public FilterWebElementSelector(WebElementSelector selector) {
     this.selector = selector;
   }
