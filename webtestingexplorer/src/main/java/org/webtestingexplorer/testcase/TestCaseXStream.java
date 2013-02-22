@@ -21,7 +21,12 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import org.webtestingexplorer.actions.ActionSequenceXStream;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
+import org.webtestingexplorer.config.selector.ClassWebElementSelector;
+import org.webtestingexplorer.config.selector.CompositeWebElementSelector;
+import org.webtestingexplorer.config.selector.CssWebElementSelector;
+import org.webtestingexplorer.config.selector.FilterWebElementSelector;
 import org.webtestingexplorer.config.selector.TagWebElementSelector;
+import org.webtestingexplorer.config.selector.XpathWebElementSelector;
 import org.webtestingexplorer.state.CountOfElementsState;
 import org.webtestingexplorer.state.CustomizedPropertiesElementsState;
 import org.webtestingexplorer.state.ElementsState;
@@ -50,6 +55,11 @@ public class TestCaseXStream {
     xstream.alias("TestCaseConfig", TestCaseConfig.class);
     xstream.alias("WebElementSelectorRegistry", WebElementSelectorRegistry.class);
     xstream.alias("TagWebElementSelector", TagWebElementSelector.class);
+    xstream.alias("CssWebElementSelector", CssWebElementSelector.class);
+    xstream.alias("XpathWebElementSelector", XpathWebElementSelector.class);
+    xstream.alias("FilterWebElementSelector", FilterWebElementSelector.class);
+    xstream.alias("ClassWebElementSelector", ClassWebElementSelector.class);
+    xstream.alias("CompositeWebElementSelector", CompositeWebElementSelector.class);
     
     // TODO(smcmaster): I think we need to expose some API here so that users can
     // register their custom classes to be serialized nicely in the test case format.
