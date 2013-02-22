@@ -15,12 +15,16 @@ limitations under the License.
 */
 package org.webtestingexplorer.config.selector;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.webtestingexplorer.config.WebElementSelector;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -32,46 +36,36 @@ public class ClassWebElementSelector implements WebElementSelector {
   private final static Logger LOGGER =
 		      Logger.getLogger(ClassWebElementSelector.class.getName());
 
-  private String xpath;
+  private Set<String> classNames;
   private int maxElementsSelected;
+  private boolean isAccurate;
+  private boolean useXpath;
   
   protected ClassWebElementSelector() {
     // For xstream.
   }
 
+  public ClassWebElementSelector(boolean isAccurate, int maxElementsSelected,
+      String... classes) {
+    this(false, isAccurate, maxElementsSelected, classes);
+  }
+  
   /**
+   * @param useXpath Set to true to use xpath, false to use className selection.
+   *        Must be true if isAccurate is false.
    * @param isAccurate whether to do an exact match or contains() on the class names.
    * @param maxElementsSelected the maximum number of elements to return (0 means 'all').
    * @param classes a list of the classes to select from.
    */
-  public ClassWebElementSelector(boolean isAccurate, int maxElementsSelected,
+  public ClassWebElementSelector(boolean useXpath, boolean isAccurate, int maxElementsSelected,
       String... classes) {
-    this.maxElementsSelected = maxElementsSelected;
-    StringBuilder xpathBuilder = new StringBuilder();
-    for (String oneClass : classes) {
-      if (xpathBuilder.length() > 0) {
-        xpathBuilder.append(" | ");
-      }
-      
-      xpathBuilder.append("//*[");
-      
-      if (isAccurate) {
-        xpathBuilder.append("@class=\"");
-      } else {
-        xpathBuilder.append("contains(@class, \"");
-      }
-      
-      xpathBuilder.append(oneClass);
-      
-      if (isAccurate) {
-        xpathBuilder.append("\"");
-      } else {
-        xpathBuilder.append("\")");
-      }
-      xpathBuilder.append("]");
+    if (!isAccurate) {
+      assert useXpath : "Must use xpath with inexact classname queries";
     }
-    this.xpath = xpathBuilder.toString();
-    LOGGER.info("ClassWebElementSelector xpath=" + xpath);
+    this.useXpath = useXpath;
+    this.isAccurate = isAccurate;
+    classNames = Sets.newHashSet();
+    this.maxElementsSelected = maxElementsSelected;
   }
   
   public ClassWebElementSelector(boolean isAccurate, String... classes) {
@@ -80,10 +74,44 @@ public class ClassWebElementSelector implements WebElementSelector {
   
   @Override
   public List<WebElement> select(WebDriver driver) {
-    List<WebElement> elements = driver.findElements(By.xpath(xpath));
-    if (maxElementsSelected > 0) {
-      return elements.subList(0, maxElementsSelected);
+    if (useXpath) {
+      StringBuilder xpathBuilder = new StringBuilder();
+      for (String oneClass : classNames) {
+        if (xpathBuilder.length() > 0) {
+          xpathBuilder.append(" | ");
+        }
+        
+        xpathBuilder.append("//*[");
+        
+        if (isAccurate) {
+          xpathBuilder.append("@class=\"");
+        } else {
+          xpathBuilder.append("contains(@class, \"");
+        }
+        
+        xpathBuilder.append(oneClass);
+        
+        if (isAccurate) {
+          xpathBuilder.append("\"");
+        } else {
+          xpathBuilder.append("\")");
+        }
+        xpathBuilder.append("]");
+      }
+      
+      String xpath = xpathBuilder.toString();
+      LOGGER.info("ClassWebElementSelector xpath=" + xpath);
+      List<WebElement> elements = driver.findElements(By.xpath(xpath));
+      if (maxElementsSelected > 0) {
+        return elements.subList(0, maxElementsSelected);
+      }
+      return elements;
+    } else {
+      List<WebElement> elements = Lists.newArrayList();
+      for (String className : classNames) {
+        elements.addAll(driver.findElements(By.className(className)));
+      }
+      return elements;
     }
-    return elements;
   }
 }
