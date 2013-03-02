@@ -32,6 +32,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public class FirefoxWebDriverFactory implements WebDriverFactory {
 
   private final boolean shouldUseProxy;
+  private final boolean shouldUseJSErrorCollector;
   private FirefoxProfile profile;
   
   public FirefoxWebDriverFactory() {
@@ -39,7 +40,12 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
   }
   
   public FirefoxWebDriverFactory(boolean shouldUseProxy) {
+    this(shouldUseProxy, true);
+  }
+  
+  public FirefoxWebDriverFactory(boolean shouldUseProxy, boolean shouldUseJSErrorCollector) {
     this.shouldUseProxy = shouldUseProxy;
+    this.shouldUseJSErrorCollector = shouldUseJSErrorCollector;
   }
   
   @Override
@@ -47,7 +53,7 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     // Use a custom profile that trusts the cybervillians cert
     // (to use Selenium with the BrowserMob proxy).
     ProfilesIni allProfiles = new ProfilesIni();
-    System.setProperty("webdriver.firefox.profile","webtestingexplorer");
+    System.setProperty("webdriver.firefox.profile", "webtestingexplorer");
     String browserProfile = System.getProperty("webdriver.firefox.profile");
     profile = allProfiles.getProfile(browserProfile);
     if (profile == null) {
@@ -56,8 +62,10 @@ public class FirefoxWebDriverFactory implements WebDriverFactory {
     profile.setAcceptUntrustedCertificates(true);
     profile.setAssumeUntrustedCertificateIssuer(false);
     
-    // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
-    JavaScriptError.addExtension(profile);
+    if (shouldUseJSErrorCollector) {
+      // Install JSErrorCollector for JSErrorCollectorOracle to use if installed.
+      JavaScriptError.addExtension(profile);
+    }
     
     // The following preferences control Firefox's default behavior of sending
     // requests for favicon.ico, which results in lots of bogus 404's for sites
