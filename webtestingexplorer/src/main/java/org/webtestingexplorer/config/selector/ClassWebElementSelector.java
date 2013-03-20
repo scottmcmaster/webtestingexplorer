@@ -37,7 +37,6 @@ public class ClassWebElementSelector implements WebElementSelector {
 		      Logger.getLogger(ClassWebElementSelector.class.getName());
 
   private Set<String> classNames;
-  private int maxElementsSelected;
   private boolean isAccurate;
   private boolean useXpath;
   
@@ -45,31 +44,23 @@ public class ClassWebElementSelector implements WebElementSelector {
     // For xstream.
   }
 
-  public ClassWebElementSelector(boolean isAccurate, int maxElementsSelected,
-      String... classes) {
-    this(false, isAccurate, maxElementsSelected, classes);
+  public ClassWebElementSelector(boolean isAccurate, String... classes) {
+    this(false, isAccurate, classes);
   }
   
   /**
    * @param useXpath Set to true to use xpath, false to use className selection.
    *        Must be true if isAccurate is false.
    * @param isAccurate whether to do an exact match or contains() on the class names.
-   * @param maxElementsSelected the maximum number of elements to return (0 means 'all').
    * @param classes a list of the classes to select from.
    */
-  public ClassWebElementSelector(boolean useXpath, boolean isAccurate, int maxElementsSelected,
-      String... classes) {
+  public ClassWebElementSelector(boolean useXpath, boolean isAccurate, String... classes) {
     if (!isAccurate) {
       assert useXpath : "Must use xpath with inexact classname queries";
     }
     this.useXpath = useXpath;
     this.isAccurate = isAccurate;
     classNames = Sets.newHashSet();
-    this.maxElementsSelected = maxElementsSelected;
-  }
-  
-  public ClassWebElementSelector(boolean isAccurate, String... classes) {
-    this(isAccurate, 0, classes);
   }
   
   @Override
@@ -101,11 +92,7 @@ public class ClassWebElementSelector implements WebElementSelector {
       
       String xpath = xpathBuilder.toString();
       LOGGER.info("ClassWebElementSelector xpath=" + xpath);
-      List<WebElement> elements = driver.findElements(By.xpath(xpath));
-      if (maxElementsSelected > 0) {
-        return elements.subList(0, maxElementsSelected);
-      }
-      return elements;
+      return driver.findElements(By.xpath(xpath));
     } else {
       List<WebElement> elements = Lists.newArrayList();
       for (String className : classNames) {
