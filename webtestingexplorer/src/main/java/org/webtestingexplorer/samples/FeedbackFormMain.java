@@ -83,7 +83,7 @@ public class FeedbackFormMain {
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
         .setOracleConfigFactory(new SampleOracleConfigFactory())
-        .setWebDriverFactory(new FirefoxWebDriverFactory(true))
+        .setWebDriverFactory(new FirefoxWebDriverFactory(true, false))
         //.setWebDriverFactory(new ChromeWebDriverFactory())
         .withRefreshButtonAction()
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))

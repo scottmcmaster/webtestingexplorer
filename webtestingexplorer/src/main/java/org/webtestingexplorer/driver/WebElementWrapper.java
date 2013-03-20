@@ -140,6 +140,7 @@ public class WebElementWrapper implements WebElement, Locatable {
     throw new IllegalStateException("Trying to locate a non-Locatable");
   }
 
+  @Deprecated
   @Override
   public Point getLocationOnScreenOnceScrolledIntoView() {
     if (element instanceof Locatable) {
