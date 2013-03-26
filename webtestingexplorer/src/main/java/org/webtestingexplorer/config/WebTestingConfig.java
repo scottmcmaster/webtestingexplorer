@@ -16,6 +16,7 @@ limitations under the License.
 package org.webtestingexplorer.config;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
@@ -26,6 +27,7 @@ import org.webtestingexplorer.state.StateChecker;
 import org.webtestingexplorer.testcase.TestCaseWriter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author smcmaster@google.com (Scott McMaster)
@@ -40,11 +42,17 @@ public class WebTestingConfig {
   private boolean useForwardButtonAction;
   private boolean useRefreshButtonAction;
   private List<ActionSequenceFilter> actionSequenceFilters = Lists.newArrayList();
-  private List<EquivalentWebElementsSet> equivalentWebElementSets = Lists.newArrayList();
   private WebDriverFactory driverFactory = new FirefoxWebDriverFactory();
   private ActionSequencePrioritizer actionSequencePrioritizer;
   private int numRetries = 3;
   private String queueFilename;
+  
+  /**
+   * Map of selector description to a {@link WebElementSelector} the selected elements of
+   * which are equivalent for the purposes of testing.
+   * TODO(smcmaster): Just store these by selector name and pull them out of the registry?
+   */
+  private Map<String, WebElementSelector> equivalentWebElementSelectors = Maps.newLinkedHashMap();
   
   /**
    * The wait condition configuration factory.
@@ -158,12 +166,12 @@ public class WebTestingConfig {
     return this;
   }
   
-  public List<EquivalentWebElementsSet> getEquivalentWebElementSets() {
-    return equivalentWebElementSets;
+  public Map<String, WebElementSelector> getEquivalentWebElementSelectors() {
+    return equivalentWebElementSelectors;
   }
   
-  public WebTestingConfig addEquivalentWebElementSet(EquivalentWebElementsSet equivalentElements) {
-    equivalentWebElementSets.add(equivalentElements);
+  public WebTestingConfig addEquivalentWebElementSelector(String description, WebElementSelector selector) {
+    equivalentWebElementSelectors.put(description, selector);
     return this;
   }
   

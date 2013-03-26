@@ -17,6 +17,7 @@ package org.webtestingexplorer.explorer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import org.openqa.selenium.WebElement;
 import org.webtestingexplorer.actions.Action;
@@ -28,7 +29,7 @@ import org.webtestingexplorer.actions.ForwardAction;
 import org.webtestingexplorer.actions.RefreshAction;
 import org.webtestingexplorer.config.ActionGeneratorConfig;
 import org.webtestingexplorer.config.ActionSequenceFilter;
-import org.webtestingexplorer.config.EquivalentWebElementsSet;
+import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.config.WebTestingConfig;
 import org.webtestingexplorer.driver.ActionSequenceRunner;
@@ -135,16 +136,15 @@ public class WebTestingExplorer {
       actions.add(new RefreshAction());
     }
 
-    // Look for element actions, filtering out ones in the same equivalence
-    // classes.
-    Map<EquivalentWebElementsSet, Boolean> markedEquivalentSets = Maps.newHashMap();
-    for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
-      markedEquivalentSets.put(equivalentSet, false);
-    }
+    // Look for element actions, filtering out ones in the same equivalence classes.
+    Set<String> markedEquivalentSelectors = Sets.newHashSet();
+    Map<String, Set<WebElement>> cachedEquivalentElements = cacheEquivalentElements();
     
     List<WebElementWithIdentifier> allElements = runner.getDriver().getActionableElements();
     for (WebElementWithIdentifier elementWithId : allElements) {
-      boolean shouldAddActions = checkEquivalentElementSets(markedEquivalentSets,
+      boolean shouldAddActions = checkEquivalentElementSelectors(
+          cachedEquivalentElements,
+          markedEquivalentSelectors,
           elementWithId);
       
       if (shouldAddActions) {
@@ -165,39 +165,45 @@ public class WebTestingExplorer {
   }
 
   /**
+   * @return a map of selector name -> elements returned by that selector for the
+   *    elements defined as equivalent in the config.
+   */
+  private Map<String, Set<WebElement>> cacheEquivalentElements() {
+    Map<String, Set<WebElement>> cachedEquivalentElements = Maps.newHashMap();
+    for (Map.Entry<String, WebElementSelector> equivalentSelector : config.getEquivalentWebElementSelectors().entrySet()) {
+      Set<WebElement> equivalentElements = Sets.newHashSet(equivalentSelector.getValue().select(runner.getDriver().getDriver()));
+      cachedEquivalentElements.put(equivalentSelector.getKey(), equivalentElements);
+    }
+    return cachedEquivalentElements;
+  }
+
+  /**
    * Checks to see if a given web element is equivalent to one we have already added
    * an action for.
    * 
-   * @param markedEquivalentSets tracks the equivalent sets that have already been addressed.
+   * @param cachedEquivalentElements the equivalent elements by selector name in the current state.
+   * @param markedEquivalentSelectors tracks the equivalent selectors that have already been addressed.
    * @param elementWithId the element to check for equivalence to already-added elements.
    * @return true if we should add actions for the element, false if we should skip it.
    */
-  private boolean checkEquivalentElementSets(
-      Map<EquivalentWebElementsSet, Boolean> markedEquivalentSets,
+  private boolean checkEquivalentElementSelectors(
+      Map<String, Set<WebElement>> cachedEquivalentElements,
+      Set<String> markedEquivalentSelectors,
       WebElementWithIdentifier elementWithId) {
     
     boolean shouldAddActions = true;
     
-    for (EquivalentWebElementsSet equivalentSet : config.getEquivalentWebElementSets()) {
-      Set<WebElement> equivalentElements = equivalentSet.getEquivalentElements(runner.getDriver());
+    for (Map.Entry<String, Set<WebElement>> equivalentElements : cachedEquivalentElements.entrySet()) {
       
-      // TODO(smcmaster): There are a couple of untested assumptions here.
-      // First, that all object ref's for WebElements retrieved from the driver
-      // which are not stale, are the same instances. This seems reasonable since
-      // WebDriver caches them.
-      // Second, that this will work correctly across frames. That part, I kind of
-      // doubt. We may need to require that EquivalentElementSets only target
-      // a single frame and make that explicit.
-      
-      if (equivalentElements.contains(elementWithId.safeGetElement(runner.getDriver()))) {
-        if (markedEquivalentSets.containsKey(equivalentSet)) {
+      if (equivalentElements.getValue().contains(elementWithId.safeGetElement(runner.getDriver())) &&
+        markedEquivalentSelectors.contains(equivalentElements.getKey())) {
           // We have already added an element from this set.
+          LOGGER.info("Filtering an element from equivalent selector: " + equivalentElements.getKey());
           shouldAddActions = false;
-        }
-        // Mark that we will add an element from this set so that we don't add
-        // any more.
-        markedEquivalentSets.put(equivalentSet, true);        
       }
+      // Mark that we will add an element from this set so that we don't add
+      // any more.
+      markedEquivalentSelectors.add(equivalentElements.getKey());        
     }
     
     return shouldAddActions;
