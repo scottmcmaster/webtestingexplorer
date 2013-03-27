@@ -35,13 +35,14 @@ public abstract class MultiCriterionActionGeneratorConfig extends AbstractAction
   private final Pattern namePattern;
   private final Pattern classNamePattern;
   private final Pattern textPattern;
+  private final Pattern typePattern;
   
   /**
    * Any of the criteria that you don't want to check may be left null.
    * If all are null, the generator config matches everything.
    */
   public MultiCriterionActionGeneratorConfig(String tag, String id,
-      String name, String className, String text) {
+      String name, String className, String text, String type) {
     if (tag != null) {
       this.tagPattern = Pattern.compile(tag);
     } else {
@@ -66,6 +67,11 @@ public abstract class MultiCriterionActionGeneratorConfig extends AbstractAction
       this.textPattern = Pattern.compile(text);
     } else {
       this.textPattern = null;
+    }
+    if (type != null) {
+      this.typePattern = Pattern.compile(type);
+    } else {
+      this.typePattern = null;
     }
   }
 
@@ -110,6 +116,14 @@ public abstract class MultiCriterionActionGeneratorConfig extends AbstractAction
       String text = elementWithId.getElement().getText();
       if (text != null && text.length() > 0) {
         isMatch = isMatch && textPattern.matcher(text).matches();
+      } else {
+        return false;
+      }
+    }
+    if (typePattern != null) {
+      String type = elementWithId.getElement().getAttribute("type");
+      if (type != null && type.length() > 0) {
+        isMatch = isMatch && typePattern.matcher(type).matches();
       } else {
         return false;
       }
