@@ -33,19 +33,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>1.2.2</version>
+      <groupId>xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>2.31.0</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>2.31.0</version>
     </dependency>
     <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-api</artifactId>
-        <version>2.31.0</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-api</artifactId>
+      <version>2.31.0</version>
     </dependency>
     <dependency>
       <groupId>biz.neustar</groupId>
@@ -53,25 +53,25 @@
       <version>2.0-beta-6</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.1.2</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.1.2</version>
     </dependency>
     <dependency>
-        <groupId>net.jsourcerer.webdriver</groupId>
-        <artifactId>JSErrorCollector</artifactId>
-        <version>0.4</version>
+      <groupId>net.jsourcerer.webdriver</groupId>
+      <artifactId>JSErrorCollector</artifactId>
+      <version>0.4</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
       <version>140</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
@@ -83,11 +83,11 @@
       <version>2.0.16</version>
     </dependency>
     <dependency>
-	  <groupId>org.json</groupId>
-	  <artifactId>json</artifactId>
-	  <version>20090211</version>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20090211</version>
     </dependency>
-	  <dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.2.1</version>
@@ -99,15 +99,38 @@
       <artifactId>jsoup</artifactId>
       <version>1.7.2</version>
     </dependency>
-   </dependencies>
+  </dependencies>
+  
   <build>
-    <plugins>  
+    <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>
+              jar-with-dependencies
+            </descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-my-jar-with-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
