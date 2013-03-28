@@ -89,7 +89,7 @@ public class FeedbackFormMain {
         .addActionSequenceFilter(new MaxRepeatedActionSequenceFilter(2))
         .addActionSequenceFilter(createNoTextboxOrderingActionSequenceFilter())
         .addActionGeneratorConfig(new MultiCriterionActionGeneratorConfig(
-            null, null, ".*email.*", null, null) {          
+            null, null, ".*email.*", null, null, null) {          
           @Override
           public Set<Action> generateActions(WebDriverWrapper driver,
               WebElementWithIdentifier elementWithId) {
