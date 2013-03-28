@@ -39,7 +39,7 @@ public class SelectedElementsState implements State {
   public SelectedElementsState(List<WebElementWithIdentifier> elements,
       String selectorKey) {
     this.selectorKey = selectorKey;
-    identifiers = Sets.newHashSet();
+    identifiers = Sets.newLinkedHashSet();
     for (WebElementWithIdentifier element : elements) {
       identifiers.add(element.getIdentifier());
     }
