@@ -171,6 +171,9 @@ public class WebTestingConfig {
   }
   
   public WebTestingConfig addEquivalentWebElementSelector(String description, WebElementSelector selector) {
+    if (equivalentWebElementSelectors.containsKey(description)) {
+      throw new IllegalStateException("Duplicate equivalent element selector: " + description);
+    }
     equivalentWebElementSelectors.put(description, selector);
     return this;
   }
