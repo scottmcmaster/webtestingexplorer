@@ -171,7 +171,7 @@ public class WebTestingExplorer {
   private Map<String, Set<WebElement>> cacheEquivalentElements() {
     Map<String, Set<WebElement>> cachedEquivalentElements = Maps.newHashMap();
     for (Map.Entry<String, WebElementSelector> equivalentSelector : config.getEquivalentWebElementSelectors().entrySet()) {
-      Set<WebElement> equivalentElements = Sets.newHashSet(equivalentSelector.getValue().select(runner.getDriver().getDriver()));
+      Set<WebElement> equivalentElements = Sets.newLinkedHashSet(equivalentSelector.getValue().select(runner.getDriver().getDriver()));
       cachedEquivalentElements.put(equivalentSelector.getKey(), equivalentElements);
     }
     return cachedEquivalentElements;
