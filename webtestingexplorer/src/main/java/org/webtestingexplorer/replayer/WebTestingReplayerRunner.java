@@ -51,7 +51,8 @@ public class WebTestingReplayerRunner {
         oracleConfig,
         waitConditionConfig,
         null,
-        NUM_RETRIES));
+        NUM_RETRIES,
+        true));
     
     runner.getDriver().close();
     return result;

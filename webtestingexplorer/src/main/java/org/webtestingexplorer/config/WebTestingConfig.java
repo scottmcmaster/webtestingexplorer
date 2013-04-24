@@ -48,6 +48,11 @@ public class WebTestingConfig {
   private String queueFilename;
   
   /**
+   * Whether or not to try to use cached elements in the driver wrapper.
+   */
+  private boolean useElementsCache;
+
+  /**
    * Map of selector description to a {@link WebElementSelector} the selected elements of
    * which are equivalent for the purposes of testing.
    * TODO(smcmaster): Just store these by selector name and pull them out of the registry?
@@ -287,5 +292,14 @@ public class WebTestingConfig {
   public WebTestingConfig setUseDefaultActionGeneratorConfigs(boolean useDefaultActionGeneratorConfigs) {
     this.useDefaultActionGeneratorConfigs = useDefaultActionGeneratorConfigs;
     return this;
+  }
+
+  public WebTestingConfig setUseElementsCache(boolean useElementsCache) {
+    this.useElementsCache = useElementsCache;
+    return this;
+  }
+  
+  public boolean isUseElementsCache() {
+    return useElementsCache;
   }
 }

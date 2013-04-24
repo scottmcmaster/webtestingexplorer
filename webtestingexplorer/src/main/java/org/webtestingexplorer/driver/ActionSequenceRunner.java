@@ -134,7 +134,7 @@ public class ActionSequenceRunner {
         // it is still open so that they can do things like examine state.
         // Probably need to add more callbacks.
         driver = new WebDriverWrapper(driverFactory, proxy, waitIntervalMillis, waitTimeoutMillis,
-            false);
+            config.isUseElementsCache());
     
         loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
         
@@ -255,7 +255,6 @@ public class ActionSequenceRunner {
     
     LOGGER.info("Performing action: " + action.toString());
     action.perform(driver);
-    driver.invalidateElementsCache();
     if (waitConditionConfig != null) {
       driver.waitOnConditions(waitConditionConfig.getAfterActionWaitConditions());
     }

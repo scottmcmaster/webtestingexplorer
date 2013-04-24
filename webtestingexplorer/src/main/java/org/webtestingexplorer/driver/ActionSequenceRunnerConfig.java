@@ -59,17 +59,24 @@ public class ActionSequenceRunnerConfig {
   private int numRetries = 3;
 
   /**
+   * Whether or not to try to use cached elements in the driver wrapper.
+   */
+  private boolean useElementsCache;
+
+  /**
    * Constructor.
    */
   public ActionSequenceRunnerConfig(String url, ActionSequence actionSequence,
       OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
-      BeforeActionCallback beforeActionCallback, int numRetries) {
+      BeforeActionCallback beforeActionCallback, int numRetries,
+      boolean useElementsCache) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.oracleConfig = oracleConfig;
     this.waitConditionConfig = waitConditionConfig;
     this.beforeActionCallback = beforeActionCallback;
     this.numRetries = numRetries;
+    this.useElementsCache = useElementsCache;
   }
 
   public String getUrl() {
@@ -94,5 +101,9 @@ public class ActionSequenceRunnerConfig {
   
   public int getNumRetries() {
     return numRetries;
+  }
+
+  public boolean isUseElementsCache() {
+    return useElementsCache;
   }
 }

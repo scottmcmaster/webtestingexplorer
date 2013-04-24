@@ -110,7 +110,8 @@ public class WebTestingExplorer {
           config.getOracleConfig(),
           config.getWaitConditionConfig(),
           null,
-          config.getNumRetries()));
+          config.getNumRetries(),
+          config.isUseElementsCache()));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         extendAndPushActionSequence(actionSequences, initialActionSequence, action);
@@ -235,7 +236,8 @@ public class WebTestingExplorer {
                   }
                 }
                },
-            config.getNumRetries()));
+            config.getNumRetries(),
+            config.isUseElementsCache()));
         if (result.hasFailures()) {
           ++failedCaseCount;
         }
