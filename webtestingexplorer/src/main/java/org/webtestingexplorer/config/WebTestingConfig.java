@@ -48,6 +48,19 @@ public class WebTestingConfig {
   private String queueFilename;
   
   /**
+   * The partition number for parallelizing the generation process. Currently this
+   * is only used to choose a partition from the initial action sequences and
+   * is completely ignored if you are starting from an existing action sequence queue.
+   * If numPartitions is 0 this value is ignored.
+   */
+  private int partitionNumber;
+  
+  /**
+   * How many partitions we're using. May be the default of 0.
+   */
+  private int numPartitions;
+  
+  /**
    * Whether or not to try to use cached elements in the driver wrapper.
    */
   private boolean useElementsCache;
@@ -301,5 +314,23 @@ public class WebTestingConfig {
   
   public boolean isUseElementsCache() {
     return useElementsCache;
+  }
+  
+  public int getPartitionNumber() {
+    return partitionNumber;
+  }
+  
+  public WebTestingConfig setPartitionNumber(int partitionNumber) {
+    this.partitionNumber = partitionNumber;
+    return this;
+  }
+  
+  public int getNumPartitions() {
+    return numPartitions;
+  }
+  
+  public WebTestingConfig setNumPartitions(int numPartitions) {
+    this.numPartitions = numPartitions;
+    return this;
   }
 }

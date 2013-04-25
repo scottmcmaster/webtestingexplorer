@@ -87,7 +87,8 @@ public class WebTestingExplorer {
       }
     }
     if (actionSequences == null || actionSequences.isEmpty()) {
-      actionSequences = buildInitialActionSequences();
+      actionSequences = buildInitialActionSequences(
+          config.getNumPartitions(), config.getPartitionNumber());
     }
     
     // Replay.
@@ -99,7 +100,8 @@ public class WebTestingExplorer {
     runner.shutdown();
   }
 
-  private ActionSequenceQueue buildInitialActionSequences() throws Exception {
+  private ActionSequenceQueue buildInitialActionSequences(
+      int numPartitions, int partitionNumber) throws Exception {
     List<ActionSequence> initialActionSequences = Lists.newArrayList(config.getInitialActionSequences());
     
     ActionSequenceQueue actionSequences = new ActionSequenceQueue();
@@ -118,7 +120,19 @@ public class WebTestingExplorer {
       }
       runner.getDriver().close();
     }
-    return actionSequences;
+    
+    if (numPartitions == 0) {
+      // We are not using partitioning of the initial action sequences.
+      return actionSequences;
+    }
+    
+    int partitionSize = actionSequences.size() / numPartitions;
+    if (actionSequences.size() % numPartitions != 0) {
+      ++partitionSize;
+    }
+    List<List<ActionSequence>> partitionedActionSequences = Lists.partition(
+        actionSequences.asList(), partitionSize);
+    return new ActionSequenceQueue(partitionedActionSequences.get(partitionNumber));
   }
 
   private List<Action> getAllPossibleActionsInCurrentState() {

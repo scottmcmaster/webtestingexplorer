@@ -1,5 +1,7 @@
 package org.webtestingexplorer.actions;
 
+import com.google.common.collect.Lists;
+
 import com.thoughtworks.xstream.XStream;
 
 import java.io.File;
@@ -11,6 +13,7 @@ import java.io.Writer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,5 +100,9 @@ public class ActionSequenceQueue implements Iterable<ActionSequence> {
   @Override
   public Iterator<ActionSequence> iterator() {
     return actionSequences.iterator();
-  }  
+  }
+  
+  public List<ActionSequence> asList() {
+    return Lists.newArrayList(actionSequences);
+  }
 }
