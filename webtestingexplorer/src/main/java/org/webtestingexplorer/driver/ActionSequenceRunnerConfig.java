@@ -64,12 +64,17 @@ public class ActionSequenceRunnerConfig {
   private boolean useElementsCache;
 
   /**
+   * Whether we want to capture screenshots or not after each action.
+   */
+  private boolean captureScreenshots;
+  
+  /**
    * Constructor.
    */
   public ActionSequenceRunnerConfig(String url, ActionSequence actionSequence,
       OracleConfig oracleConfig, WaitConditionConfig waitConditionConfig,
       BeforeActionCallback beforeActionCallback, int numRetries,
-      boolean useElementsCache) {
+      boolean useElementsCache, boolean captureScreenshots) {
     this.url = url;
     this.actionSequence = actionSequence;
     this.oracleConfig = oracleConfig;
@@ -77,6 +82,7 @@ public class ActionSequenceRunnerConfig {
     this.beforeActionCallback = beforeActionCallback;
     this.numRetries = numRetries;
     this.useElementsCache = useElementsCache;
+    this.captureScreenshots = captureScreenshots;
   }
 
   public String getUrl() {
@@ -105,5 +111,9 @@ public class ActionSequenceRunnerConfig {
 
   public boolean isUseElementsCache() {
     return useElementsCache;
+  }
+
+  public boolean isCaptureScreenshots() {
+    return captureScreenshots;
   }
 }

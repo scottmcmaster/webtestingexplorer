@@ -46,6 +46,7 @@ public class WebTestingConfig {
   private ActionSequencePrioritizer actionSequencePrioritizer;
   private int numRetries = 3;
   private String queueFilename;
+  private boolean captureScreenshots;
   
   /**
    * The partition number for parallelizing the generation process. Currently this
@@ -331,6 +332,15 @@ public class WebTestingConfig {
   
   public WebTestingConfig setNumPartitions(int numPartitions) {
     this.numPartitions = numPartitions;
+    return this;
+  }
+
+  public boolean isCaptureScreenshots() {
+    return captureScreenshots;
+  }
+  
+  public WebTestingConfig setCaptureScreenshots(boolean captureScreenshots) {
+    this.captureScreenshots = captureScreenshots;
     return this;
   }
 }

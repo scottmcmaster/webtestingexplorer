@@ -113,7 +113,8 @@ public class WebTestingExplorer {
           config.getWaitConditionConfig(),
           null,
           config.getNumRetries(),
-          config.isUseElementsCache()));
+          config.isUseElementsCache(),
+          false));
       List<Action> actions = getAllPossibleActionsInCurrentState();
       for (Action action : actions) {
         extendAndPushActionSequence(actionSequences, initialActionSequence, action);
@@ -251,7 +252,8 @@ public class WebTestingExplorer {
                 }
                },
             config.getNumRetries(),
-            config.isUseElementsCache()));
+            config.isUseElementsCache(),
+            config.isCaptureScreenshots()));
         if (result.hasFailures()) {
           ++failedCaseCount;
         }

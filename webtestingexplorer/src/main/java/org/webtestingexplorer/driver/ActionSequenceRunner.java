@@ -15,6 +15,10 @@ limitations under the License.
 */
 package org.webtestingexplorer.driver;
 
+import com.google.common.collect.Lists;
+
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.webtestingexplorer.actions.Action;
 import org.webtestingexplorer.actions.ActionSequence;
 import org.webtestingexplorer.config.waitcondition.WaitConditionConfig;
@@ -54,12 +58,26 @@ public class ActionSequenceRunner {
      */
     private final List<FailureReason> failures;
     
-    public ActionSequenceResult(List<FailureReason> failures) {
+    /**
+     * The screenshots that were captured action-by-action while running the action sequence.
+     * May be null if we're not configured to capture screenshots.
+     */
+    private final List<Byte[]> screenshots;
+    
+    public ActionSequenceResult(List<FailureReason> failures, List<Byte[]> screenshots) {
       this.failures = failures;
+      this.screenshots = screenshots;
     }
     
     public List<FailureReason> getFailures() {
       return failures;
+    }
+
+    /**
+     * @return the screenshots
+     */
+    public List<Byte[]> getScreenshots() {
+      return screenshots;
     }
 
     /**
@@ -138,6 +156,11 @@ public class ActionSequenceRunner {
     
         loadUrl(driver, config.getUrl(), config.getWaitConditionConfig());
         
+        List<Byte[]> screenshots = null;
+        if (config.isCaptureScreenshots()) {
+          screenshots = Lists.newArrayList();
+        }
+        
         for (int i = 0; i < config.getActionSequence().getActions().size(); ++i) {
           if (config.getOracleConfig() != null) {
           	resetOracles(config.getOracleConfig().getAfterActionOracles());
@@ -148,7 +171,7 @@ public class ActionSequenceRunner {
             config.getBeforeActionCallback().onBeforeAction(action);
           }
           try {
-            performAction(driver, action, config.getWaitConditionConfig());
+            performAction(driver, action, config.getWaitConditionConfig(), screenshots);
           } catch (Exception e) {
             String message = "Exception running action: " + action
                 + ", element outerHTML=" + action.getIdentifier().getOuterHtml();
@@ -170,7 +193,7 @@ public class ActionSequenceRunner {
               config.getActionSequence(), config.getActionSequence().getLastAction());
         }
         
-        return new ActionSequenceResult(failures);
+        return new ActionSequenceResult(failures, screenshots);
       } catch (Exception e) {
       	// Page source is sometimes useful for debugging.
         //String source = driver.getDriver().getPageSource();
@@ -245,7 +268,7 @@ public class ActionSequenceRunner {
   }
 
   private void performAction(WebDriverWrapper driver, Action action,
-      WaitConditionConfig waitConditionConfig) {
+      WaitConditionConfig waitConditionConfig, List<Byte[]> screenshots) {
     if (proxy != null) {
       // We should reset the proxy on each action (keeping in mind that we
       // don't really know which actions will actually trigger http
@@ -257,6 +280,15 @@ public class ActionSequenceRunner {
     action.perform(driver);
     if (waitConditionConfig != null) {
       driver.waitOnConditions(waitConditionConfig.getAfterActionWaitConditions());
+    }
+    
+    if (screenshots != null) {
+      byte[] screenshotBytes = ((TakesScreenshot) driver.getDriver()).getScreenshotAs(OutputType.BYTES);
+      Byte[] screenshotBytesWithAB = new Byte[screenshotBytes.length];
+      for(int i = 0; i < screenshotBytes.length; i++) {
+        screenshotBytesWithAB[i] = new Byte(screenshotBytes[i]);
+      }
+      screenshots.add(screenshotBytesWithAB);
     }
   }
 }

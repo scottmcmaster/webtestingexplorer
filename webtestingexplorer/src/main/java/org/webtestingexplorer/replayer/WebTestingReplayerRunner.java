@@ -52,7 +52,8 @@ public class WebTestingReplayerRunner {
         waitConditionConfig,
         null,
         NUM_RETRIES,
-        true));
+        true,
+        false));
     
     runner.getDriver().close();
     return result;
