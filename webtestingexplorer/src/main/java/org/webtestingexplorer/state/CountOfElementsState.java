@@ -17,6 +17,8 @@ package org.webtestingexplorer.state;
 
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.util.List;
 
 /**
@@ -41,6 +43,11 @@ public class CountOfElementsState implements State {
     return diff((CountOfElementsState) other).isEmpty();
   }
 
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(numElements).hashCode();
+  }
+  
   @Override
   public StateChecker createStateChecker() {
     return new CountOfElementsStateChecker();

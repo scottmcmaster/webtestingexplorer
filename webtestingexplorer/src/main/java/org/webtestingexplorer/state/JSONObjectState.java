@@ -2,6 +2,7 @@ package org.webtestingexplorer.state;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,6 +71,28 @@ public abstract class JSONObjectState implements State {
     this.json = json;
   }
   
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      // Same states
+      return true;
+    }
+    if (!(other instanceof JSONObjectState)) {
+      // Compare with non-ElementsState instance
+      return false;
+    }
+
+    JSONObjectState otherState = (JSONObjectState) other;
+    return this.diff(otherState).isEmpty();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(json)
+        .hashCode();
+  }
+
   @Override
   public List<StateDifference> diff(State otherState) {
     if (!(otherState instanceof JSONObjectState)) {

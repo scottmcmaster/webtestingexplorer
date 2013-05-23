@@ -16,6 +16,7 @@
 package org.webtestingexplorer.state;
 
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -54,6 +55,28 @@ public class CustomizedPropertiesElementsState extends ElementsState {
       customizedProperties = new ArrayList<String>();
     }
     elementProperties = parseXML(xmlString);
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      // Same states
+      return true;
+    }
+    if (!(other instanceof CustomizedPropertiesElementsState)) {
+      return false;
+    }
+
+    CustomizedPropertiesElementsState otherState = (CustomizedPropertiesElementsState) other;
+    return this.diff(otherState).isEmpty();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .appendSuper(super.hashCode())
+        .append(customizedProperties)
+        .hashCode();
   }
 
   private Map<WebElementIdentifier, Map<String, String>> parseXML(String xmlString) {

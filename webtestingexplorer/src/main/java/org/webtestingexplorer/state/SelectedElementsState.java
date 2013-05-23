@@ -18,6 +18,7 @@ package org.webtestingexplorer.state;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.webtestingexplorer.config.WebElementSelector;
 import org.webtestingexplorer.config.WebElementSelectorRegistry;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
@@ -54,6 +55,14 @@ public class SelectedElementsState implements State {
       return false;
     }
     return diff((SelectedElementsState) other).isEmpty();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(identifiers)
+        .append(selectorKey)
+        .hashCode();
   }
 
   @Override

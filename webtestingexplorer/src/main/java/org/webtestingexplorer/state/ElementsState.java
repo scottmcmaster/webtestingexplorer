@@ -17,6 +17,7 @@ package org.webtestingexplorer.state;
 
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 
 import java.util.Arrays;
@@ -69,6 +70,14 @@ public abstract class ElementsState implements State {
 
     ElementsState otherState = (ElementsState) other;
     return this.diff(otherState).isEmpty();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(elementType)
+        .append(elementProperties)
+        .hashCode();
   }
   
   @Override

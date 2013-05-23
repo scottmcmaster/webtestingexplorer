@@ -46,6 +46,7 @@ public class WebTestingConfig {
   private ActionSequencePrioritizer actionSequencePrioritizer;
   private int numRetries = 3;
   private String queueFilename;
+  private String stateFilename;
   private boolean captureScreenshots;
   
   /**
@@ -297,6 +298,15 @@ public class WebTestingConfig {
   
   public String getQueueFilename() {
     return queueFilename;
+  }
+  
+  public WebTestingConfig setStateFilename(String stateFileName) {
+    this.stateFilename = stateFileName;
+    return this;
+  }
+  
+  public String getStateFilename() {
+    return stateFilename;
   }
   
   public boolean isUseDefaultActionGeneratorConfigs() {

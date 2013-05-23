@@ -16,9 +16,11 @@ import org.webtestingexplorer.actions.SelectAction;
 import org.webtestingexplorer.actions.SetTextAction;
 import org.webtestingexplorer.actions.WaitAction;
 import org.webtestingexplorer.identifiers.AttributeValueWebElementIdentifier;
+import org.webtestingexplorer.identifiers.ClassIndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IdWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
+import org.webtestingexplorer.identifiers.TagIndexWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementIdentifier;
 import org.webtestingexplorer.identifiers.XpathWebElementIdentifier;
 import org.webtestingexplorer.identifiers.IndexWebElementIdentifier.IndexBasis;
@@ -64,6 +66,8 @@ public class ActionSequenceXStream {
     xstream.alias("IndexWebElementIdentifier", IndexWebElementIdentifier.class);
     xstream.alias("XpathWebElementIdentifier", XpathWebElementIdentifier.class);
     xstream.alias("AttributeValueWebElementIdentifier", AttributeValueWebElementIdentifier.class);
+    xstream.alias("TagIndexWebElementIdentifier", TagIndexWebElementIdentifier.class);
+    xstream.alias("ClassIndexWebElementIdentifier", ClassIndexWebElementIdentifier.class);
     xstream.alias("IndexBasis", IndexBasis.class);
     xstream.addImmutableType(IndexBasis.class);
   }

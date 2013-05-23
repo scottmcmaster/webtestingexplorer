@@ -27,11 +27,7 @@ import org.webtestingexplorer.config.selector.CssWebElementSelector;
 import org.webtestingexplorer.config.selector.FilterWebElementSelector;
 import org.webtestingexplorer.config.selector.TagWebElementSelector;
 import org.webtestingexplorer.config.selector.XpathWebElementSelector;
-import org.webtestingexplorer.state.CountOfElementsState;
-import org.webtestingexplorer.state.CustomizedPropertiesElementsState;
-import org.webtestingexplorer.state.ElementsState;
-import org.webtestingexplorer.state.SelectedElementsState;
-import org.webtestingexplorer.state.VisibleElementsState;
+import org.webtestingexplorer.state.StateXStream;
 
 /**
  * XStream configuration for reading and writing test cases.
@@ -46,12 +42,8 @@ public class TestCaseXStream {
   public static XStream createXStream() {
     XStream xstream = new XStream(new StaxDriver());
     ActionSequenceXStream.addActionSequenceAliases(xstream);
-    xstream.alias("CountOfElementsState", CountOfElementsState.class);
-    xstream.alias("CustomizedPropertiesElementsState", CustomizedPropertiesElementsState.class);
-    xstream.alias("ElementsState", ElementsState.class);
-    xstream.alias("VisibleElementsState", VisibleElementsState.class);
+    StateXStream.addStateAliases(xstream);
     xstream.alias("TestCase", TestCase.class);
-    xstream.alias("SelectedElementsState", SelectedElementsState.class);
     xstream.alias("TestCaseConfig", TestCaseConfig.class);
     xstream.alias("WebElementSelectorRegistry", WebElementSelectorRegistry.class);
     xstream.alias("TagWebElementSelector", TagWebElementSelector.class);

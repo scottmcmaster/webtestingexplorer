@@ -35,6 +35,11 @@ public class NullState implements State {
   }
 
   @Override
+  public int hashCode() {
+    return 29;
+  }
+  
+  @Override
   public StateChecker createStateChecker() {
     return new NullStateChecker();
   }

@@ -40,6 +40,7 @@ import org.webtestingexplorer.identifiers.NameWebElementIdentifier;
 import org.webtestingexplorer.identifiers.WebElementWithIdentifier;
 import org.webtestingexplorer.javascript.JavaScriptUtil;
 import org.webtestingexplorer.state.CountOfElementsStateChecker;
+import org.webtestingexplorer.stateexplorer.WebTestingStateExplorer;
 import org.webtestingexplorer.testcase.ReplayableTestCaseWriter;
 
 import java.io.IOException;
@@ -65,6 +66,9 @@ public class FeedbackFormMain {
   @Option(name="-queueFile", usage="Filename to read/write the persistent queue of action sequences (may be empty)")
   private String queueFile = "";
   
+  @Option(name="-stateFile", usage="Filename to read/write the state graph to (may be empty)")
+  private String stateFile = "";
+  
   @Argument
   private List<String> arguments = Lists.newArrayList();
   
@@ -79,6 +83,7 @@ public class FeedbackFormMain {
     WebTestingConfig config = new WebTestingConfig()
         .addTestCaseWriter(new ReplayableTestCaseWriter(outputDir))
         .setQueueFilename(queueFile)
+        .setStateFilename(stateFile)
         .setUrl(url)
         .setMaxLength(5)
         .addStateChecker(new CountOfElementsStateChecker())
@@ -101,6 +106,7 @@ public class FeedbackFormMain {
           }
         })
         .addActionGeneratorConfig(new JavascriptAnchorActionGeneratorConfig());
+    //new WebTestingStateExplorer(config).run();    
     new WebTestingExplorer(config).run();    
   }
 
